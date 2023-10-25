@@ -1,0 +1,108 @@
+input{
+    outline: none;
+}
+.login_page{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+.login_from-register{
+   
+}
+.login_logo{
+    margin-bottom: 20px;
+}
+.login_frames{
+    width: 500px;
+    height: 700px;
+    margin-right: 50px;
+}
+
+.login_form{
+    border-radius: 10px;
+    border: 1px solid #D9D9D9;
+    padding: 70px 50px 20px 50px;
+    height: fit-content;
+}
+.login_input{
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+}
+.btn-color{
+    padding: 10px 0;
+    font-size: 15px;
+    color: #fff;
+    border-radius: 300px;
+    background-color: #dc582c;
+    width: 100%;
+}
+.serapate{
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+.serapate-line{
+    height: 1px;
+    width: 100%;
+   background-color: #D3D3D3;  
+}
+.serapate-text{
+    font-weight: 400;
+    color: #6D6D6D;
+}
+.login_facebook{
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login_facebook-img{
+    width: 25px;
+}
+
+.login_facebook-text{
+    margin-left: 8px;
+    color: #3338B6;
+    font-weight: 500;
+}
+
+.login_forgot{
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #C43302;
+    cursor: pointer;
+    text-decoration: none;
+    &:hover{
+        color: #C43302;
+        opacity: 0.8;
+        
+    }
+}
+
+.login_register{
+    margin-top: 40px;
+    padding: 20px 50px;
+    border: 1px solid #D9D9D9;
+}
+
+.login_register-link{
+    color: #C43302;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 8px;
+    &:hover{
+        color: #C43302;
+        opacity: 0.8;
+        
+    }
+}
