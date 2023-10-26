@@ -1,9 +1,21 @@
-import React from 'react';
+import React from "react";
 
 const NotFound = () => {
   return (
-    <div className="container"> 
-      <h1>404 | Not Found</h1>
+    <div
+      className="position-relative col-9"
+      style={{ minHeight: "calc(100vh - 70px)"}}
+    >
+      <h2
+        className="position-absolute text-secondary"
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%,-50%)",
+        }}
+      >
+        404 | Not Found.
+      </h2>
     </div>
   );
 };
