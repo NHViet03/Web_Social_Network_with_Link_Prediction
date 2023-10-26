@@ -10,11 +10,10 @@ const Login = () => {
     const { name, value } = e.target;
     setUserData({...userData, [name]: value})
   }
-
   return (
     <div className="login_page">
      <img src={img.frames} alt="" className="login_frames"/>
-      <div className="login_from-register">
+      <div className="login_form-register">
       <form className="login_form" >
       <img src={img.logo} alt="" className="login_logo"/>
         <div className="mb-3 ">
