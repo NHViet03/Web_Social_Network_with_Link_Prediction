@@ -1,19 +1,24 @@
-import React from 'react';
-import {BrowserRouter,Routes,Route} from 'react-router-dom';
-import PageRender from './PageRender';
-import LoginScreen from './pages/login';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import PageRender from "./customRouter/PageRender";
+import LoginScreen from "./pages/login";
+import Home from "./pages/home";
+import SideBar from "./components/sideBar/SideBar";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Client</h1>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LoginScreen />}/> 
-          <Route path="/:page" element={<PageRender />}/> 
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <div className="App">
+        <div className="main row">
+          <SideBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/:page" element={<PageRender />} />
+            <Route path="/:page/:id" element={<PageRender />} />
+          </Routes>
+        </div>
+      </div>
+    </BrowserRouter>
   );
 }
 
