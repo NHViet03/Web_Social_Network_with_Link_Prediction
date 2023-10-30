@@ -1,14 +1,14 @@
-import React from 'react'
-import Avatar from '../components/Avatar';
+import React from "react";
+import MainContent from "../components/home/MainContent";
+import Suggestions from "../components/home/Suggestions";
 
-const fakeImage="https://marketplace.canva.com/EAFltIh8PKg/1/0/1600w/canva-cute-anime-cartoon-illustration-girl-avatar-J7nVyTlhTAE.jpg";
 const Home = () => {
   return (
-    <div className='col-9'>
-      Home
-      <Avatar src={fakeImage} size='avatar-md' border/>
+    <div className="row mx-0 home">
+      <MainContent />
+      <Suggestions />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

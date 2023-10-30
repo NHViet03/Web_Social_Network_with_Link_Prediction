@@ -3,7 +3,7 @@ import React from "react";
 const NotFound = () => {
   return (
     <div
-      className="position-relative col-9"
+      className="position-relative"
       style={{ minHeight: "calc(100vh - 70px)"}}
     >
       <h2

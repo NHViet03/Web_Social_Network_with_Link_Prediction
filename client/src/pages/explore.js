@@ -2,7 +2,7 @@ import React from 'react'
 
 const Explore = () => {
   return (
-    <div className='col-9'>
+    <div className=''>
       Explore
     </div>
   )

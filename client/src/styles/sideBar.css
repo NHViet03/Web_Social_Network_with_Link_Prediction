@@ -1,8 +1,13 @@
 .side-bar {
   padding: 30px 20px;
-  max-width: 250px;
+  width: 250px;
   z-index: 2;
   border-right: 1px solid var(--border-color);
+  position: fixed;
+  left:0;
+  top:0;
+  height:100vh;
+  background-color: #fff;
 }
 
 .side-bar-logo {
@@ -17,6 +22,9 @@
 .side-bar .menu li:hover {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+}
+.side-bar .menu li:hover .nav-icon{
+  transform: scale(1.05);
 }
 .side-bar .menu li a {
   color: #000;
@@ -67,7 +75,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .side-bar-logo {
-    display: none;
+    display: none!important;
   }
   .side-bar .menu .nav-text {
     display: none;

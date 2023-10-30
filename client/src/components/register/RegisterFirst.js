@@ -20,7 +20,7 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
       className="d-flex justify-content-center flex-column pt-4 auth_form "
       onSubmit={handleSubmit}
     >
-      <img src={logo} alt="Logo" className="mb-2" />
+      <img src={logo} alt="Logo" className="auth_logo" />
       <p className="mb-3 auth_intro">Đăng ký để xem ảnh và video từ bạn bè.</p>
       <button class="btn btn_primary w-100">
         <i className="fa-brands fa-square-facebook me-1"></i>

@@ -6,8 +6,10 @@
   align-items: center;
 }
 .auth_logo {
-  margin-bottom: 20px;
   object-fit: cover;
+  width:200px;
+  display: block;
+  margin: 0 auto 16px;
 }
 .auth_frames {
   width: 450px;

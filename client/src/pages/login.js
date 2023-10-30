@@ -17,7 +17,7 @@ const Login = () => {
       <img src={Images.frames} alt="Cover" className="auth_frames" />
       <div className="login_from-register">
         <form className="auth_form">
-          <img src={logo} alt="Logo" className="mb-3 login_logo" />
+          <img src={logo} alt="Logo" className="auth_logo" />
           <div className="mb-3 ">
             <input
               placeholder="Email"

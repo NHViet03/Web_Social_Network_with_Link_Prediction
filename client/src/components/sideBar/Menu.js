@@ -26,7 +26,7 @@ const SideBar = () => {
     },
     {
       label: "Thông báo",
-      icon: "favorite",
+      icon: "favorite_border",
       path: "/notify",
     },
     {

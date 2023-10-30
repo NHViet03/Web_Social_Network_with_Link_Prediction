@@ -1,6 +1,6 @@
 .avatar-container {
   border-radius: 50%;
-  border:1px solid var(--border-color);
+  border:0.5px solid var(--border-color);
 }
 
 .avatar-container.avatar-border {
@@ -21,13 +21,13 @@
 }
 
 .avatar-md {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
 }
 
 .avatar-sm {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34  px;
 }
 
 .avatar {

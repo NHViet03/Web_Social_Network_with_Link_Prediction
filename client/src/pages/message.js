@@ -2,7 +2,7 @@ import React from 'react'
 
 const Message = () => {
   return (
-    <div className='col-9'>
+    <div className="">
       Message
     </div>
   )

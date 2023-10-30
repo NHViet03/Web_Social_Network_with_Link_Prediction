@@ -28,17 +28,19 @@ input{
 
 a{
   text-decoration: none;
+  color: unset;
+}
+a:hover{
+  color: unset;
 }
 
 .App{
-  width: 100%;
-  min-height: 100vh;
-  background: white;
+  background: #fff;
 }
 .main{
   width: 100%;
   min-height: 100vh;
-  margin: auto;
+  margin:auto;
 }
 
 .text_primary{
@@ -63,3 +65,16 @@ a{
 
 /*---------------AVATAR---------------------*/
 @import url("./avatar.css");
+
+/*---------------HOME---------------------*/
+@import url("./home.css");
+
+/*---------------USER CARD---------------------*/
+@import url("./userCard.css");
+
+
+/*---------------POST CARD---------------------*/
+@import url("./postCard.css");
+
+/*---------------POST DETAIL MODAL---------------------*/
+@import url("./post_detail_modal.css");
