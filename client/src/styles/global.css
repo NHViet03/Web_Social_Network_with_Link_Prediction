@@ -3,6 +3,7 @@
   --border-color:#d9d9d9;
   --text-color:#737373;
 }
+
 *{
   padding:0;
   box-sizing: border-box;
@@ -59,3 +60,6 @@ a{
 
 /*---------------SIDEBAR---------------------*/
 @import url("./sideBar.css");
+
+/*---------------AVATAR---------------------*/
+@import url("./avatar.css");

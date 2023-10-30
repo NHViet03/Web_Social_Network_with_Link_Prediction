@@ -6,7 +6,7 @@
 }
 
 .side-bar-logo {
-  max-width: 150px;
+  width: 150px;
   object-fit: contain;
 }
 .side-bar .nav_bar {

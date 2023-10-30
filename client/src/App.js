@@ -4,8 +4,10 @@ import PageRender from "./customRouter/PageRender";
 import LoginScreen from "./pages/login";
 import Home from "./pages/home";
 import SideBar from "./components/sideBar/SideBar";
+import {useSelector} from 'react-redux'
 
 function App() {
+
   return (
     <BrowserRouter>
       <div className="App">
