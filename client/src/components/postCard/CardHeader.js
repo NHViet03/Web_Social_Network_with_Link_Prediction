@@ -19,6 +19,7 @@ const CardHeader = ({ user }) => {
           className="material-icons"
           id="morelink"
           data-bs-toggle="dropdown"
+          style={{cursor:"pointer"}}
         >
           more_horiz
         </span>

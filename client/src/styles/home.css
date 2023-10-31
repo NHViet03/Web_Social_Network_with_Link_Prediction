@@ -1,5 +1,4 @@
 .home{
-    margin-top: 32px;
     padding-right: 16px;
 }
 
@@ -14,7 +13,7 @@
 /* Story List */
 
 .home .story-list{
-    padding:0 32px; 
+    padding:32px 32px 0; 
     display: flex;
     flex-direction: row;
     width:100%;
@@ -53,7 +52,7 @@
 
 .suggestions{
     height:650px;
-    padding:0 36px 0 12px;
+    padding:32px 36px 0 12px;
 }
 
 .suggestions > h6{

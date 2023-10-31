@@ -4,16 +4,17 @@
   min-height: 100vh;
   justify-content: center;
   align-items: center;
+  margin-left:-250px;
 }
 .auth_logo {
   object-fit: cover;
-  width:200px;
+  width:250px;
   display: block;
   margin: 0 auto 16px;
 }
 .auth_frames {
   width: 450px;
-  height: 600px;
+  height: 500px;
   margin-right: 50px;
   object-fit: contain;
 }
@@ -100,13 +101,20 @@
   justify-content: center;
 }
 
+
+.login_facebook{
+  color: #3338b6;
+}
+.login_facebook:hover{
+  opacity: 0.8;
+  color: #3338b6;
+}
 .login_facebook-img {
   font-size: 24px;
 }
-
 .login_facebook-text {
   margin-left: 4px;
-  color: #3338b6;
+  
   font-weight: 500;
 }
 .login_forgot {

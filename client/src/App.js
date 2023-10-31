@@ -6,15 +6,41 @@ import LoginScreen from "./pages/login";
 import Home from "./pages/home";
 import SideBar from "./components/sideBar/SideBar";
 import PostDetailModal from "./components/PostDetailModal";
+import SharePostModal from "./components/SharePostModal";
+import moment from "moment";
+
+moment.updateLocale("vi", {
+  relativeTime: {
+    future: "trong %s",
+    past: "%s trước",
+    s: "1 giây",
+    ss: "%d giây",
+    m: "1 phút",
+    mm: "%d phút",
+    h: "1 giờ",
+    hh: "%d giờ",
+    d: "một ngày",
+    dd: "%d ngày",
+    w: "1 tuần",
+    ww: "%d tuần",
+    M: "1 tháng",
+    MM: "%d tháng",
+    y: "1 năm",
+    yy: "%d năm",
+  },
+});
+
 
 function App() {
-  const { postDetail } = useSelector((state) => state);
+  const { postDetail,sharePost } = useSelector((state) => state);
   return (
     <BrowserRouter>
+      <input type="checkbox" id="theme" />
       <div className="App">
         <div className="main">
           <SideBar />
           {postDetail && <PostDetailModal />}
+          {sharePost && <SharePostModal />}
           <div style={{ marginLeft: "250px" }}>
             <Routes>
               <Route path="/" element={<Home />} />

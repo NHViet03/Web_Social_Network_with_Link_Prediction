@@ -18,9 +18,9 @@ const UserCard = ({ avatar, username, fullname, size, follow }) => {
       <div>
         {follow && (
           <span
+           className="text_primary"
             style={{
               fontSize: "14px",
-              color: "var(--primary-color)",
               fontWeight: "500",
               cursor: "pointer",
             }}

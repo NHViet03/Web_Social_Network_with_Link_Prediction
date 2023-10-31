@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+
 const MenuItemDropdown = () => {
   const [show, setShow] = useState(false);
+  const { theme } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   return (
     <div className="dropdown w-100 px-1 py-2">
@@ -9,7 +14,7 @@ const MenuItemDropdown = () => {
         className="text-center d-flex align-items-center mb-0 dropdown-title"
         onClick={() => setShow(!show)}
       >
-        <span class="material-icons me-2">menu</span>
+        <span className="material-icons me-2">menu</span>
         Xem thêm
       </p>
       {show && (
@@ -33,13 +38,21 @@ const MenuItemDropdown = () => {
             </Link>
           </li>
           <li>
-            <Link
+            <label
               className="dropdown-item px-2 py-3 d-flex align-items-center"
-              to={"/"}
+              htmlFor="theme"
+              onClick={() =>
+                dispatch({ type: GLOBAL_TYPES.THEME, payload: !theme })
+              }
             >
-              <span className="material-icons">light_mode</span>
-              <span className="nav-text ms-3">Chế độ sáng</span>
-            </Link>
+              <span className="material-icons">
+                {theme ? "light_mode" : "dark_mode"}
+              </span>
+              <span className="nav-text ms-3">
+                Chế độ {theme ? "sáng" : "tối"}
+              </span>
+            
+            </label>
           </li>
           <li>
             <Link

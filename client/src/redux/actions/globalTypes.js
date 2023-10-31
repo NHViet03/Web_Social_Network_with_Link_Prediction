@@ -1,4 +1,6 @@
 export const GLOBAL_TYPES = {
     POST_DETAIL: 'POST_DETAIL',
+    SHARE_POST: 'SHARE_POST',
+    THEME: 'THEME',
 }
 

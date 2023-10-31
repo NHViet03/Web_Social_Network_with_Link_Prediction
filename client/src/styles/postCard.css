@@ -40,7 +40,7 @@
     align-items: center;
     gap: 8px;
 }
-.card_header .dropdown-item:active{
+.dropdown-item:active{
     background-color: transparent;
 }
 
@@ -85,6 +85,10 @@
 .card_footer-icons span:hover{
     cursor: pointer;
     opacity: 0.7;
+}
+.card_footer-icons span:active{
+    transform: scale(1.2);
+    transition: scale 0.5s ease-in-out;
 }
 
 .card_footer-comments{

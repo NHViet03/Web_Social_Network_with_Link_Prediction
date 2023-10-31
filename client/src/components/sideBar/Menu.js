@@ -1,8 +1,11 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import {useSelector} from 'react-redux'
 import MenuItem from "./MenuItem";
 
 const SideBar = () => {
+  const {auth}=useSelector(state=>state);
+
   const navLinks = [
     {
       label: "Trang chủ",
@@ -27,6 +30,7 @@ const SideBar = () => {
     {
       label: "Thông báo",
       icon: "favorite_border",
+      active:'favorite',
       path: "/notify",
     },
     {
@@ -36,8 +40,8 @@ const SideBar = () => {
     },
     {
       label: "Trang cá nhân",
-      icon: "account_circle",
-      path: "/profile/abc",
+      avatar:auth.avatar,
+      path: `/profile/${auth._id}`,
     },
   ];
   const { pathname } = useLocation();

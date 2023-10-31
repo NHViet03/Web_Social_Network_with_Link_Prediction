@@ -1,14 +1,13 @@
 import { GLOBAL_TYPES } from "../actions/globalTypes";
-
 const initialState = false;
 
-const postDetailReducer = (state = initialState, action) => {
+const themeReducer = (state = initialState, action) => {
   switch (action.type) {
-    case GLOBAL_TYPES.POST_DETAIL:
+    case GLOBAL_TYPES.THEME:
       return action.payload;
     default:
       return state;
   }
 };
 
-export default postDetailReducer;
+export default themeReducer;

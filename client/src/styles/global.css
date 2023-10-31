@@ -1,21 +1,21 @@
-:root{
-  --primary-color:#C43302;
-  --border-color:#d9d9d9;
-  --text-color:#737373;
+:root {
+  --primary-color: #c43302;
+  --border-color: #d9d9d9;
+  --text-color: #737373;
 }
 
-*{
-  padding:0;
+* {
+  padding: 0;
   box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-input{
+input {
   outline: none;
 }
 
@@ -26,33 +26,40 @@ input{
   box-shadow: unset;
 }
 
-a{
+a {
   text-decoration: none;
   color: unset;
 }
-a:hover{
+a:hover {
   color: unset;
 }
+#theme {
+  display: none;
+}
+#theme:checked ~ *{
+  filter: invert(1);
+}
 
-.App{
+.App {
   background: #fff;
 }
-.main{
+.main {
   width: 100%;
   min-height: 100vh;
-  margin:auto;
+  margin: auto;
 }
 
-.text_primary{
+.text_primary {
   color: var(--primary-color);
 }
-.btn_primary{
+.btn_primary {
   background-color: var(--primary-color);
-  color:#fff;
+  color: #fff;
   border-radius: 8px;
   opacity: 0.9;
-  &:hover{
-    color:#fff;
+  &:hover {
+    background-color: var(--primary-color);
+    color: #fff;
     opacity: 1;
   }
 }
@@ -72,9 +79,14 @@ a:hover{
 /*---------------USER CARD---------------------*/
 @import url("./userCard.css");
 
-
 /*---------------POST CARD---------------------*/
 @import url("./postCard.css");
 
 /*---------------POST DETAIL MODAL---------------------*/
 @import url("./post_detail_modal.css");
+
+/*---------------SHARE POST MODAL---------------------*/
+@import url("./share_post_modal.css");
+
+/*---------------EXPLORE---------------------*/
+@import url("./explore.css");

@@ -6,13 +6,14 @@
   position: fixed;
   left:0;
   top:0;
+  bottom:0;
   height:100vh;
   background-color: #fff;
 }
 
 .side-bar-logo {
-  width: 150px;
-  object-fit: contain;
+  width: 100%;
+  object-fit: cover;
 }
 .side-bar .nav_bar {
   width: 100%;

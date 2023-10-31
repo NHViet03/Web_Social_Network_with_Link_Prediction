@@ -55,7 +55,7 @@ const Login = () => {
             <div className="separate-text">HOẶC</div>
             <div className="separate-line"></div>
           </div>
-          <a href="" className="login_facebook">
+          <a href="#" className="login_facebook">
             <i className="fa-brands fa-facebook me-1 login_facebook-img" />
             <div className="login_facebook-text">Đăng nhập với Facebook</div>
           </a>
