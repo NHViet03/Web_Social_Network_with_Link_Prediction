@@ -1,10 +1,182 @@
 .message{
     background-color: #fbfbfb;
     padding-right: 0%;
+    flex: 1;
+}
+.message_header{
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: #ddd 1px solid;
+}
+.message_header-swicthAccountandModal{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10px;
+}
+
+.message_header-namedropdown{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.message_header-namedropdown >h2{
+    font-size: 20px;
+    font-weight: 700;
+}
+.message_header-namedropdown >i{
+    font-size: 15px;
+}
+.message_header-request{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin: 20px 7px 0px 7px;
+}
+.message_header-request >h3{
+    font-size: 15px;
+    font-weight: 700;
+    color: #db4e20;
+    cursor: text;
+}
+.message_header-request >h4{
+    font-size: 15px;
+    font-weight: 500;
+    color: #db4e20;
+    opacity: 0.8;
+}
+.message_header-newchat{
+    margin-right: 10px;
+}
+.message_header-newchat >i{
+    font-size: 25px;
+    cursor: pointer;
+}
+.message_mes-fb{
+    color: #db4e20 !important;
+}
+.message_right-side{
+
+}
+.message_right-side-h5{
+    font-size: 16px;
+    font-weight: 400;
+    font-style: italic;
+}
+.message_right-side-btn{
+    padding: 5px 30px;
+    border-radius: 10px;
+    font-weight: 500;
+    border: 1px solid #D97B5C;
+    color: white;
+    background-color: #D97B5C;
+    &:hover{
+        opacity: 0.8;
+    }
 }
 .message_left-side{
     border-right: 1px solid #ddd;
 }
-.message_right-side{
-
+.message_chat_list{
+    max-height: 850px;
+    overflow-y: auto;
+}
+/* Card message */
+.card-message.click {
+    background-color: #ef963e63; 
+}
+.card-message.hover:hover{
+    background-color: #ef963e63;   
+}
+/* .card-message >Link:hover{
+    background-color: none;
+} */
+.card-message_fullname{
+    font-size: 16px;
+    font-weight: 500;
+    color: #262626;
+}
+.card-message_username{
+    font-size: 14px;
+    font-weight: 400;
+    color: #262626;
+    opacity: 0.5;
+}
+.card-message-fullname-username{
+    margin-left: 10px;
+}
+/* Modal Add Message */
+.modal-addmess{
+    background-color: #6c686771;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-addmess_content{
+    display: flex;
+    flex-direction: column;
+    height: 700px;
+    width: 500px;
+    background-color: #fff;
+    border-radius: 25px;
+    padding: 10px;
+}
+.modal-addmess_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px 15px 0px;
+    border-bottom: 1px solid #ddd;
+}
+.modal-addmess_header >i{
+    font-size: 20px;
+    cursor: pointer;
+   margin-top: 4px;
+}
+.modal-addmess_content-h5{
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0px 0px 0px 180px;
+}
+.modal-addmess_content-search{
+    display: flex;
+    padding: 15px 20px 15px 0px;
+    border-bottom: 1px solid #ddd;
+    align-items: center;
+    text-align: center;
+}
+.modal-addmess_content-search >h5{
+    font-size: 15px;
+    margin: 0 5px 0 20px;
+}
+.modal-addmess_content-search input{
+    border: none;
+   flex: 1;
+}
+.modal-addmess_message_chat_list{
+    min-height: 525px;
+    max-height: 525px;
+    overflow-y: auto;
+}
+.modal-addmess_btn{
+    margin: 10px 0px 0px 0px;
+    border-radius: 20px;
+    background-color: #dc582c;
+    color: #fff;
+    &:hover{
+        opacity: 0.8;
+        background-color: #dc582c;
+    }
 }
