@@ -1,17 +1,18 @@
 import React from "react";
 import Avatar from "../sideBar/Avatar";
 import { Link } from "react-router-dom";
-export const UserCard = ({ childen, user, border, isInModal, indexActive, setIndexActive , index}) => {
+export const UserCard = ({ childen, user, border, isInModal,isInRight, indexActive, setIndexActive , index}) => {
  const handleOnClick = (e) => {
     if (isInModal) {
       e.preventDefault();
- 
-      
-      indexActive!==-1 && setIndexActive(index)
+      setIndexActive(index)
+    }
+    if (isInRight) {
+      e.preventDefault();
     }
  }
   return (
-    <div className={ `card-message ${!isInModal ? 'hover' : ''} w-100 ${isInModal && indexActive && index === indexActive ? 'click' : ''}`} >
+    <div className={ `card-message ${!isInModal && !isInRight ? 'hover' : ''} w-100 ${isInModal  && index === indexActive ? 'click' : ''}`} >
       <div className="p-2">
         <Link to={`/message/${user?.id}`} className="d-flex align-items-center" onClick={handleOnClick}>
           <Avatar

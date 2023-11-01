@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { UserCard } from "./UserCard";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 export const ModalAddMessage = ({ setOpenModal }) => {
   //   const modalRef = useRef(null);
   //  Xử lý sự kiện khi bấm ra ngoài modal
@@ -109,18 +110,23 @@ export const ModalAddMessage = ({ setOpenModal }) => {
   const [fillterdData, setFillterData] = useState(fetchData);
   const handleChangeInput = (e) => {
     const searchText = e.target.value;
-    setIndexActive(-1)
+    setIndexActive(-2)
     setSearch(searchText);
     const fillterdUsers = fetchData.filter((user) =>
     user.fullname.toLowerCase().includes(searchText.toLowerCase())
     );
     setFillterData(fillterdUsers)
   }
+  const handleButton = () => {
+    setOpenModal(false);
+    dispatch({type: 'ADD_USER', payload: fillterdData[indexActive]})
+  }
   return (
     <div className="modal-addmess">
       <div className="modal-addmess_content">
         <div className="modal-addmess_header">
           <h5 className="modal-addmess_content-h5">Tin nhắn mới</h5>
+
           <i
             class="fa fa-times"
             aria-hidden="true"
@@ -136,7 +142,7 @@ export const ModalAddMessage = ({ setOpenModal }) => {
             <UserCard user={user} isInModal={true} indexActive={indexActive} setIndexActive={setIndexActive} index={index}/>
           ))}
         </div>
-        <button className="modal-addmess_btn btn" disabled = {indexActive !== -1 ? false : true}>
+        <button className="modal-addmess_btn btn" onClick={handleButton} disabled = {indexActive !== -2  ? false : true}>
           Trò chuyện
         </button>
       </div>

@@ -170,6 +170,9 @@
     max-height: 525px;
     overflow-y: auto;
 }
+.modal-addmess_link{
+    width: 100%;
+}
 .modal-addmess_btn{
     margin: 10px 0px 0px 0px;
     border-radius: 20px;
@@ -179,4 +182,104 @@
         opacity: 0.8;
         background-color: #dc582c;
     }
+}
+/* Conversation message */
+.conversation-message{
+    display: flex;
+    flex-direction: column;
+}
+.conversation-message_header{
+    display: flex;
+    padding: 15px 0px;
+    border-bottom: 1px solid #ddd;
+    
+}
+.conversation-message_header-icon{
+    display: flex;
+    align-items: center;
+   
+}
+.conversation-message_header-icon >i{
+    font-size: 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    color: #D97B5C;
+}
+.conversation-message_chat-container{
+   height: calc(100vh - 165px);
+    overflow-y: auto;
+   padding: 0 10px;
+}
+.conversation-message_chat-display{
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.conversation-message_chat_row{
+   display: grid;
+   grid-template-columns: 70%;
+   margin-bottom: 10px;
+}
+.other_message{
+   justify-items: start;
+    justify-content: start;
+}
+.your-message{
+    justify-items: end;
+     justify-content: end;
+ }
+.chat_text{
+    padding: 9px 14px;
+    margin-bottom: 5px;
+ }
+.chat_time{
+    font-size: 13px;
+    color: #777;
+}
+.your-message .chat_title{
+    display: none;
+}
+.your-message .chat_text{
+    background-color: #D97B5C;
+    color: #fff;
+    border-radius: 20px 20px 0px 20px;
+}
+.other_message .chat_text{
+    background-color: #ddd;
+    color: #000;
+    border-radius: 20px 20px 20px 0px;
+}
+.chat_title{
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+/* Icon input */
+.conversation-message_chat-input{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+.conversation-message_chat-input >input{
+    flex: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    outline: none;
+}
+.conversation-message_chat-input > button{
+    border: none;
+    background-color: transparent;
+
+}
+.conversation-message_chat-input > button >i{
+    font-size: 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    color: #D97B5C;
+
 }
