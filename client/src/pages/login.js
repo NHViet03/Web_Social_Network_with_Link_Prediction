@@ -1,59 +1,72 @@
-import React from "react";
-import { useState } from "react";
-import  img  from "../images";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Images from "../images";
+import logo from "../images/logo.svg";
 const Login = () => {
-  const inittialState = { email: "", password: "" };
-  const [userData, setUserData] = useState(inittialState);
-  const {email, password} = userData;
-
+  const initialState = { email: "", password: "" };
+  const [userData, setUserData] = useState(initialState);
+  const { email, password } = userData;
+  const [typePass, setTypePass] = useState(false);
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
-    setUserData({...userData, [name]: value})
-  }
+    setUserData({ ...userData, [name]: value });
+  };
+
   return (
-    <div className="login_page">
-     <img src={img.frames} alt="" className="login_frames"/>
-      <div className="login_form-register">
-      <form className="login_form" >
-      <img src={img.logo} alt="" className="login_logo"/>
-        <div className="mb-3 ">
-          <input 
-            placeholder="Email"
-            type="email"
-            className=" login_input"
-            id="exampleInputEmail1"
-            aria-describedby="emailHelp"
-            onChange={handleChangeInput}
-            value={email}
-            name="email"
-          />
+    <div className="auth_page">
+      <img src={Images.frames} alt="Cover" className="auth_frames" />
+      <div className="login_from-register">
+        <form className="auth_form">
+          <img src={logo} alt="Logo" className="mb-3 login_logo" />
+          <div className="mb-3 ">
+            <input
+              placeholder="Email"
+              type="email"
+              className=" auth_input"
+              id="email"
+              onChange={handleChangeInput}
+              value={email}
+              name="email"
+            />
+          </div>
+          <div className="mb-3 form_input">
+            <input
+              placeholder="Mật khẩu"
+              type={typePass ? "text" : "password"}
+              className="auth_input"
+              id="password"
+              onChange={handleChangeInput}
+              value={password}
+              name="password"
+            />
+            <small className="show-hide" onClick={() => setTypePass(!typePass)}>
+              {typePass ? "Ẩn" : "Hiển thị"}
+            </small>
+          </div>
+          <button
+            type="submit"
+            className="btn btn-login"
+            disabled={email && password ? false : true}
+          >
+            Đăng nhập
+          </button>
+          <div className="separate">
+            <div className="separate-line"></div>
+            <div className="separate-text">HOẶC</div>
+            <div className="separate-line"></div>
+          </div>
+          <a href="" className="login_facebook">
+            <i className="fa-brands fa-facebook me-1 login_facebook-img" />
+            <div className="login_facebook-text">Đăng nhập với Facebook</div>
+          </a>
+          <a className="login_forgot">Quên mật khẩu</a>
+        </form>
+        <div className="auth_footer">
+          Bạn chưa có tài khoản{" "}
+          <Link className="ms-1 auth_footer-link" to="/register">
+            Đăng ký
+          </Link>{" "}
         </div>
-        <div className="mb-3">
-          <input
-            placeholder="Mật khẩu"
-            type="password"
-            className="login_input"
-            id="exampleInputPassword1"
-            onChange={handleChangeInput}
-            value={password}
-            name="password"
-          />
-        </div>
-        <button type="submit" className="btn btn-color" disabled = {email && password ? false : true}>
-          Đăng nhập
-        </button>
-        <div className="serapate">
-          <div className="serapate-line"></div>
-          <div className="serapate-text">OR</div>
-          <div className="serapate-line"></div>
-        </div>
-        <a href="" className="login_facebook">
-          <img src={img.facebook} className="login_facebook-img"  alt=""/>
-          <div className="login_facebook-text" >Đăng nhập với Facebook</div>
-        </a>
-        <a className="login_forgot">Quên mật khẩu</a>
-      </form>
-      <div className="login_register">Bạn chưa có tài khoản <a className="login_register-link" href="/register">Đăng ký</a> </div>
       </div>
     </div>
   );

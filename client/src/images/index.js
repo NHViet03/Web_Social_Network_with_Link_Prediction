@@ -1,6 +1,6 @@
-const img = {
-    logo: require('./login/logo.png'),
-    frames: require('./login/frames.png'),
-    facebook: require('./login/Facebook.png'),
+const Images = {
+    logo: require('./auth/logo.png'),
+    frames: require('./auth/frames.png'),
+    facebook: require('./auth/Facebook.png'),
 }
-export default img;
+export default Images;

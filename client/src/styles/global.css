@@ -1,0 +1,63 @@
+:root{
+  --primary-color:#C43302;
+  --border-color:#d9d9d9;
+  --text-color:#737373;
+}
+*{
+  padding:0;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input{
+  outline: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border: 1px solid var(--border-color);
+  border-color: unset;
+  box-shadow: unset;
+}
+
+a{
+  text-decoration: none;
+}
+
+.App{
+  width: 100%;
+  min-height: 100vh;
+  background: white;
+}
+.main{
+  width: 100%;
+  min-height: 100vh;
+  margin: auto;
+}
+
+.text_primary{
+  color: var(--primary-color);
+}
+.btn_primary{
+  background-color: var(--primary-color);
+  color:#fff;
+  border-radius: 8px;
+  opacity: 0.9;
+  &:hover{
+    color:#fff;
+    opacity: 1;
+  }
+}
+
+/*---------------AUTH---------------------*/
+@import url("./auth.css");
+
+/*---------------SIDEBAR---------------------*/
+@import url("./sideBar.css");
+/*---------------MESSAGE---------------------*/
+@import url("./message.css");

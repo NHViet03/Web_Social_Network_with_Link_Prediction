@@ -1,0 +1,162 @@
+.auth_page {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+.auth_logo {
+  margin-bottom: 20px;
+  object-fit: cover;
+}
+.auth_frames {
+  width: 450px;
+  height: 600px;
+  margin-right: 50px;
+  object-fit: contain;
+}
+
+.auth_form {
+  width:100%;
+  max-width: 400px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  padding: 50px 50px 20px 50px;
+  color: var(--text-color);
+  height: fit-content;
+}
+.auth_form .form_input{ 
+  position: relative;
+}
+.auth_form .form_input .show-hide{
+  position: absolute;
+  top:50%;
+  right:6px;
+  transform: translateY(-50%);
+}
+
+.auth_input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.auth_page .separate {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.auth_page .separate-line {
+  height: 1px;
+  width: 100%;
+  background-color: #d3d3d3;
+}
+.auth_page .separate-text {
+  font-weight: 400;
+  color: #6d6d6d;
+}
+
+.auth_page .auth_footer {
+  margin-top: 12px;
+  width:100%;
+  max-width: 400px;
+  padding: 20px 50px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+.auth_page .auth_footer-link {
+  color: var(--primary-color);
+  font-weight: 600;
+  &:hover {
+    color: var(--primary-color);
+    opacity: 0.8;
+  }
+}
+
+/* ----------------- Login Page ------------- */
+
+.login_from-register {
+}
+.auth_form .btn-login {
+  padding: 10px 0;
+  font-size: 15px;
+  color: #fff;
+  border-radius: 300px;
+  background-color: var(--primary-color);
+  width: 100%;
+}
+
+.login_facebook {
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login_facebook-img {
+  font-size: 24px;
+}
+
+.login_facebook-text {
+  margin-left: 4px;
+  color: #3338b6;
+  font-weight: 500;
+}
+.login_forgot {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  cursor: pointer;
+  &:hover {
+    color: var(--primary-color);
+    opacity: 0.8;
+  }
+}
+
+
+/* ----------------- Register Page ------------- */
+.auth_form .auth_intro{
+  font-size:16px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--text-color);
+}
+
+.auth_sub-intro{
+  text-align: center;
+  font-size: 13px;
+}
+.auth_sub-intro a{
+  cursor: pointer;
+  &:hover{
+    color: var(--primary-color);
+  }
+}
+.auth_form .register-thumbnail{
+  width:250px;
+  height: 150px;
+  object-fit: contain;
+  margin: auto;
+}
+.auth_form .step_back{
+  cursor: pointer;
+  font-weight: 600;
+  &:hover{
+    opacity: 0.8;
+  }
+}
+
+.auth_form .form-select{
+  padding:6px 4px;
+  overflow-y:auto;
+  background-position: right 4px center;
+  color: var(--text-color);
+  font-size: 14px;
+}
