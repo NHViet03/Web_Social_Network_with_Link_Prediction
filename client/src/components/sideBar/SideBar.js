@@ -18,6 +18,7 @@ const SideBar = () => {
             src={logo}
             alt="Logo"
             className="mx-auto mb-3 d-block side-bar-logo"
+            onClick={()=>window.scrollTo(0,0)}
             style={{
               filter: theme ? "invert(1)" : "invert(0)",
             }}

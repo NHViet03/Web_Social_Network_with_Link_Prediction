@@ -11,7 +11,7 @@ const MenuItem = ({ link, active }) => {
       <Link
         className={`nav-link ${
           active ? "active" : ""
-        }  d-flex align-items-center`}
+        } d-flex align-items-center`}
         to={link.path}
         style={{ filter: active && theme ? "invert(1)" : "invert(0)" }}
       >

@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import PageRender from "./customRouter/PageRender";
@@ -32,16 +32,27 @@ moment.updateLocale("vi", {
 
 
 function App() {
-  const { postDetail,sharePost } = useSelector((state) => state);
+  const { theme, postDetail,sharePost } = useSelector((state) => state);
+
+  useEffect(() => {
+    if(theme) return;
+    if(postDetail ||sharePost){
+      window.document.body.style.overflow = "hidden";
+    } else{
+      window.document.body.style.overflow = "auto";
+    }
+  })
+
   return (
     <BrowserRouter>
       <input type="checkbox" id="theme" />
-      <div className="App">
+      <div className="App"
+      >
         <div className="main">
           <SideBar />
           {postDetail && <PostDetailModal />}
           {sharePost && <SharePostModal />}
-          <div style={{ marginLeft: "250px" }}>
+          <div className="main_container">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/:page" element={<PageRender />} />

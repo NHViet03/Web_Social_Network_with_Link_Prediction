@@ -25,6 +25,7 @@ const initialState = {
       comments: [
         {
           content: "Beautiful Girl",
+          likes:["",""],
           user: {
             _id: "abc123",
             username: "xeesoxee",
@@ -35,6 +36,7 @@ const initialState = {
         },
         {
           content: "Awesome! The most beautiful girl i have ever seen!",
+          likes:["",""],
           user: {
             _id: "abc123",
             username: "xeesoxee",
@@ -70,6 +72,7 @@ const initialState = {
       comments: [
         {
           content: "Beautiful Girl",
+          likes:["",""],
           user: {
             _id: "abc456",
             username: "shinseulkee",
@@ -80,6 +83,7 @@ const initialState = {
         },
         {
           content: "Awesome! The most beautiful girl i have ever seen!",
+          likes:[""],
           user: {
             _id: "abc678",
             username: "rohyoonseo",
@@ -307,21 +311,21 @@ const initialState = {
         "https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.15752-9/396419820_887913802728349_2601651184966517625_n.png?_nc_cat=105&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGJur1UcJHdQB6lcwM3ZLlPZ63kFHMYKDNnreQUcxgoMyk1ANCoNc1WEa1qkikaLrB3j5g3q_vlKdG02jJqlQR6&_nc_ohc=frgmMR08utkAX8RzkOi&_nc_ht=scontent.fsgn5-2.fna&oh=03_AdSfsBFgUYCi7toROjKHPqDdEXHRIeZBISSNOgvGpqobJg&oe=6566E1FA",
     },
     {
-      _id: "abc678",
+      _id: "abc679",
       username: "rosalineyuhh",
       fullname: "Rosa Line",
       avatar:
         "https://scontent.fsgn5-6.fna.fbcdn.net/v/t1.15752-9/395465307_532495459099163_6143034257415964199_n.png?_nc_cat=111&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeFcfoE6yIwvbxu7SkRe6Aqqz3ycLNOzlu3PfJws07OW7c75IV2cO9E9iLWj80zbzQvX_OyX4p-sn_N8lcbP4dh8&_nc_ohc=yzbKK_12uF0AX_xse8f&_nc_ht=scontent.fsgn5-6.fna&oh=03_AdSpk-zY4au6stUa5CEp4IduEINQfVcvoBkVwXkNfnFKjg&oe=65687E9F",
     },
     {
-      _id: "abc678",
+      _id: "abc680",
       username: "phs1116",
       fullname: "PARK HYUNGSIK",
       avatar:
         "https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.15752-9/394659218_1087699275929146_1726840625700674151_n.png?_nc_cat=109&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeEEh8U0eNCfNj9jZso_tcwqSnwg7iJgOTFKfCDuImA5MRoIBO-Ip8bsLDV-d5Qug59T8UfGspJJ0eMfVvvWrpkS&_nc_ohc=kPZeMxIQctUAX-_b5rH&_nc_ht=scontent.fsgn5-8.fna&oh=03_AdS1qhet2-TpajuaYugcBOZ8pViStROqjkAsXAHvJNgvNw&oe=6568A5CB",
     },
     {
-      _id: "abc678",
+      _id: "abc681",
       username: "bogummy",
       fullname: "PARK BO GUM",
       avatar:
@@ -335,21 +339,21 @@ const initialState = {
         "https://scontent.fsgn5-10.fna.fbcdn.net/v/t1.15752-9/368591203_718249323495961_8215655904493420963_n.png?_nc_cat=107&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeF7av1jU9wtBPLnVg54AnFbh0UfhyrkjfuHRR-HKuSN-3EU3Zvcf_qyiDI0U6gGZF16FRYXkMPe2xjhsFsagWyx&_nc_ohc=NymJjJJjDYoAX9NNuQE&_nc_ht=scontent.fsgn5-10.fna&oh=03_AdR5YkeqJLOJCC4n4yUSA-ALVt9_3vELb6cGYO0Pn4O7MA&oe=65688115",
     },
     {
-      _id: "abc105",
+      _id: "abc108",
       username: "thv",
       fullname: "V",
       avatar:
         "https://scontent.fsgn5-6.fna.fbcdn.net/v/t1.15752-9/396312643_709463721056013_4572404616959222186_n.png?_nc_cat=111&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGLZ6HANuhQdEz8n1sDN-9ohUcHDfNEpOSFRwcN80Sk5NuBZKcEYdth6upfKiXSMirE2q3sfAqQjNPiWYYelvPi&_nc_ohc=3n4Fm1lEUdAAX8XTlwE&_nc_ht=scontent.fsgn5-6.fna&oh=03_AdQSWM-iVEMCRoo1o5LpH2g9AskZ7Cv4_rkd9MDPXqIm6A&oe=6568AEC7",
     },
     {
-      _id: "abc105",
+      _id: "abc107",
       username: "hihyunwoo",
       fullname: "이현우",
       avatar:
         "https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.15752-9/371461896_1709932952822028_4130076371343332306_n.png?_nc_cat=100&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeFPQOdI5j1QutUf6Fzasj95INzZLAVViM0g3NksBVWIzU7SqJu85zlgFs_z-QdKJfsy36-lCSmEyy7Ut-N0_LdR&_nc_ohc=NY1irItYTK8AX_R4Oim&_nc_ht=scontent.fsgn5-5.fna&oh=03_AdQvCTFmNkvcdBX8-hTc8zPITiZloeNkw_YVD7VJqzsysQ&oe=6568AD6C",
     },
     {
-      _id: "abc105",
+      _id: "abc111",
       username: "yejinhand",
       fullname: "Son Ye-Jin",
       avatar:

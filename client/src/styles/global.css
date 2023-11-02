@@ -41,12 +41,17 @@ a:hover {
 }
 
 .App {
+  width: 100%;
+  min-height: 100vh;
   background: #fff;
 }
 .main {
   width: 100%;
   min-height: 100vh;
   margin: auto;
+}
+.main_container{
+  margin-left:250px;
 }
 
 .text_primary {
@@ -63,6 +68,13 @@ a:hover {
     opacity: 1;
   }
 }
+
+@media (max-width: 768px) {
+  .main_container {
+    margin-left: 80px;
+  }
+}
+
 
 /*---------------AUTH---------------------*/
 @import url("./auth.css");
@@ -90,3 +102,4 @@ a:hover {
 
 /*---------------EXPLORE---------------------*/
 @import url("./explore.css");
+

@@ -15,7 +15,7 @@ const MenuItemDropdown = () => {
         onClick={() => setShow(!show)}
       >
         <span className="material-icons me-2">menu</span>
-        Xem thêm
+        <span className="dropdown-text">Xem thêm</span>
       </p>
       {show && (
         <ul className="dropdown-menu mb-1 p-2">

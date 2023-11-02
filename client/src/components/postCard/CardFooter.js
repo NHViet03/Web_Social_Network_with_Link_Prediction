@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import LikeButton from "../LikeButton";
+import BookMarkButton from "./BookMarkButton";
 
 const CardFooter = ({ post }) => {
   const [postModal, setPostModal] = useState(false);
   const [isLike, setIsLike] = useState(false);
+  const [isBookmark, setIsBookmark] = useState(false);
   const [readMore, setReadMore] = useState(false);
   const { auth, postDetail, sharePost } = useSelector((state) => state);
   const dispatch = useDispatch();
@@ -18,15 +21,23 @@ const CardFooter = ({ post }) => {
     setIsLike(true);
     setPostModal({
       ...postModal,
-      likes:[...postModal.likes,auth._id]
-    })
+      likes: [...postModal.likes, auth._id],
+    });
   };
   const handleUnLike = () => {
     setIsLike(false);
     setPostModal({
       ...postModal,
-      likes:postModal.likes.filter(like=>like!==auth._id)
-    })
+      likes: postModal.likes.filter((like) => like !== auth._id),
+    });
+  };
+
+  const handleBookmark = () => {
+    setIsBookmark(true);
+  };
+
+  const handleUnBookmark = () => {
+    setIsBookmark(false);
   };
 
   const handleShowPostDetail = () => {
@@ -45,22 +56,25 @@ const CardFooter = ({ post }) => {
       {postModal && (
         <>
           <div className="card_footer-icons">
-            {isLike ? (
-              <span
-                className="fa-solid fa-heart"
-                style={{ color: "var(--primary-color)" }}
-                onClick={handleUnLike}
+            <div>
+              <LikeButton
+                isLike={isLike}
+                handleLike={handleLike}
+                handleUnLike={handleUnLike}
               />
-            ) : (
-              <span className="fa-regular fa-heart" onClick={handleLike} />
-            )}
-            <span
-              className="fa-regular fa-comment"
-              onClick={handleShowPostDetail}
-            />
-            <span
-              className="fa-regular fa-paper-plane"
-              onClick={handleShowSharePost}
+              <span
+                className="fa-regular fa-comment"
+                onClick={handleShowPostDetail}
+              />
+              <span
+                className="fa-regular fa-paper-plane"
+                onClick={handleShowSharePost}
+              />
+            </div>
+            <BookMarkButton
+              isBookmark={isBookmark}
+              handleBookmark={handleBookmark}
+              handleUnBookmark={handleUnBookmark}
             />
           </div>
           <p className="mb-1 mt-2" style={{ fontWeight: "600" }}>
@@ -87,6 +101,7 @@ const CardFooter = ({ post }) => {
               </small>
             )}
           </div>
+
           <p
             className="mt-2 mb-0"
             style={{
@@ -96,7 +111,9 @@ const CardFooter = ({ post }) => {
             }}
             onClick={handleShowPostDetail}
           >
-            Xem tất cả {postModal.comments.length} bình luận
+            {postModal.comments.length > 0
+              ? `Xem tất cả ${postModal.comments.length} bình luận`
+              : "Thêm bình luận..."}
           </p>
         </>
       )}

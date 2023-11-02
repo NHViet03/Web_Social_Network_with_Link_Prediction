@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 
 const GalleryPost = ({ posts }) => {
-  const { postModal } = useSelector((state) => state);
+  const { postModal, theme } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   const handleShowPost = (post) => {
@@ -19,13 +19,19 @@ const GalleryPost = ({ posts }) => {
             className="gallery_post"
             onClick={() => handleShowPost(post)}
           >
-            <img src={post.images[0].url} alt="Post" />
+            <img
+              src={post.images[0].url}
+              alt="Post"
+              style={{
+                filter: theme ? "invert(1)" : "invert(0)",
+              }}
+            />
             <div className="gallery_overlay">
               <span className="me-4">
-                <i className="fas fa-heart"/> {post.likes.length}
+                <i className="fas fa-heart" /> {post.likes.length}
               </span>
               <span>
-                <i className="fas fa-comment"/> {post.comments.length}
+                <i className="fas fa-comment" /> {post.comments.length}
               </span>
             </div>
           </div>

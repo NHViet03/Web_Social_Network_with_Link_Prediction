@@ -4,6 +4,7 @@
     top:0;
     width:100%;
     height: 100vh;
+    padding-top: 1px;
     background-color: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
@@ -42,4 +43,15 @@
 
 .postDetail_modal .card_footer{
     border-top: 1px solid var(--border-color);
+}
+
+
+@media (max-width: 768px) {
+    .postDetail_modal-content{
+        max-width: 550px;
+        height: 400px;
+    }
+    .postDetail_modal .card_body img{
+        height: 400px;
+    }
 }
