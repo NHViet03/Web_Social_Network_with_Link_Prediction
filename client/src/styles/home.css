@@ -1,32 +1,40 @@
 .home {
-  padding-right: 16px;
+  padding: 0 32px;
 }
 
 /* Main Content */
 .home .main-content {
-  padding: 0 36px;
+  padding: 0 32px 0 64px;
+  margin-top: 48px;
 }
 
 /* Story List */
 
 .home .story-list {
-  padding: 32px 32px 0;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  overflow-x: auto;
-  gap: 12px;
-  margin: 0 auto;
 }
 
-.home .story-list::-webkit-scrollbar {
-  display: none;
+.home .story-list .story-arrow {
+  position: absolute;
+  top: 20px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  background-image: unset;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: rgba(9, 30, 66, 0.2) 0px 3px 6px -2px,
+    rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+  border-radius: 50%;
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .home .story-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
 }
 
 .home .story-item span {
@@ -63,7 +71,7 @@
 
 .suggestions {
   height: 650px;
-  padding: 32px 36px 0 12px;
+  padding: 48px 36px 0 12px;
 }
 
 .suggestions > h6 {
@@ -78,7 +86,7 @@
   gap: 12px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .home .main-content {
     width: 100%;
   }
@@ -89,3 +97,4 @@
     width: 400px;
   }
 }
+

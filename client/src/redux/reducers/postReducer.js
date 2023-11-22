@@ -15,28 +15,30 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc678",
+        _id: "abc670",
         username: "rohyoonseo",
         fullname: "Roh Yoon-seo",
         avatar:
-          "https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.15752-9/396419820_887913802728349_2601651184966517625_n.png?_nc_cat=105&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGJur1UcJHdQB6lcwM3ZLlPZ63kFHMYKDNnreQUcxgoMyk1ANCoNc1WEa1qkikaLrB3j5g3q_vlKdG02jJqlQR6&_nc_ohc=frgmMR08utkAX8RzkOi&_nc_ht=scontent.fsgn5-2.fna&oh=03_AdSfsBFgUYCi7toROjKHPqDdEXHRIeZBISSNOgvGpqobJg&oe=6566E1FA",
+          "https://i.pinimg.com/564x/20/92/2c/20922c29d6d7ec392068f4a924a5ebd6.jpg",
       },
       likes: ["", "", ""],
       comments: [
         {
+          _id: "cmt100",
           content: "Beautiful Girl",
-          likes:["",""],
+          likes: ["", ""],
           user: {
             _id: "abc123",
             username: "xeesoxee",
             fullname: "Han So-hee",
             avatar:
-              "https://scontent.fsgn5-10.fna.fbcdn.net/v/t1.15752-9/396615157_551338183844421_7619172125110417112_n.png?_nc_cat=107&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeHRW7uHlh5XjzitCTbdFZMzNrbJfkSOG9E2tsl-RI4b0WVQrhPu2d1BZkDLRHgyc2zz7803SxyQYdAJ1xZ0ZK2e&_nc_ohc=E8Nu3nNn5psAX9UeJCw&_nc_ht=scontent.fsgn5-10.fna&oh=03_AdQtxzBRmbH7kuTuJj88fJBfpWJArRRQU3jWCX4BDMA8_w&oe=6566D742",
+              "https://i.pinimg.com/564x/14/9a/e0/149ae0f72060755d652d4d09591c6691.jpg",
           },
         },
         {
+          _id: "cmt101",
           content: "Awesome! The most beautiful girl i have ever seen!",
-          likes:["",""],
+          likes: ["", ""],
           user: {
             _id: "abc123",
             username: "xeesoxee",
@@ -46,6 +48,26 @@ const initialState = {
           },
         },
       ],
+    },
+    {
+      _id: "abc110",
+      content:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      images: [
+        {
+          public_id: "public_id",
+          url: "https://scontent.fsgn5-5.fna.fbcdn.net/v/t1.15752-9/370217152_1356716918290439_3785808565501362891_n.png?_nc_cat=100&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGuG64nYciTu6C_ernrWpF7VCoO4Kp9XGtUKg7gqn1ca-VkfiQsCNUcUj5N9bBbRUD9nxGuBljwd_H3ezdLl7tG&_nc_ohc=H7BsCBzcLqgAX89fvyo&_nc_ht=scontent.fsgn5-5.fna&oh=03_AdTfg53802464L4lXW8ARaMMPPyva9ED3ms6e8ERESvv0g&oe=6575EB9F",
+        },
+      ],
+      user: {
+        _id: "abc456",
+        username: "shinseulkee",
+        fullname: "Shin Seul-Ki",
+        avatar:
+          "https://i.pinimg.com/564x/22/60/3a/22603ab665885115366fdc481c652628.jpg",
+      },
+      likes: ["", "", ""],
+      comments: [],
     },
     {
       _id: "abc123",
@@ -66,33 +88,55 @@ const initialState = {
         username: "xeesoxee",
         fullname: "Han So-hee",
         avatar:
-          "https://scontent.fsgn5-10.fna.fbcdn.net/v/t1.15752-9/396615157_551338183844421_7619172125110417112_n.png?_nc_cat=107&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeHRW7uHlh5XjzitCTbdFZMzNrbJfkSOG9E2tsl-RI4b0WVQrhPu2d1BZkDLRHgyc2zz7803SxyQYdAJ1xZ0ZK2e&_nc_ohc=E8Nu3nNn5psAX9UeJCw&_nc_ht=scontent.fsgn5-10.fna&oh=03_AdQtxzBRmbH7kuTuJj88fJBfpWJArRRQU3jWCX4BDMA8_w&oe=6566D742",
+          "https://i.pinimg.com/564x/14/9a/e0/149ae0f72060755d652d4d09591c6691.jpg",
       },
       likes: ["", "", ""],
       comments: [
         {
+          _id: "cmt102",
           content: "Beautiful Girl",
-          likes:["",""],
+          likes: ["", ""],
           user: {
             _id: "abc456",
             username: "shinseulkee",
             fullname: "Shin Seul-Ki",
             avatar:
-              "https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.15752-9/367368199_675352334573886_277255189688645264_n.png?_nc_cat=109&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeHMqdVfgKCChOgil1DxZgxgyScKg0DqDY3JJwqDQOoNjRAV8wQGv0wMmxqadi4h5dpyLjakhnqmh_vzVxil8BHD&_nc_ohc=NQZidFJy-1AAX9OTiLB&_nc_ht=scontent.fsgn5-8.fna&oh=03_AdSGrIxrCgiQfnLrMP9ljzrF0JiGb4eDHp9BSugT5DQcfQ&oe=6566D768",
+              "https://i.pinimg.com/564x/22/60/3a/22603ab665885115366fdc481c652628.jpg",
           },
         },
         {
+          _id: "cmt103",
           content: "Awesome! The most beautiful girl i have ever seen!",
-          likes:[""],
+          likes: [""],
           user: {
-            _id: "abc678",
+            _id: "abc670",
             username: "rohyoonseo",
             fullname: "Roh Yoon-seo",
             avatar:
-              "https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.15752-9/396419820_887913802728349_2601651184966517625_n.png?_nc_cat=105&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGJur1UcJHdQB6lcwM3ZLlPZ63kFHMYKDNnreQUcxgoMyk1ANCoNc1WEa1qkikaLrB3j5g3q_vlKdG02jJqlQR6&_nc_ohc=frgmMR08utkAX8RzkOi&_nc_ht=scontent.fsgn5-2.fna&oh=03_AdSfsBFgUYCi7toROjKHPqDdEXHRIeZBISSNOgvGpqobJg&oe=6566E1FA",
+              "https://i.pinimg.com/564x/20/92/2c/20922c29d6d7ec392068f4a924a5ebd6.jpg",
           },
         },
       ],
+    },
+    {
+      _id: "abc112",
+      content:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      images: [
+        {
+          public_id: "public_id",
+          url: "https://scontent.fsgn5-13.fna.fbcdn.net/v/t1.15752-9/400216288_888517666203712_7465078066594220093_n.png?_nc_cat=106&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGV48leUwuMCWwg-Dl6lrWBJM2xTR_K7LckzbFNH8rstyd9kZ_ikGIlOILNCw1NyhI2Xql1aiGjaSdIWMFqMMxp&_nc_ohc=gxvjDBlkwo8AX8jfRnk&_nc_ht=scontent.fsgn5-13.fna&oh=03_AdTHe43qggjfoB1M287XtBzqwaIhYLZSKBQ4vv4bRGF5ew&oe=6575DF9F",
+        },
+      ],
+      user: {
+        _id: "abc456",
+        username: "shinseulkee",
+        fullname: "Shin Seul-Ki",
+        avatar:
+          "https://i.pinimg.com/564x/22/60/3a/22603ab665885115366fdc481c652628.jpg",
+      },
+      likes: ["", "", ""],
+      comments: [],
     },
     {
       _id: "abc100",
@@ -105,7 +149,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc678",
+        _id: "abc679",
         username: "rosalineyuhh",
         fullname: "Rosa Line",
         avatar:
@@ -125,7 +169,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc678",
+        _id: "abc679",
         username: "rosalineyuhh",
         fullname: "Rosa Line",
         avatar:
@@ -145,11 +189,11 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc678",
+        _id: "abc680",
         username: "phs1116",
         fullname: "PARK HYUNGSIK",
         avatar:
-          "https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.15752-9/394659218_1087699275929146_1726840625700674151_n.png?_nc_cat=109&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeEEh8U0eNCfNj9jZso_tcwqSnwg7iJgOTFKfCDuImA5MRoIBO-Ip8bsLDV-d5Qug59T8UfGspJJ0eMfVvvWrpkS&_nc_ohc=kPZeMxIQctUAX-_b5rH&_nc_ht=scontent.fsgn5-8.fna&oh=03_AdS1qhet2-TpajuaYugcBOZ8pViStROqjkAsXAHvJNgvNw&oe=6568A5CB",
+          "https://i.pinimg.com/564x/1e/b0/22/1eb022bc5bc2be053ba0f363de7b75ad.jpg",
       },
       likes: ["", "", ""],
       comments: [],
@@ -165,7 +209,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc678",
+        _id: "abc681",
         username: "bogummy",
         fullname: "PARK BO GUM",
         avatar:
@@ -185,7 +229,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc678",
+        _id: "abc681",
         username: "bogummy",
         fullname: "PARK BO GUM",
         avatar:
@@ -225,7 +269,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc105",
+        _id: "abc108",
         username: "thv",
         fullname: "V",
         avatar:
@@ -245,7 +289,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc105",
+        _id: "abc108",
         username: "thv",
         fullname: "V",
         avatar:
@@ -265,7 +309,7 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc105",
+        _id: "abc107",
         username: "hihyunwoo",
         fullname: "이현우",
         avatar:
@@ -285,11 +329,32 @@ const initialState = {
         },
       ],
       user: {
-        _id: "abc105",
+        _id: "abc111",
         username: "yejinhand",
         fullname: "Son Ye-Jin",
         avatar:
           "https://scontent.fsgn5-12.fna.fbcdn.net/v/t1.15752-9/396697211_205262485926980_571658785852988638_n.png?_nc_cat=103&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeFSXVawaqJiUqdMTtaWf9C4WqrNaMkxIVRaqs1oyTEhVEEg2xaTPI20Yu-fVm_AVM571uS7q2Ft8sMS_nriJTP4&_nc_ohc=HJUWvVcFjNIAX_IGNkn&_nc_ht=scontent.fsgn5-12.fna&oh=03_AdQj0ZsRzFi1P1lx2VDbgq_yObpHijXetP2azEoh9QRyrA&oe=65689A53",
+      },
+      likes: ["", "", ""],
+      comments: [],
+    },
+
+    {
+      _id: "abc111",
+      content:
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+      images: [
+        {
+          public_id: "public_id",
+          url: "https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.15752-9/368084914_1017502906151003_4682741367941311670_n.png?_nc_cat=109&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGOtHE5RcuagmyrEyBC5CeB4hPCn2-O3XfiE8Kfb47dd-_4y6-eYgUJvFnxDtnbgoHZNdZ6_PqLsldWdPaK0Kbq&_nc_ohc=AcRvjqOXWN8AX9XaJrX&_nc_ht=scontent.fsgn5-8.fna&oh=03_AdSGdmExpgTtu5KtiBF0cPWvMFUuWl6U4my0jIQMMooD8w&oe=6575E723",
+        },
+      ],
+      user: {
+        _id: "abc456",
+        username: "shinseulkee",
+        fullname: "Shin Seul-Ki",
+        avatar:
+          "https://i.pinimg.com/564x/22/60/3a/22603ab665885115366fdc481c652628.jpg",
       },
       likes: ["", "", ""],
       comments: [],
@@ -301,14 +366,14 @@ const initialState = {
       username: "xeesoxee",
       fullname: "Han So-hee",
       avatar:
-        "https://scontent.fsgn5-10.fna.fbcdn.net/v/t1.15752-9/396615157_551338183844421_7619172125110417112_n.png?_nc_cat=107&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeHRW7uHlh5XjzitCTbdFZMzNrbJfkSOG9E2tsl-RI4b0WVQrhPu2d1BZkDLRHgyc2zz7803SxyQYdAJ1xZ0ZK2e&_nc_ohc=E8Nu3nNn5psAX9UeJCw&_nc_ht=scontent.fsgn5-10.fna&oh=03_AdQtxzBRmbH7kuTuJj88fJBfpWJArRRQU3jWCX4BDMA8_w&oe=6566D742",
+        "https://i.pinimg.com/564x/14/9a/e0/149ae0f72060755d652d4d09591c6691.jpg",
     },
     {
-      _id: "abc678",
+      _id: "abc670",
       username: "rohyoonseo",
       fullname: "Roh Yoon-seo",
       avatar:
-        "https://scontent.fsgn5-2.fna.fbcdn.net/v/t1.15752-9/396419820_887913802728349_2601651184966517625_n.png?_nc_cat=105&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeGJur1UcJHdQB6lcwM3ZLlPZ63kFHMYKDNnreQUcxgoMyk1ANCoNc1WEa1qkikaLrB3j5g3q_vlKdG02jJqlQR6&_nc_ohc=frgmMR08utkAX8RzkOi&_nc_ht=scontent.fsgn5-2.fna&oh=03_AdSfsBFgUYCi7toROjKHPqDdEXHRIeZBISSNOgvGpqobJg&oe=6566E1FA",
+        "https://i.pinimg.com/564x/20/92/2c/20922c29d6d7ec392068f4a924a5ebd6.jpg",
     },
     {
       _id: "abc679",
@@ -322,7 +387,7 @@ const initialState = {
       username: "phs1116",
       fullname: "PARK HYUNGSIK",
       avatar:
-        "https://scontent.fsgn5-8.fna.fbcdn.net/v/t1.15752-9/394659218_1087699275929146_1726840625700674151_n.png?_nc_cat=109&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeEEh8U0eNCfNj9jZso_tcwqSnwg7iJgOTFKfCDuImA5MRoIBO-Ip8bsLDV-d5Qug59T8UfGspJJ0eMfVvvWrpkS&_nc_ohc=kPZeMxIQctUAX-_b5rH&_nc_ht=scontent.fsgn5-8.fna&oh=03_AdS1qhet2-TpajuaYugcBOZ8pViStROqjkAsXAHvJNgvNw&oe=6568A5CB",
+        "https://i.pinimg.com/564x/1e/b0/22/1eb022bc5bc2be053ba0f363de7b75ad.jpg",
     },
     {
       _id: "abc681",
@@ -358,6 +423,13 @@ const initialState = {
       fullname: "Son Ye-Jin",
       avatar:
         "https://scontent.fsgn5-12.fna.fbcdn.net/v/t1.15752-9/396697211_205262485926980_571658785852988638_n.png?_nc_cat=103&ccb=1-7&_nc_sid=8cd0a2&_nc_eui2=AeFSXVawaqJiUqdMTtaWf9C4WqrNaMkxIVRaqs1oyTEhVEEg2xaTPI20Yu-fVm_AVM571uS7q2Ft8sMS_nriJTP4&_nc_ohc=HJUWvVcFjNIAX_IGNkn&_nc_ht=scontent.fsgn5-12.fna&oh=03_AdQj0ZsRzFi1P1lx2VDbgq_yObpHijXetP2azEoh9QRyrA&oe=65689A53",
+    },
+    {
+      _id: "abc456",
+      username: "shinseulkee",
+      fullname: "Shin Seul-Ki",
+      avatar:
+        "https://i.pinimg.com/564x/22/60/3a/22603ab665885115366fdc481c652628.jpg",
     },
   ],
 };

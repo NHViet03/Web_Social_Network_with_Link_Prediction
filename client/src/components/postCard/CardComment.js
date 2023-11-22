@@ -6,7 +6,7 @@ import Avatar from "../Avatar";
 import LikeButton from "../LikeButton";
 
 const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
-  const { auth } = useSelector((state) => state);
+  const auth = useSelector((state) => state.auth);
   const [comment, setComment] = useState(false);
   const [isLike, setIsLike] = useState(false);
 
@@ -62,7 +62,7 @@ const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
             <div className="d-flex card_comment-menu">
               <span className="card_comment-menu-text">
                 {comment.createdAt
-                  ? moment(new Date()).fromNow()
+                  ? moment(comment.createdAt).fromNow()
                   : "1 ngày trước"}
               </span>
 

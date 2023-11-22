@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 import UserCard from "./UserCard";
 
-
 const SharePostModal = ({ post }) => {
-  const { homePosts,sharePost } = useSelector((state) => state);
+  const homePosts = useSelector((state) => state.homePosts);
+  const sharePost = useSelector((state) => state.sharePost);
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -17,23 +17,18 @@ const SharePostModal = ({ post }) => {
   }, [homePosts.users]);
 
   const handleClose = () => {
-    if (sharePost)
-      dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: false });
+    if (sharePost) dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: false });
   };
 
   const handleSelectUser = (e, user) => {
     if (e.target.checked) {
       setSelectUsers([...selectUsers, user]);
     } else {
-      setSelectUsers(
-        selectUsers.filter((item) => item._id !== user._id)
-      );
+      setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
     }
   };
   const handleRemoveUser = (user) => {
-    setSelectUsers(
-      selectUsers.filter((item) => item._id !== user._id)
-    );
+    setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
   };
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -81,16 +76,19 @@ const SharePostModal = ({ post }) => {
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  checked={selectUsers.find(
-                    (item) => item._id === user._id
-                  )}
+                  checked={selectUsers.find((item) => item._id === user._id)}
                   onChange={(e) => handleSelectUser(e, user)}
                 />
               </div>
             ))}
         </div>
         <div className="sharePost_modal-button">
-          <button className="btn w-100 btn_primary" disabled={selectUsers.length>0 ? false : true}>Gửi</button>
+          <button
+            className="btn w-100 btn_primary"
+            disabled={selectUsers.length > 0 ? false : true}
+          >
+            Gửi
+          </button>
         </div>
         <span className="material-icons sharePost-close" onClick={handleClose}>
           close

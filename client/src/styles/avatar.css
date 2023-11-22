@@ -1,6 +1,7 @@
 .avatar-container {
   border-radius: 50%;
   border:0.5px solid var(--border-color);
+  box-sizing: border-box;
 }
 
 .avatar-container.avatar-border {
@@ -9,11 +10,13 @@
     #feda75,
     #fa7e1e,
     #d62976,
-    #962fbf,
-    #4f5bd5
+    #962fbf
   );
   padding: 2px;
   border: unset;
+}
+.avatar-container.avatar-primary{
+  border:2px solid var(--primary-color)
 }
 .avatar-lg {
   width: 150px;
@@ -21,19 +24,31 @@
 }
 
 .avatar-md {
-  width: 60px;
-  height: 60px;
+  width: 66px;
+  height: 66px;
 }
 
+.avatar-middle {
+  width: 54px;
+  height: 54px;
+}
+
+
 .avatar-sm {
-  width: 34px;
-  height: 34  px;
+  width: 40px;
+  height: 40px;
+}
+
+.avatar-xs {
+  width: 32px;
+  height: 32px;
 }
 
 .avatar {
   width: 100%;
   height: 100%;
   padding: 1px;
+  object-fit: cover;
   background-color: #fff;
   border-radius: inherit;
 }

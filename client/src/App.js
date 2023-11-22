@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import PageRender from "./customRouter/PageRender";
@@ -9,6 +9,7 @@ import PostDetailModal from "./components/PostDetailModal";
 import SharePostModal from "./components/SharePostModal";
 import moment from "moment";
 
+// Config moment
 moment.updateLocale("vi", {
   relativeTime: {
     future: "trong %s",
@@ -30,24 +31,24 @@ moment.updateLocale("vi", {
   },
 });
 
-
 function App() {
-  const { theme, postDetail,sharePost } = useSelector((state) => state);
+  const { postDetail, sharePost } = useSelector((state) => ({
+    postDetail: state.postDetail,
+    sharePost: state.sharePost,
+  }));
 
   useEffect(() => {
-    if(theme) return;
-    if(postDetail ||sharePost){
+    if (postDetail || sharePost) {
       window.document.body.style.overflow = "hidden";
-    } else{
+    } else {
       window.document.body.style.overflow = "auto";
     }
-  })
+  });
 
   return (
     <BrowserRouter>
       <input type="checkbox" id="theme" />
-      <div className="App"
-      >
+      <div className="App">
         <div className="main">
           <SideBar />
           {postDetail && <PostDetailModal />}

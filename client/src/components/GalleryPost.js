@@ -1,41 +1,87 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 
 const GalleryPost = ({ posts }) => {
-  const { postModal, theme } = useSelector((state) => state);
   const dispatch = useDispatch();
+
+  const clusterPosts = useMemo(() => {
+    const res = [];
+    const group = 5;
+
+    for (let i = 0; i < posts.length; i += group) {
+      res.push(posts.slice(i, i + group));
+    }
+
+    return res;
+  }, [posts]);
 
   const handleShowPost = (post) => {
     dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
   };
 
   return (
-    <div className="gallery_col">
-      {posts &&
-        posts.map((post) => (
-          <div
-            key={post._id}
-            className="gallery_post"
-            onClick={() => handleShowPost(post)}
-          >
-            <img
-              src={post.images[0].url}
-              alt="Post"
-              style={{
-                filter: theme ? "invert(1)" : "invert(0)",
-              }}
-            />
-            <div className="gallery_overlay">
-              <span className="me-4">
-                <i className="fas fa-heart" /> {post.likes.length}
-              </span>
-              <span>
-                <i className="fas fa-comment" /> {post.comments.length}
-              </span>
+    <div className="gallery_post">
+      {clusterPosts &&
+        clusterPosts.map((cluster, index) => {
+          return (
+            <div key={index} className="gallery_group">
+              {index % 2 === 1 && cluster[4] && (
+                <div
+                  className="gallery_item-large"
+                  onClick={() => handleShowPost(cluster[4])}
+                >
+                  <img src={cluster[4].images[0].url} alt="Post" />
+                  <div className="gallery_overlay">
+                    <span className="me-4">
+                      <i className="fas fa-heart" /> {cluster[4].likes.length}
+                    </span>
+                    <span>
+                      <i className="fas fa-comment" />{" "}
+                      {cluster[4].comments.length}
+                    </span>
+                  </div>
+                </div>
+              )}
+              <div className="gallery_group_4">
+                {cluster.slice(0, 4).map((post, index) => (
+                  <div
+                    key={index}
+                    className="gallery_item"
+                    onClick={() => handleShowPost(post)}
+                  >
+                    <img src={post.images[0].url} alt="Post" />
+                    <div className="gallery_overlay">
+                      <span className="me-4">
+                        <i className="fas fa-heart" /> {post.likes.length}
+                      </span>
+                      <span>
+                        <i className="fas fa-comment" /> {post.comments.length}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {index % 2 === 0 && cluster[4] && (
+                <div
+                  className="gallery_item-large"
+                  onClick={() => handleShowPost(cluster[4])}
+                >
+                  <img src={cluster[4].images[0].url} alt="Post" />
+                  <div className="gallery_overlay">
+                    <span className="me-4">
+                      <i className="fas fa-heart" /> {cluster[4].likes.length}
+                    </span>
+                    <span>
+                      <i className="fas fa-comment" />{" "}
+                      {cluster[4].comments.length}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
     </div>
   );
 };

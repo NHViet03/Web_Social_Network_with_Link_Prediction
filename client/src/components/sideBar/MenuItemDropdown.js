@@ -5,7 +5,7 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 
 const MenuItemDropdown = () => {
   const [show, setShow] = useState(false);
-  const { theme } = useSelector((state) => state);
+  const theme = useSelector((state) => state.theme);
   const dispatch = useDispatch();
 
   return (
@@ -22,7 +22,7 @@ const MenuItemDropdown = () => {
           <li>
             <Link
               className="dropdown-item px-2 py-3 d-flex align-items-center"
-              to={"/"}
+              to={"/setting"}
             >
               <span className="material-icons">settings</span>
               <span className="nav-text ms-3">Cài đặt</span>

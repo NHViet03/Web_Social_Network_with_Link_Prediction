@@ -2,7 +2,7 @@ import React from "react";
 import {useSelector} from 'react-redux'
 
 const Carousel = ({ images, id }) => {
-  const {theme}= useSelector(state => state)
+  const theme= useSelector(state => state.theme)
 
   const isActive = (index) => {
     return index === 0 ? "active" : "";

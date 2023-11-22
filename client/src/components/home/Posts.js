@@ -5,7 +5,7 @@ import CardHeader from "../postCard/CardHeader";
 import CardFooter from "../postCard/CardFooter";
 
 const Posts = () => {
-  const { homePosts } = useSelector((state) => state);
+  const  homePosts = useSelector((state) => state.homePosts);
   const [posts, setPosts] = useState([]);
   const [showPosts, setShowPosts] = useState([]);
   const [next, setNext] = useState(2);

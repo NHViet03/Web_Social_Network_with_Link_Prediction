@@ -9,7 +9,7 @@ const CardFooter = ({ post }) => {
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [readMore, setReadMore] = useState(false);
-  const { auth, postDetail, sharePost } = useSelector((state) => state);
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,14 +41,12 @@ const CardFooter = ({ post }) => {
   };
 
   const handleShowPostDetail = () => {
-    if (!postDetail) {
       dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: postModal });
-    }
   };
   const handleShowSharePost = () => {
-    if (!sharePost) {
+   
       dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: postModal });
-    }
+    
   };
 
   return (

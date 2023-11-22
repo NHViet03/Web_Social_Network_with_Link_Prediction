@@ -69,7 +69,9 @@ a:hover {
   }
 }
 
-@media (max-width: 768px) {
+
+
+@media (max-width: 1024px) {
   .main_container {
     margin-left: 80px;
   }
@@ -103,3 +105,14 @@ a:hover {
 /*---------------EXPLORE---------------------*/
 @import url("./explore.css");
 
+/*---------------SEARCH MODAL---------------------*/
+@import url("./search_modal.css");
+
+/*---------------NOTIFY MODAL---------------------*/
+@import url("./notify_modal.css");
+
+/*---------------FOLLOW BUTTON---------------------*/
+@import url("./follow_btn.css");
+
+/*---------------STORY MODAL ---------------------*/
+@import url("./story_modal.css");
