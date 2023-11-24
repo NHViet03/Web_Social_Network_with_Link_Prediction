@@ -1,0 +1,79 @@
+.addPost_modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  padding-top: 1px;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.addPost_modal_container {
+  background-color: #fff;
+  width: 550px;
+  height: 600px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.addPost_modal_header {
+  border-bottom: 1px solid var(--border-color);
+}
+.addPost_modal_container h6 {
+  padding: 12px 0;
+  margin-bottom: 0;
+}
+
+/* SELECT IMAGE */
+.addPost_modal_container .select_image p {
+  font-size: 20px;
+  margin: 16px 0;
+  font-size: 500;
+}
+
+.addPost_modal_container .select_image_btn {
+  background-color: var(--primary-color);
+  font-weight: 500;
+  color: #fff;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* SHOW IMAGES */
+.addPost_modal_container .show_images .carousel-inner {
+  width: 550px;
+  height: 556px;
+}
+
+.addPost_modal_container .show_images img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* WRITE CONTENT */
+.addPost_modal_container .write_content{
+  width:350px;
+  height:100%;
+}
+
+.addPost_modal_container textarea{
+  width:100%;
+  min-height: 350px;
+  margin:12px 0;
+  padding:4px 16px;
+  border:none;
+  border-top:1px solid var(--border-color);
+  border-bottom:1px solid var(--border-color);
+  outline: none;
+  resize: none;
+
+}
+

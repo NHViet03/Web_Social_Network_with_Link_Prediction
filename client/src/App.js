@@ -7,6 +7,7 @@ import Home from "./pages/home";
 import SideBar from "./components/sideBar/SideBar";
 import PostDetailModal from "./components/PostDetailModal";
 import SharePostModal from "./components/SharePostModal";
+import AddPostModal from "./components/addPostModal";
 import moment from "moment";
 
 // Config moment
@@ -32,13 +33,14 @@ moment.updateLocale("vi", {
 });
 
 function App() {
-  const { postDetail, sharePost } = useSelector((state) => ({
+  const { postDetail, sharePost,addPostModal } = useSelector((state) => ({
     postDetail: state.postDetail,
     sharePost: state.sharePost,
+    addPostModal:state.addPostModal
   }));
 
   useEffect(() => {
-    if (postDetail || sharePost) {
+    if (postDetail || sharePost|| addPostModal) {
       window.document.body.style.overflow = "hidden";
     } else {
       window.document.body.style.overflow = "auto";
@@ -53,6 +55,7 @@ function App() {
           <SideBar />
           {postDetail && <PostDetailModal />}
           {sharePost && <SharePostModal />}
+          {addPostModal && <AddPostModal />}
           <div className="main_container">
             <Routes>
               <Route path="/" element={<Home />} />

@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import UserCard from "./UserCard";
 
-function SearchModal() {
+function SearchModal({isShowSearch}) {
   const [search, setSearch] = useState("");
   const homePosts = useSelector((state) => state.homePosts);
 
   return (
-    <div className="sideBar_modal search_modal">
+    <div className={`sideBar_modal search_modal ${isShowSearch && 'show'}`}>
       <h3>Tìm kiếm</h3>
       <div className="px-3 search_input">
         {search.length === 0 && (

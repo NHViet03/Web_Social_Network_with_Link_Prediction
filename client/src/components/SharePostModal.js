@@ -69,9 +69,7 @@ const SharePostModal = ({ post }) => {
             users.map((user, index) => (
               <div key={index} className="mb-3 sharePost_modal-user">
                 <UserCard
-                  avatar={user.avatar}
-                  username={user.username}
-                  fullname={user.fullname}
+                  user={user}
                 />
                 <input
                   className="form-check-input"
@@ -90,7 +88,7 @@ const SharePostModal = ({ post }) => {
             Gửi
           </button>
         </div>
-        <span className="material-icons sharePost-close" onClick={handleClose}>
+        <span className="material-icons modal-close sharePost-close" onClick={handleClose}>
           close
         </span>
       </div>

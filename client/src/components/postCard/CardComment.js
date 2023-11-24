@@ -19,7 +19,7 @@ const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
     setIsLike(true);
     setComment({
       ...comment,
-      likes:[...comment.likes,auth._id]
+      likes:[...comment.likes,auth.user._id]
     })
   };
 
@@ -27,7 +27,7 @@ const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
     setIsLike(false);
     setComment({
       ...comment,
-      likes:comment.likes.filter(like=>like !== auth._id)
+      likes:comment.likes.filter(like=>like !== auth.user._id)
     })
   };
 
@@ -75,7 +75,7 @@ const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
                 </span>
               )}
 
-              {auth._id === comment.user._id && (
+              {auth.user._id === comment.user._id && (
                 <div className="ms-3 nav-item dropdown">
                   <span
                     className="material-icons"

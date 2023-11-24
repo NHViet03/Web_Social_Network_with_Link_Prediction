@@ -27,6 +27,7 @@
 .side-bar .nav_bar {
   width: 100%;
   height: 100%;
+  z-index: 3;
 }
 
 .side-bar .menu .nav-item:hover {
@@ -95,6 +96,10 @@
   display: flex;
   justify-content: center;
 }
+.side-bar.small .menu .nav-item.active {
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+}
 .side-bar.small .dropdown-title .dropdown-text {
   display: none;
 }
@@ -105,30 +110,21 @@
   left: calc(100% + 10px);
   top: -20px;
   bottom: -20px;
-  width: 400px;
+  width:400px;
   background-color: #fff;
   z-index: 4;
   box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
   border-left: 1px solid var(--border-color);
-  animation: slideIn 0.3s linear forwards;
+  transform: translateX(-400px);
+  transition: transform 0.3s ease-in-out;
+  visibility:hidden;
+  z-index: -9999;
 }
 
-@keyframes slideIn {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0.5;
-    z-index: -1;
-  }
-  50% {
-    transform: translateX(-50%);
-    opacity: 0.8;
-    z-index: -1;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-    z-index: 4;
-  }
+.sideBar_modal.show{
+  transform: none;
+  z-index: 1;
+  visibility: visible;
 }

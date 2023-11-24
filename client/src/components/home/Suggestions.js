@@ -15,7 +15,7 @@ const Suggestions = () => {
   return (
     <div className="col-4 suggestions">
       <UserCard
-        user={auth}
+        user={auth.user}
         size="avatar-md"
       />
       <h6 className="my-4">Gợi ý cho bạn</h6>

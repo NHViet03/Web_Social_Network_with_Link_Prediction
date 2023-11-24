@@ -1,10 +1,13 @@
 import React, { useState, useMemo, useCallback, useContext } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import MenuItem from "./MenuItem";
 import { ModalSideBarContext } from "./SideBar";
 
 const SideBar = () => {
   const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   const { isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify } =
     useContext(ModalSideBarContext);
   const [active, setActive] = useState(-1);
@@ -20,6 +23,13 @@ const SideBar = () => {
     setIsShowSearch(false);
     setIsShowNotify(!isShowNotify);
   }, [isShowNotify, setIsShowNotify, setIsShowSearch]);
+
+  const handleShowAddModal = useCallback(() => {
+    dispatch({
+      type: GLOBAL_TYPES.ADD_POST_MODAL,
+      payload: true,
+    });
+  }, [dispatch]);
 
   const navLinks = useMemo(
     () => [
@@ -52,15 +62,21 @@ const SideBar = () => {
       {
         label: "Tạo",
         icon: "add_box",
-        path: "/add",
+        onClick: handleShowAddModal,
       },
       {
         label: "Trang cá nhân",
-        avatar: auth.avatar,
-        path: `/profile/${auth._id}`,
+        avatar: auth.user.avatar,
+        path: `/profile/${auth.user._id}`,
       },
     ],
-    [auth._id, auth.avatar, handleShowNotify, handleShowSearch]
+    [
+      auth.user._id,
+      auth.user.avatar,
+      handleShowAddModal,
+      handleShowNotify,
+      handleShowSearch,
+    ]
   );
 
   const handleClickMenuItem = (index) => {
@@ -84,7 +100,7 @@ const SideBar = () => {
               </div>
             ) : (
               <li
-                className={`nav-item my-2 p-2 ${
+                className={`nav-item mb-3 p-2 ${
                   link.label === "Tìm kiếm" && isShowSearch ? "active" : ""
                 }
                 ${link.label === "Thông báo" && isShowNotify ? "active" : ""}

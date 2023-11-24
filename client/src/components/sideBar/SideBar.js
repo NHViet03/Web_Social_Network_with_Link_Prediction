@@ -68,8 +68,8 @@ const SideBar = () => {
           </nav>
           <MenuItemDropdown />
 
-          {isShowSearch && <SearchModal />}
-          {isShowNotify && <NotifyModal />}
+          <SearchModal isShowSearch={isShowSearch}/>
+          <NotifyModal isShowNotify={isShowNotify}/>
         </div>
       </div>
     </ModalSideBarContext.Provider>

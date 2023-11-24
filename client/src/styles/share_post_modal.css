@@ -40,16 +40,15 @@
   padding: 4px 16px;
 }
 
-.sharePost_modal-username{
-    background-color: rgba(196,51,2,0.2);
-    padding:2px 6px;
-    margin:2px 4px;
-    border-radius: 12px;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
+.sharePost_modal-username {
+  background-color: rgba(196, 51, 2, 0.2);
+  padding: 2px 6px;
+  margin: 2px 4px;
+  border-radius: 12px;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
 }
-
 
 .sharePost_modal-search input {
   border: none;
@@ -99,16 +98,9 @@
 }
 
 .sharePost-close {
-  position: absolute;
-  top: 8px;
-  right: 16px;
-  width: 30px;
-  height: 30px;
-  color: #000;
-  font-size: 30px;
-  cursor: pointer;
+  top: 8px !important;
+  color: #000 !important;
 }
-
 
 @media (max-width: 768px) {
   .sharePost_modal-content {

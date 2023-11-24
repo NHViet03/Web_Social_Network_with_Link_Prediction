@@ -21,14 +21,14 @@ const CardFooter = ({ post }) => {
     setIsLike(true);
     setPostModal({
       ...postModal,
-      likes: [...postModal.likes, auth._id],
+      likes: [...postModal.likes, auth.user._id],
     });
   };
   const handleUnLike = () => {
     setIsLike(false);
     setPostModal({
       ...postModal,
-      likes: postModal.likes.filter((like) => like !== auth._id),
+      likes: postModal.likes.filter((like) => like !== auth.user._id),
     });
   };
 

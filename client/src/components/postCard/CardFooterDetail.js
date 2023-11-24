@@ -43,14 +43,14 @@ const CardFooterDetail = ({ post, handleClose }) => {
     setIsLike(true);
     setPostModal({
       ...postModal,
-      likes: [...postModal.likes, auth._id],
+      likes: [...postModal.likes, auth.user._id],
     });
   };
   const handleUnLike = () => {
     setIsLike(false);
     setPostModal({
       ...postModal,
-      likes: postModal.likes.filter((like) => like !== auth._id),
+      likes: postModal.likes.filter((like) => like !== auth.user._id),
     });
   };
 
@@ -66,7 +66,7 @@ const CardFooterDetail = ({ post, handleClose }) => {
     e.preventDefault();
     const newComment = {
       content: comment,
-      user: auth,
+      user: auth.user,
       likes: [],
       createdAt: new Date().toISOString(),
     };
@@ -82,7 +82,7 @@ const CardFooterDetail = ({ post, handleClose }) => {
     setPostModal({
       ...postModal,
       comments: postModal.comments.filter(
-        (comment) => comment.user._id !== auth._id
+        (comment) => comment.user._id !== auth.user._id
       ),
     });
   };
@@ -163,14 +163,14 @@ const CardFooterDetail = ({ post, handleClose }) => {
             {postModal.likes.length} lượt thích
           </p>
           <form onSubmit={handleComment} className="form-comment">
-            <div className="form-comment-emoji">
+            <div className="form-emoji">
               <i
                 className="fa-regular fa-face-grin"
                 onClick={() => setShowEmoji(!showEmoji)}
               />
 
               {showEmoji && (
-                <div className="form-comment-emoji-picker">
+                <div className="form-emoji-picker">
                   <Picker
                     data={data}
                     previewPosition="none"
@@ -183,7 +183,6 @@ const CardFooterDetail = ({ post, handleClose }) => {
                     emojiSize={28}
                     navPosition="bottom"
                     onEmojiSelect={handleEmojiSelect}
-                    className="abc"
                   />
                 </div>
               )}

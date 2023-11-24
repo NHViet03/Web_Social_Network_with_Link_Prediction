@@ -51,8 +51,8 @@
   object-fit: cover;
   border-radius: 4px;
 }
-.card_body .carousel-control-prev-icon,
-.card_body .carousel-control-next-icon {
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
   width: 28px;
   height: 28px;
   display: flex;
@@ -64,9 +64,9 @@
   color: rgba(0, 0, 0, 0.5);
 }
 
-.card_body .carousel-btn {
-  width: 8px;
-  height: 8px;
+.carousel-btn {
+  width: 8px!important;
+  height: 8px!important;
   border-radius: 50%;
 }
 
@@ -122,37 +122,7 @@
   cursor: pointer;
 }
 
-.form-comment .form-comment-emoji {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.form-comment .form-comment-emoji i {
-  position: relative;
-  font-size: 24px;
-  cursor: pointer;
-}
-.form-comment .form-comment-emoji i:active {
-  transform: scale(1.1);
-  transition: scale 0.3s ease-in-out;
-}
-
-.form-comment .form-comment-emoji .form-comment-emoji-picker {
-  position: absolute;
-  left: 0;
-  top: auto;
-  bottom: 100%;
-  margin-bottom: 4px;
-  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
-    rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
-}
-
-.form-comment .form-comment-emoji .form-comment-emoji-picker em-emoji-picker {
-  padding-top: 12px;
-  max-height: 350px;
-}
 /* Card Comment */
 .card_comment {
   display: flex;

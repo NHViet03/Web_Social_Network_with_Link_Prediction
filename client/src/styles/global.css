@@ -36,7 +36,7 @@ a:hover {
 #theme {
   display: none;
 }
-#theme:checked ~ *{
+#theme:checked ~ * {
   filter: invert(1);
 }
 
@@ -50,8 +50,8 @@ a:hover {
   min-height: 100vh;
   margin: auto;
 }
-.main_container{
-  margin-left:250px;
+.main_container {
+  margin-left: 250px;
 }
 
 .text_primary {
@@ -69,14 +69,55 @@ a:hover {
   }
 }
 
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+}
 
+/* Custom EMOJI */
+.form-emoji {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-emoji i {
+  position: relative;
+  font-size: 24px;
+  cursor: pointer;
+}
+.form-emoji i:active {
+  transform: scale(1.1);
+  transition: scale 0.3s ease-in-out;
+}
+
+.form-emoji .form-emoji-picker {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 4px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+    rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.form-emoji .form-emoji-picker em-emoji-picker {
+  max-height: 300px;
+}
 
 @media (max-width: 1024px) {
   .main_container {
     margin-left: 80px;
   }
 }
-
 
 /*---------------AUTH---------------------*/
 @import url("./auth.css");
@@ -116,3 +157,6 @@ a:hover {
 
 /*---------------STORY MODAL ---------------------*/
 @import url("./story_modal.css");
+
+/*---------------ADD POST MODAL ---------------------*/
+@import url("./add_post_modal.css");
