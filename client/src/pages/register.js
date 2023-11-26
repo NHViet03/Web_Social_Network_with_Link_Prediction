@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link,useNavigate} from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 import RegisterFirst from "../components/register/RegisterFirst";
 import RegisterSecond from "../components/register/RegisterSecond";
 import RegisterThird from "../components/register/RegisterThird";
 
 const Register = () => {
+  const {auth} = useSelector(state=> state)
+  const navigate=useNavigate();
+   useEffect(() =>{
+    if(auth.token) navigate('/')
+   },[auth.token, navigate])
+
   const initialState = {
     email: "",
     fullname: "",
@@ -15,7 +22,7 @@ const Register = () => {
   };
   const [userData, setUserData] = useState(initialState);
   const [registerStep, setRegisterStep] = useState(1);
-  const navigate=useNavigate();
+
 
   const renderRegisterStep = () => {
     switch (registerStep) {

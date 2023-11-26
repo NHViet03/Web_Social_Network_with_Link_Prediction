@@ -1,9 +1,11 @@
-import Reac, { useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import cake from "../../images/cake.png";
 import { renderOptionSelect } from "../../utils/renderDate";
-
+import { register2 } from "../../redux/actions/authAction";
+import { useDispatch } from "react-redux";
 const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
+  const dispatch = useDispatch();
   const initialState = {
     month: 1,
     day: 1,
@@ -15,10 +17,11 @@ const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
     const { name, value } = e.target;
     setDate({ ...date, [name]: value });
   };
-  const handleSubmit = (e) => {
+  const handleSubmit =  (e) => {
     e.preventDefault();
     const birthday=moment(new Date(year,month-1,day)).format('L'); 
     setUserData({...userData,birthday})
+     dispatch(register2(userData));
     setRegisterStep(preStep=>preStep+1);
   };
 

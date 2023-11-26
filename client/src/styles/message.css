@@ -249,7 +249,8 @@
 .other_message .chat_text{
     background-color: #ddd;
     color: #000;
-    border-radius: 20px 20px 20px 0px;
+    border-radius: 0px 20px 20px 20px;
+    margin-left: 5px;
 }
 .chat_title{
     font-size: 15px;

@@ -1,23 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Images from "../images";
-import logo from "../images/logo.svg";
+import logo from "../images/auth/logo-2.png";
+import { login } from '../redux/actions/authAction'
+import {useDispatch, useSelector} from 'react-redux'
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const initialState = { email: "", password: "" };
   const [userData, setUserData] = useState(initialState);
   const { email, password } = userData;
+
+  const dispatch = useDispatch();
+
+  const {auth} = useSelector(state=> state)
+  const navigate=useNavigate();
+   useEffect(() =>{
+    if(auth.token) navigate('/')
+   },[auth.token, navigate])
+
+
   const [typePass, setTypePass] = useState(false);
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(login(userData))
+  }
+
   return (
     <div className="auth_page">
       <img src={Images.frames} alt="Cover" className="auth_frames" />
       <div className="login_from-register">
-        <form className="auth_form">
-          <img src={logo} alt="Logo" className="mb-3 login_logo" />
+        <form className="auth_form" onSubmit={handleSubmit}>
+            <img src={logo} alt="Logo" className="mb-3 login_logo w-100" />
           <div className="mb-3 ">
             <input
               placeholder="Email"
@@ -39,9 +57,9 @@ const Login = () => {
               value={password}
               name="password"
             />
-            <small className="show-hide" onClick={() => setTypePass(!typePass)}>
+            {/* <small className="show-hide" onClick={() => setTypePass(!typePass)}>
               {typePass ? "Ẩn" : "Hiển thị"}
-            </small>
+            </small> */}
           </div>
           <button
             type="submit"

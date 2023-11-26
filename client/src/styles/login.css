@@ -13,7 +13,9 @@ input{
 }
 .login_logo{
     margin-bottom: 20px;
+    width: 10px;
 }
+
 .login_frames{
     width: 500px;
     height: 700px;

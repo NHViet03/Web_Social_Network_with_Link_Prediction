@@ -1,18 +1,23 @@
 import React, { useState } from "react";
-import logo from "../../images/logo.svg";
+import logo from "../../images/auth/logo-2.png";
+import { register1 } from "../../redux/actions/authAction";
+import { useDispatch, useSelector } from "react-redux";
 
 const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
+  const {alert} = useSelector(state=> state)
   const { email, fullname, username, password } = userData;
   const [typePass, setTypePass] = useState(false);
+  const dispatch = useDispatch();
   
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setUserData((preUserData) => ({ ...preUserData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit =  async (e) => {
     e.preventDefault();
-    setRegisterStep(preStep=>preStep+1);
+    dispatch(register1(userData));
+   setRegisterStep(preStep=>preStep+1);
   };
 
   return (
@@ -40,8 +45,12 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
           onChange={handleChangeInput}
           value={email}
           name="email"
+          style={{backgroundColor: `${alert.email ? '#fd2d6a14' : ''}`}}
         />
         <label htmlFor="email">Email</label>
+        <small className="form-text text-danger">
+         {alert.email ? alert.email : ''}
+        </small>
       </div>
       <div className="mb-3 form-floating">
         <input
@@ -52,8 +61,12 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
           onChange={handleChangeInput}
           value={fullname}
           name="fullname"
+          style={{backgroundColor: `${alert.fullname ? '#fd2d6a14' : ''}`}}
         />
         <label htmlFor="fullname">Tên đầy đủ</label>
+        <small className="form-text text-danger">
+         {alert.fullname ? alert.fullname : ''}
+        </small>
       </div>
       <div className="mb-3 form-floating">
         <input
@@ -62,10 +75,14 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
           className="form-control auth_input"
           id="username"
           onChange={handleChangeInput}
-          value={username}
+          value={username.toLowerCase().replace(/ /g, "")}
           name="username"
+          style={{backgroundColor: `${alert.username ? '#fd2d6a14' : ''}`}}
         />
         <label htmlFor="username">Tên người dùng</label>
+        <small className="form-text text-danger">
+         {alert.username ? alert.username : ''}
+        </small>
       </div>
 
       <div className="mb-3 form-floating form_input">
@@ -77,10 +94,14 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
           onChange={handleChangeInput}
           value={password}
           name="password"
+          style={{backgroundColor: `${alert.password ? '#fd2d6a14' : ''}`}}
         />
         <label htmlFor="password">Mật khẩu</label>
-        <small className="show-hide" onClick={() => setTypePass(!typePass)}>
+        {/* <small className="show-hide" onClick={() => setTypePass(!typePass)}>
           {typePass ? "Ẩn" : "Hiển thị"}
+        </small> */}
+        <small className="form-text text-danger">
+         {alert.password ? alert.password : ''}
         </small>
       </div>
       <span className="auth_sub-intro mb-3">
