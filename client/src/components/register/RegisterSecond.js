@@ -21,7 +21,7 @@ const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
     e.preventDefault();
     const birthday=moment(new Date(year,month-1,day)).format('L'); 
     setUserData({...userData,birthday})
-     dispatch(register2(userData));
+    //  dispatch(register2(userData));
     setRegisterStep(preStep=>preStep+1);
   };
 

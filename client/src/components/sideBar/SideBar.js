@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Menu from "./Menu";
-import logo from "../../images/logo.svg";
+import logo from "../../images/auth/logo-2.png";
 import MenuItemDropdown from "./MenuItemDropdown";
 
 const SideBar = () => {
@@ -16,6 +16,7 @@ const SideBar = () => {
             src={logo}
             alt="Logo"
             className="mx-auto mb-3 d-block side-bar-logo"
+            style={{height: "80px", width: "200px"}}
           />
         </Link>
         <Menu />

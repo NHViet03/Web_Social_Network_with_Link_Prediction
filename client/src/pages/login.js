@@ -9,7 +9,7 @@ const Login = () => {
   const initialState = { email: "", password: "" };
   const [userData, setUserData] = useState(initialState);
   const { email, password } = userData;
-
+  const firstLogin = localStorage.getItem("firstLogin");
   const dispatch = useDispatch();
 
   const {auth} = useSelector(state=> state)

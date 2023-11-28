@@ -12,12 +12,13 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setUserData((preUserData) => ({ ...preUserData, [name]: value }));
+    dispatch({type: 'ALERT', payload: {}});
   };
 
   const handleSubmit =  async (e) => {
     e.preventDefault();
-    dispatch(register1(userData));
-   setRegisterStep(preStep=>preStep+1);
+      dispatch(register1(userData));
+    //  if(JSON.stringify(alert) === '{}') setRegisterStep(preStep=>preStep+1);
   };
 
   return (
@@ -27,7 +28,7 @@ const RegisterFirst = ({ userData, setUserData,setRegisterStep }) => {
     >
       <img src={logo} alt="Logo" className="mb-2" />
       <p className="mb-3 auth_intro">Đăng ký để xem ảnh và video từ bạn bè.</p>
-      <button class="btn btn_primary w-100">
+      <button className="btn btn_primary w-100">
         <i className="fa-brands fa-square-facebook me-1"></i>
         Đăng nhập bằng Facebook
       </button>

@@ -7,10 +7,11 @@ import Home from "./pages/home";
 import SideBar from "./components/sideBar/SideBar";
 import Alert from "./components/alert/Alert";
 import { refreshToken } from "./redux/actions/authAction";
-import { UseSelector, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function App() {
   const {auth} = useSelector((state) => state);
+  const firstLogin = localStorage.getItem("firstLogin");
   const dispatch = useDispatch();
    useEffect (() => {
     dispatch(refreshToken());

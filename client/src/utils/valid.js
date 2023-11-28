@@ -1,4 +1,4 @@
-const valid = ({fullname, username, email, password, gender }) =>{
+const valid = ({fullname, username, email, password }) =>{
     const err = {}
     if(!fullname){
         err.fullname = "Vui lòng nhập tên đầy đủ."

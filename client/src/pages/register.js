@@ -7,11 +7,12 @@ import RegisterSecond from "../components/register/RegisterSecond";
 import RegisterThird from "../components/register/RegisterThird";
 
 const Register = () => {
+  const firstLogin = localStorage.getItem("firstLogin");
   const {auth} = useSelector(state=> state)
   const navigate=useNavigate();
    useEffect(() =>{
     if(auth.token) navigate('/')
-   },[auth.token, navigate])
+   },[auth.token  , navigate])
 
   const initialState = {
     email: "",
