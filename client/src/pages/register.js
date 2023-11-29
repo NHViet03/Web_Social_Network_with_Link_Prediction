@@ -44,14 +44,6 @@ const Register = () => {
           />
         );
       case 3:
-        return (
-          <RegisterThird
-            userData={userData}
-            setUserData={setUserData}
-            setRegisterStep={setRegisterStep}
-          />
-        );
-      case 4:
           return navigate('/')
       default:
         return <div></div>;
