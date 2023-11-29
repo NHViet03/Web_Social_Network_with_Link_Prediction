@@ -1,4 +1,4 @@
-import Reac, { useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import cake from "../../images/cake.png";
 import { renderOptionSelect } from "../../utils/renderDate";
