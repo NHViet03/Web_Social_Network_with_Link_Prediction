@@ -121,7 +121,8 @@ a:hover {
 
 /*---------------AUTH---------------------*/
 @import url("./auth.css");
-
+/*---------------LOADING---------------------*/
+@import url("./loading.css");
 /*---------------SIDEBAR---------------------*/
 @import url("./sideBar.css");
 
@@ -160,3 +161,6 @@ a:hover {
 
 /*---------------ADD POST MODAL ---------------------*/
 @import url("./add_post_modal.css");
+
+/*---------------MESSAGE---------------------*/
+@import url("./message.css");

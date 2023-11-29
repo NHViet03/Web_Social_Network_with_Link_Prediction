@@ -15,7 +15,7 @@ const PageRender = () => {
   const {page,id}=useParams();
   let pageName='';
   if(id){
-    pageName=`${page}/[id]`;
+    pageName=`${page}/[id]`; //message/[id]
   } else {
     pageName=`${page}`;
   }

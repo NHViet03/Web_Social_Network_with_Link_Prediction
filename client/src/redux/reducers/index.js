@@ -6,9 +6,11 @@ import theme from "./themeReducer";
 import homePosts from './postReducer'
 import notify from './notifyReducer'
 import addPostModal from './addPostModalReducer'
+import alert from "./alertReducer"
 
 export default combineReducers({
   auth,
+  alert,
   postDetail,
   sharePost,
   theme,

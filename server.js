@@ -11,7 +11,7 @@ app.use(cookieParser());
 
 
 //Routes
-
+app.use('/api', require('./routes/authRouter'))
 
 //Connect MongoDB
 
@@ -19,6 +19,18 @@ app.get('/',(req,res)=>{
     res.json({msg:"Welcome to my website"})
 })
 
+const URI = process.env.MONGODB_URL;
+try {
+    mongoose.connect(URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    });
+    console.log("Connect to MongoDB successfully !!!");
+} catch (error) {
+    console.log("Connect to MongoDB failure !!!");
+}
 const port=process.env.PORT||5000;
 
 app.listen(port,()=>{

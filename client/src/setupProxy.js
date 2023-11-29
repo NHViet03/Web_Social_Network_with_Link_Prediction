@@ -6,8 +6,8 @@ module.exports = function(app) {
     createProxyMiddleware({
       target: 'http://localhost:5000',
       changeOrigin: true,
-      headers:{
-          Connection:'keep-alive',
+      headers: {
+        'Connection': 'keep-alive'
       }
     })
   );

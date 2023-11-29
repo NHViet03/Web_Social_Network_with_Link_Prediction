@@ -16,7 +16,7 @@ const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
         <p className="mb-3 auth_intro">Nhập mã xác nhận</p>
         <p className="mb-3 text-center">
           Nhập mã xác nhận mà chúng tôi đã gửi đến địa chỉ {userData.email}{" "}
-          <span className="text_primary">Gửi lại mã</span>.
+          <span className="text_primary" style={{cursor: 'pointer'}}>Gửi lại mã</span>.
         </p>
 
         <div className="mb-3 form-floating">

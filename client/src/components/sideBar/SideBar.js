@@ -8,15 +8,19 @@ import MenuItemDropdown from "./MenuItemDropdown";
 import SearchModal from "../SearchModal";
 import NotifyModal from "../NotifyModal";
 
+
 export const ModalSideBarContext = createContext(null);
 
 const SideBar = () => {
+  const auth=useSelector(state=>state.auth);
   const { pathname } = useLocation();
   const [logo, setLogo] = useState(logoImg);
   const [isSmall, setIsSmall] = useState(false);
   const [isShowSearch, setIsShowSearch] = useState(false);
   const [isShowNotify, setIsShowNotify] = useState(false);
   const theme = useSelector((state) => state.theme);
+
+ 
 
   useEffect(() => {
     const idEvent = window.addEventListener(
@@ -41,6 +45,7 @@ const SideBar = () => {
     else setLogo(logoImg);
   }, [isShowNotify, isShowSearch]);
 
+  if(!auth.token) return null;
   if (pathname === "/login" || pathname === "/register") return null;
 
   return (
@@ -48,7 +53,7 @@ const SideBar = () => {
       value={{ isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify }}
     >
       <div
-        className={`col-3 side-bar ${isSmall || isShowSearch || isShowNotify ? "small" : ""}`}
+        className={`col-3 side-bar ${isSmall || isShowSearch || isShowNotify ||pathname==='/message' ? "small" : ""}`}
       >
         <div className="position-relative  d-flex justify-content-between h-100 flex-column ">
           <nav className="nav_bar navbar-expand-lg">
