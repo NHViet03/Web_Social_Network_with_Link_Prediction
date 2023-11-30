@@ -13,7 +13,7 @@ import BookMarkButton from "./BookMarkButton";
 import Avatar from "../Avatar";
 
 const CardFooterDetail = ({ post, handleClose }) => {
-  const [postModal, setPostModal] = useState(false);
+  const [postModal, setPostModal] = useState(post);
   const [comment, setComment] = useState("");
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
@@ -22,11 +22,6 @@ const CardFooterDetail = ({ post, handleClose }) => {
   const dispatch = useDispatch();
 
   const commentRef = useRef();
-
-  useEffect(() => {
-    // Fake API
-    setPostModal(post);
-  }, [post]);
 
   const handleShowPostDetail = () => {
    
@@ -120,9 +115,7 @@ const CardFooterDetail = ({ post, handleClose }) => {
                 </div>
                 <div className="d-flex">
                   <span className="card_comment-menu-text">
-                    {postModal.createdAt
-                      ? moment(new Date()).fromNow()
-                      : "1 ngày trước"}
+                    {moment(postModal.createdAt).fromNow()}
                   </span>
                 </div>
               </div>

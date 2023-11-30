@@ -1,24 +1,46 @@
 import React, { useState, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import SelectImage from "./SelectImage";
 import ShowImages from "./ShowImages";
 import WriteContent from "./WriteContent";
 import SharePost from "./SharePost";
 
+import { useSelector, useDispatch } from "react-redux";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { createPost,updatePost } from "../../redux/actions/postAction";
+
 function AddPostModal() {
-  const [addStep, setAddStep] = useState(1);
-  const [post, setPost] = useState({
-    content: "",
-    images: [],
-  });
+  const { auth, addPostModal } = useSelector((state) => ({
+    auth: state.auth,
+    addPostModal: state.addPostModal,
+  }));
   const dispatch = useDispatch();
+
+  const [addStep, setAddStep] = useState(addPostModal.onEdit ? 3 : 1);
+  const [post, setPost] = useState(
+    addPostModal.onEdit
+      ? addPostModal.post
+      : {
+          content: "",
+          images: [],
+        }
+  );
 
   const handleClose = () => {
     dispatch({
       type: GLOBAL_TYPES.ADD_POST_MODAL,
       payload: false,
     });
+  };
+
+  const handleCreatePost = async () => {
+    await dispatch(createPost({ post, auth }));
+    setAddStep(4);
+  };
+
+  const handleUpdatePost = () => {
+    if(post.content === addPostModal.post.content) return handleClose();
+    dispatch(updatePost({post,auth}))
+    handleClose();
   };
 
   const renderComponent = useCallback(() => {
@@ -47,7 +69,7 @@ function AddPostModal() {
         }}
       >
         <div className="d-flex justify-content-between align-items-center px-3 addPost_modal_header">
-          {addStep > 1 && addStep !== 4 && (
+          {!addPostModal.onEdit && addStep > 1 && addStep !== 4 && (
             <i
               className="fa-solid fa-arrow-left-long"
               style={{
@@ -58,15 +80,34 @@ function AddPostModal() {
             />
           )}
           <h6 className="text-center flex-fill">
-            {addStep === 4 ? "Đã chia sẻ bài viết" : "Tạo bài viết mới"}
+            {addPostModal.onEdit
+              ? "Chỉnh sửa thông tin"
+              : addStep === 4
+              ? "Đã chia sẻ bài viết"
+              : "Tạo bài viết mới"}
           </h6>
-          {addStep > 1 && addStep < 4 && (
+          {addPostModal.onEdit ? (
+            addStep > 1 &&
+            addStep < 4 && (
+              <h6
+                style={{
+                  color: "var(--primary-color)",
+                  cursor: "pointer",
+                }}
+                onClick={handleUpdatePost}
+              >
+                Xong
+              </h6>
+            )
+          ) : (
             <h6
               style={{
                 color: "var(--primary-color)",
                 cursor: "pointer",
               }}
-              onClick={() => setAddStep(addStep + 1)}
+              onClick={
+                addStep === 3 ? handleCreatePost : () => setAddStep(addStep + 1)
+              }
             >
               {addStep === 3 ? "Chia sẻ" : "Tiếp"}
             </h6>

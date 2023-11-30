@@ -20,7 +20,7 @@ const PostDetailModal = () => {
           <CardBody post={postDetail} />
         </div>
         <div className="col-5 mt-2 px-1 d-flex flex-column">
-          <CardHeader user={postDetail.user} />
+          <CardHeader user={postDetail.user} post={postDetail} />
           <CardFooterDetail post={postDetail} handleClose={handleClose} />
         </div>
         <span className="material-icons modal-close" onClick={handleClose}>

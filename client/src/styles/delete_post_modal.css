@@ -1,0 +1,45 @@
+.deletePost_modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  padding-top: 1px;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.deletePost_modal_container {
+  background-color: #fff;
+  width: 400px;
+  height: 200px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: width 0.3s ease-in-out;
+}
+
+.deletePost_modal_title {
+  margin: 32px 32px 16px 32px;
+  text-align: center;
+}
+
+.deletePost_modal_title h4 {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.deletePost_modal_title p {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.deletePost_modal_action button{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-top: 0.5px solid var(--border-color);
+}

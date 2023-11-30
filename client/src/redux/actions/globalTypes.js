@@ -6,4 +6,3 @@ export const GLOBAL_TYPES = {
     ADD_POST_MODAL:'ADD_POST_MODAL',
     THEME: 'THEME',
 }
-

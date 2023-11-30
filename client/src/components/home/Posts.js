@@ -11,7 +11,6 @@ const Posts = () => {
   const [next, setNext] = useState(2);
 
   useEffect(() => {
-    // Fake API
     setPosts(homePosts.posts);
   
   }, [homePosts]);
@@ -31,7 +30,7 @@ const Posts = () => {
       {showPosts &&
         showPosts.map((post, index) => (
           <div className="mb-3 home-post-item" key={index}>
-            <CardHeader user={post.user} />
+            <CardHeader user={post.user} post={post}/>
             <CardBody post={post} />
             <CardFooter post={post} />
           </div>

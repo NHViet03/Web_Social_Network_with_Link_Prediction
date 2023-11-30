@@ -20,6 +20,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: width 0.3s ease-in-out;
 }
 
 .addPost_modal_header {

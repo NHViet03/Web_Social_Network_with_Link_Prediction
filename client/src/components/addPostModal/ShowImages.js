@@ -1,7 +1,7 @@
-import React from 'react'
+import React from "react";
 
-function SelectImage({post}) {
-  const {images}=post;
+function SelectImage({ post }) {
+  const { images } = post;
   const isActive = (index) => {
     return index === 0 ? "active" : "";
   };
@@ -23,7 +23,7 @@ function SelectImage({post}) {
         {images.map((img, index) => (
           <div key={index} className={`carousel-item h-100 ${isActive(index)}`}>
             <img
-              src={URL.createObjectURL(img)}
+              src={img.url ? img.url : URL.createObjectURL(img)}
               alt="Post"
             />
           </div>
@@ -36,9 +36,8 @@ function SelectImage({post}) {
         data-bs-slide="prev"
       >
         <span className="carousel-control-prev-icon">
-          <i className="fa-solid fa-chevron-left"/>
+          <i className="fa-solid fa-chevron-left" />
         </span>
-        
       </button>
       <button
         className="carousel-control-next"
@@ -47,11 +46,11 @@ function SelectImage({post}) {
         data-bs-slide="next"
       >
         <span className="carousel-control-next-icon">
-          <i className="fa-solid fa-chevron-right"/>
+          <i className="fa-solid fa-chevron-right" />
         </span>
       </button>
     </div>
-  )
+  );
 }
 
-export default SelectImage
+export default SelectImage;

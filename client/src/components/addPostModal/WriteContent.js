@@ -4,10 +4,10 @@ import { useSelector } from "react-redux";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
-import SelectImage from "./ShowImages";
+import ShowImages from "./ShowImages";
 import Avatar from "../Avatar";
 
-function WriteContent({ post, setPost }) {
+function WriteContent({ post, setPost}) {
   const auth = useSelector((state) => state.auth);
   const [showEmoji, setShowEmoji] = useState(false);
 
@@ -23,7 +23,7 @@ function WriteContent({ post, setPost }) {
 
   return (
     <div className="d-flex justify-content-between">
-      <SelectImage post={post} />
+      <ShowImages post={post} />
       <div className="write_content">
         <div className="d-flex align-items-center mt-3 px-3">
           <Avatar src={auth.user.avatar} size="avatar-xs" />
