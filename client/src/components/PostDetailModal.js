@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 import CardHeader from "./postCard/CardHeader";
@@ -6,7 +6,20 @@ import CardBody from "./postCard/CardBody";
 import CardFooterDetail from "./postCard/CardFooterDetail";
 
 const PostDetailModal = () => {
-  const postDetail = useSelector((state) => state.postDetail);
+  const { homePosts, postDetail } = useSelector((state) => ({
+    postDetail: state.postDetail,
+    homePosts: state.homePosts,
+  }));
+  const [post, setPost] = useState(false);
+
+  useEffect(() => {
+    if (postDetail) {
+      const post = homePosts.posts.find((item) => item._id === postDetail);
+
+      setPost(post);
+    }
+  }, [homePosts.posts, postDetail]);
+
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -15,18 +28,22 @@ const PostDetailModal = () => {
 
   return (
     <div className="postDetail_modal">
-      <div className="d-flex postDetail_modal-content">
-        <div className="col-7">
-          <CardBody post={postDetail} />
+      {post && (
+        <div className="d-flex postDetail_modal-content">
+          <div className="col-7">
+            <CardBody post={post} />
+          </div>
+          <div className="col-5 mt-2 d-flex flex-column">
+            <div className="px-2">
+              <CardHeader user={post.user} post={post} />
+            </div>
+            <CardFooterDetail post={post} handleClose={handleClose} />
+          </div>
+          <span className="material-icons modal-close" onClick={handleClose}>
+            close
+          </span>
         </div>
-        <div className="col-5 mt-2 px-1 d-flex flex-column">
-          <CardHeader user={postDetail.user} post={postDetail} />
-          <CardFooterDetail post={postDetail} handleClose={handleClose} />
-        </div>
-        <span className="material-icons modal-close" onClick={handleClose}>
-          close
-        </span>
-      </div>
+      )}
     </div>
   );
 };

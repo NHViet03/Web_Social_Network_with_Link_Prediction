@@ -1,34 +1,49 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import Avatar from "../Avatar";
 import LikeButton from "../LikeButton";
 
-const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
+import { useSelector, useDispatch } from "react-redux";
+import {
+  likeComment,
+  unLikeComment,
+  deleteComment,
+} from "../../redux/actions/commentAction";
+
+const CardComment = ({ post, comment, loadComment, handleClose }) => {
   const auth = useSelector((state) => state.auth);
-  const [comment, setComment] = useState(false);
+  const dispatch = useDispatch();
   const [isLike, setIsLike] = useState(false);
+  const [loadLike, setLoadLike] = useState(false);
 
   useEffect(() => {
-    setComment(commentProp);
-  }, [commentProp]);
+    if (comment.likes.find((like) => like === auth.user._id)) {
+      setIsLike(true);
+    } else {
+      setIsLike(false);
+    }
+  }, [auth.user._id, comment.likes]);
 
-
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (loadLike) return;
+    setLoadLike(true);
     setIsLike(true);
-    setComment({
-      ...comment,
-      likes:[...comment.likes,auth.user._id]
-    })
+    await dispatch(likeComment({ post, comment, auth }));
+    setLoadLike(false);
+  };
+  const handleUnLike = async () => {
+    if (loadLike) return;
+    setLoadLike(true);
+    setIsLike(false);
+    await dispatch(unLikeComment({ post, comment, auth }));
+    setLoadLike(false);
   };
 
-  const handleUnLike = () => {
-    setIsLike(false);
-    setComment({
-      ...comment,
-      likes:comment.likes.filter(like=>like !== auth.user._id)
-    })
+  const handleDeleteComment = () => {
+    if (post.user._id === auth.user._id || comment.user._id === auth.user._id) {
+      dispatch(deleteComment({ post, comment, auth }));
+    }
   };
 
   const handleClickUser = () => {
@@ -36,7 +51,12 @@ const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
   };
 
   return (
-    <div className="mb-3 card_comment">
+    <div
+      className="mb-3 card_comment"
+      style={{
+        opacity: loadComment ? "0.5" : "1",
+      }}
+    >
       {comment && (
         <>
           <Link to={`/profile/${comment.user._id}`} onClick={handleClickUser}>
@@ -75,7 +95,8 @@ const CardComment = ({ commentProp, handleClose, handleDeleteComment }) => {
                 </span>
               )}
 
-              {auth.user._id === comment.user._id && (
+              {(auth.user._id === comment.user._id ||
+                post.user._id === auth.user._id) && (
                 <div className="ms-3 nav-item dropdown">
                   <span
                     className="material-icons"

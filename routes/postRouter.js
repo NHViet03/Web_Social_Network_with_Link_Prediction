@@ -11,4 +11,8 @@ router
   .patch(auth, postCtrl.updatePost)
   .delete(auth, postCtrl.deletePost);
 
+router.patch("/like_post/:id",auth,postCtrl.likePost);
+router.patch("/unlike_post/:id",auth,postCtrl.unLikePost);
+
+
 module.exports = router;

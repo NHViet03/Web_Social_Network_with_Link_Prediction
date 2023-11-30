@@ -3,10 +3,11 @@ import auth from "./authReducer";
 import postDetail from "./postDetailReducer";
 import sharePost from "./sharePostReducer";
 import theme from "./themeReducer";
-import homePosts from './postReducer'
-import notify from './notifyReducer'
-import addPostModal from './addPostModalReducer'
-import alert from "./alertReducer"
+import homePosts from "./postReducer";
+import notify from "./notifyReducer";
+import addPostModal from "./addPostModalReducer";
+import alert from "./alertReducer";
+import suggest from "./suggestReducer";
 
 export default combineReducers({
   auth,
@@ -16,5 +17,6 @@ export default combineReducers({
   theme,
   homePosts,
   notify,
-  addPostModal
+  addPostModal,
+  suggest,
 });

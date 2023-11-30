@@ -1,35 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import LikeButton from "../LikeButton";
 import BookMarkButton from "./BookMarkButton";
 
+import { useSelector, useDispatch } from "react-redux";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { likePost, unLikePost } from "../../redux/actions/postAction";
+
 const CardFooter = ({ post }) => {
-  const [postModal, setPostModal] = useState(false);
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [readMore, setReadMore] = useState(false);
+  const [loadLike, setLoadLike] = useState(false);
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Fake API
-    setPostModal(post);
-  }, [post]);
+    if (post.likes.find((like) => like === auth.user._id)) {
+      setIsLike(true);
+    } else {
+      setIsLike(false);
+    }
+  }, [auth.user._id, post]);
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (loadLike) return;
+    setLoadLike(true);
     setIsLike(true);
-    setPostModal({
-      ...postModal,
-      likes: [...postModal.likes, auth.user._id],
-    });
+    await dispatch(likePost({ post, auth }));
+    setLoadLike(false);
   };
-  const handleUnLike = () => {
+  const handleUnLike = async () => {
+    if (loadLike) return;
+    setLoadLike(true);
     setIsLike(false);
-    setPostModal({
-      ...postModal,
-      likes: postModal.likes.filter((like) => like !== auth.user._id),
-    });
+    await dispatch(unLikePost({ post, auth }));
+    setLoadLike(false);
   };
 
   const handleBookmark = () => {
@@ -41,17 +46,15 @@ const CardFooter = ({ post }) => {
   };
 
   const handleShowPostDetail = () => {
-      dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: postModal });
+    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post._id });
   };
   const handleShowSharePost = () => {
-   
-      dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: postModal });
-    
+    dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
   };
 
   return (
     <div className="mt-3 card_footer">
-      {postModal && (
+      {post && (
         <>
           <div className="card_footer-icons">
             <div>
@@ -76,17 +79,15 @@ const CardFooter = ({ post }) => {
             />
           </div>
           <p className="mb-1 mt-2" style={{ fontWeight: "600" }}>
-            {postModal.likes.length} lượt thích
+            {post.likes.length} lượt thích
           </p>
           <div className="card_footer-content">
-            <span style={{ fontWeight: "600" }}>
-              {postModal.user.username}{" "}
-            </span>
-            {postModal.content.length < 80 || readMore
-              ? postModal.content
-              : postModal.content.slice(0, 80) + "..."}
+            <span style={{ fontWeight: "600" }}>{post.user.username} </span>
+            {post.content.length < 80 || readMore
+              ? post.content
+              : post.content.slice(0, 80) + "..."}
 
-            {postModal.content.length > 80 && (
+            {post.content.length > 80 && (
               <small
                 onClick={() => setReadMore(!readMore)}
                 style={{
@@ -109,8 +110,8 @@ const CardFooter = ({ post }) => {
             }}
             onClick={handleShowPostDetail}
           >
-            {postModal.comments.length > 0
-              ? `Xem tất cả ${postModal.comments.length} bình luận`
+            {post.comments.length > 0
+              ? `Xem tất cả ${post.comments.length} bình luận`
               : "Thêm bình luận..."}
           </p>
         </>

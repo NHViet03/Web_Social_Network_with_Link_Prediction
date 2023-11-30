@@ -97,6 +97,8 @@
 }
 
 .card_footer-comments {
+  display: flex;
+  flex-direction: column;
   border-bottom: 1px solid var(--border-color);
   flex: 1;
   max-height: 440px;
@@ -168,7 +170,7 @@
 
 @media (max-width: 768px) {
   .card_body img {
-    height: 400px;
+    height: 450px;
   }
   .card_footer-comments {
     max-height: 190px;

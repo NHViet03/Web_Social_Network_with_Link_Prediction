@@ -1,52 +1,59 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import moment from "moment";
-
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-
 import CardComment from "./CardComment";
 import LikeButton from "../LikeButton";
 import BookMarkButton from "./BookMarkButton";
 import Avatar from "../Avatar";
 
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { useSelector, useDispatch } from "react-redux";
+import { likePost, unLikePost } from "../../redux/actions/postAction";
+import { createComment } from "../../redux/actions/commentAction";
+
 const CardFooterDetail = ({ post, handleClose }) => {
-  const [postModal, setPostModal] = useState(post);
   const [comment, setComment] = useState("");
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
-  const  auth  = useSelector((state) => state.auth);
+  const [loadLike, setLoadLike] = useState(false);
+  const [loadComment, setLoadComment] = useState(false);
+
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const commentRef = useRef();
 
+  useEffect(() => {
+    if (post.likes.find((like) => like === auth.user._id)) {
+      setIsLike(true);
+    } else {
+      setIsLike(false);
+    }
+  }, [auth.user._id, post]);
+
   const handleShowPostDetail = () => {
-   
-      dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
-    
+    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
   };
   const handleShowSharePost = () => {
-    
-      dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
-    
+    dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    if (loadLike) return;
+    setLoadLike(true);
     setIsLike(true);
-    setPostModal({
-      ...postModal,
-      likes: [...postModal.likes, auth.user._id],
-    });
+    await dispatch(likePost({ post, auth }));
+    setLoadLike(false);
   };
-  const handleUnLike = () => {
+  const handleUnLike = async () => {
+    if (loadLike) return;
+    setLoadLike(true);
     setIsLike(false);
-    setPostModal({
-      ...postModal,
-      likes: postModal.likes.filter((like) => like !== auth.user._id),
-    });
+    await dispatch(unLikePost({ post, auth }));
+    setLoadLike(false);
   };
 
   const handleBookmark = () => {
@@ -57,30 +64,27 @@ const CardFooterDetail = ({ post, handleClose }) => {
     setIsBookmark(false);
   };
 
-  const handleComment = (e) => {
+  const handleComment = async (e) => {
     e.preventDefault();
+
+    if (!comment.trim() || loadComment) return;
+    setLoadComment(true);
+    setComment("");
+    setShowEmoji(false);
+
     const newComment = {
       content: comment,
       user: auth.user,
       likes: [],
+      postId: post._id,
+      postUserId: post.user._id,
       createdAt: new Date().toISOString(),
     };
-    setPostModal({
-      ...postModal,
-      comments: [newComment, ...postModal.comments],
-    });
-    setComment("");
-    setShowEmoji(false);
+
+    await dispatch(createComment({ post, newComment, auth }));
+    setLoadComment(false);
   };
 
-  const handleDeleteComment = () => {
-    setPostModal({
-      ...postModal,
-      comments: postModal.comments.filter(
-        (comment) => comment.user._id !== auth.user._id
-      ),
-    });
-  };
 
   const handleEmojiSelect = (emoji) => {
     setComment(comment + emoji.native);
@@ -88,49 +92,61 @@ const CardFooterDetail = ({ post, handleClose }) => {
   };
 
   return (
-    <div className="mt-3 pt-3 pb-1 px-2  flex-fill d-flex flex-column card_footer">
-      {postModal && (
+    <div className="mt-3 pt-3 pb-1 flex-fill d-flex flex-column card_footer">
+      {post && (
         <>
           <div className="card_footer-comments mb-3">
             <div className="mb-3 card_comment">
-              <Link to={`/profile/${postModal.user._id}`} onClick={handleClose}>
-                <Avatar src={postModal.user.avatar} size="avatar-sm" />
+              <Link to={`/profile/${post.user._id}`} onClick={handleClose}>
+                <Avatar src={post.user.avatar} size="avatar-sm" />
               </Link>
 
               <div className="card_comment-content">
                 <div className="card_comment-content-user">
-                  <Link
-                    to={`/profile/${postModal.user._id}`}
-                    onClick={handleClose}
-                  >
+                  <Link to={`/profile/${post.user._id}`} onClick={handleClose}>
                     <span className="card_comment-content-user-username">
-                      {postModal.user.username}
+                      {post.user.username}
                     </span>
                   </Link>
 
                   <span className="card_comment-content-user-comment">
                     {" "}
-                    {postModal.content}
+                    {post.content}
                   </span>
                 </div>
                 <div className="d-flex">
                   <span className="card_comment-menu-text">
-                    {moment(postModal.createdAt).fromNow()}
+                    {moment(post.createdAt).fromNow()}
                   </span>
                 </div>
               </div>
             </div>
 
-            {postModal.comments.map((comment, index) => (
+            {post.comments.length === 0 && (
+              <div className="d-flex align-items-center justify-content-center flex-column flex-fill">
+                <h4>Chưa có bình luận nào.</h4>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "var(--text-color)",
+                  }}
+                >
+                  Bắt đầu trò chuyện.
+                </p>
+              </div>
+            )}
+
+            {post.comments.map((comment, index) => (
               <CardComment
                 key={index}
-                commentProp={comment}
+                post={post}
+                comment={comment}
+                loadComment={!comment._id ? loadComment : false}
                 handleClose={handleClose}
-                handleDeleteComment={handleDeleteComment}
               />
             ))}
           </div>
-          <div className="card_footer-icons">
+          <div className="px-3 card_footer-icons">
             <div>
               <LikeButton
                 isLike={isLike}
@@ -152,10 +168,13 @@ const CardFooterDetail = ({ post, handleClose }) => {
               handleUnBookmark={handleUnBookmark}
             />
           </div>
-          <p className="my-2" style={{ fontWeight: "600", fontSize: "14px" }}>
-            {postModal.likes.length} lượt thích
+          <p
+            className="my-2 px-3"
+            style={{ fontWeight: "600", fontSize: "14px" }}
+          >
+            {post.likes.length} lượt thích
           </p>
-          <form onSubmit={handleComment} className="form-comment">
+          <form onSubmit={handleComment} className="px-3 form-comment">
             <div className="form-emoji">
               <i
                 className="fa-regular fa-face-grin"
@@ -188,7 +207,7 @@ const CardFooterDetail = ({ post, handleClose }) => {
               placeholder="Thêm bình luận..."
             />
             <button
-              className="btn btn-comment"
+              className="btn pe-0 btn-comment"
               type="submit"
               disabled={comment.length < 1 ? true : false}
               style={{ color: "var(--primary-color)" }}

@@ -112,3 +112,53 @@ export const deletePost =
       });
     }
   };
+
+export const likePost =
+  ({ post, auth }) =>
+  async (dispatch) => {
+    const newPost = {
+      ...post,
+      likes: [...post.likes, auth.user._id],
+    };
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    try {
+      await patchDataAPI(`like_post/${post._id}`, null, auth.token);
+    } catch (error) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: error.response.data.msg,
+        },
+      });
+    }
+  };
+
+export const unLikePost =
+  ({ post, auth }) =>
+  async (dispatch) => {
+    const newPost = {
+      ...post,
+      likes: post.likes.filter((like) => like !== auth.user._id),
+    };
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    try {
+      await patchDataAPI(`unlike_post/${post._id}`, null, auth.token);
+    } catch (error) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: error.response.data.msg,
+        },
+      });
+    }
+  };

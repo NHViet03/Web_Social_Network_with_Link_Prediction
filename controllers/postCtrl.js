@@ -74,12 +74,67 @@ const postCtrl = {
       await Posts.findOneAndDelete({ _id: id, user: req.user._id });
 
       return res.json({
-        msg:"Đã xóa bài viết thành công"
-      })
+        msg: "Đã xóa bài viết thành công",
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  likePost: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const post = await Posts.find({
+        _id: id,
+        likes: req.user.id,
+      });
+      if (post.length > 0) {
+        return res.status(400).json({
+          msg: "Bạn đã thích bài viết này",
+        });
+      }
+
+      await Posts.findOneAndUpdate(
+        { _id: id },
+        {
+          $push: {
+            likes: req.user._id,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      return res.json({
+        msg: "Đã thích bài viết",
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  unLikePost: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      await Posts.findOneAndUpdate(
+        { _id: id },
+        {
+          $pull: {
+            likes: req.user._id,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      return res.json({
+        msg: "Đã hủy thích bài viết",
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   },
 };
+
 
 module.exports = postCtrl;

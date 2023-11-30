@@ -31,8 +31,15 @@
     border-bottom-left-radius: 4px;
 }
 
+/* Card Footer */
+
 .postDetail_modal .card_footer{
     border-top: 1px solid var(--border-color);
+    padding:0;
+}
+
+.postDetail_modal .card_footer .card_comment{
+    padding:0 16px;
 }
 
 

@@ -6,7 +6,7 @@ import SharePost from "./SharePost";
 
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
-import { createPost,updatePost } from "../../redux/actions/postAction";
+import { createPost, updatePost } from "../../redux/actions/postAction";
 
 function AddPostModal() {
   const { auth, addPostModal } = useSelector((state) => ({
@@ -24,6 +24,7 @@ function AddPostModal() {
           images: [],
         }
   );
+  const [loading,setLoading]=useState(false);
 
   const handleClose = () => {
     dispatch({
@@ -33,13 +34,15 @@ function AddPostModal() {
   };
 
   const handleCreatePost = async () => {
-    await dispatch(createPost({ post, auth }));
+    setLoading(true);
     setAddStep(4);
+    await dispatch(createPost({ post, auth }));
+    setLoading(false);
   };
 
   const handleUpdatePost = () => {
-    if(post.content === addPostModal.post.content) return handleClose();
-    dispatch(updatePost({post,auth}))
+    if (post.content === addPostModal.post.content) return handleClose();
+    dispatch(updatePost({ post, auth }));
     handleClose();
   };
 
@@ -54,11 +57,11 @@ function AddPostModal() {
       case 3:
         return <WriteContent post={post} setPost={setPost} />;
       case 4:
-        return <SharePost />;
+        return <SharePost loading={loading} />;
       default:
         return <SelectImage post={post} setPost={setPost} />;
     }
-  }, [addStep, post]);
+  }, [addStep, loading, post]);
 
   return (
     <div className="addPost_modal">
@@ -109,7 +112,7 @@ function AddPostModal() {
                 addStep === 3 ? handleCreatePost : () => setAddStep(addStep + 1)
               }
             >
-              {addStep === 3 ? "Chia sẻ" : "Tiếp"}
+              { addStep === 3 ? "Chia sẻ" : addStep !== 4 && "Tiếp"}
             </h6>
           )}
         </div>

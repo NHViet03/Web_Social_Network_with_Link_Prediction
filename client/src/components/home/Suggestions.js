@@ -1,40 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import UserCard from "../UserCard";
+
+import { useSelector, useDispatch } from "react-redux";
+import { getSuggestedUsers } from "../../redux/actions/suggestAction";
 
 const Suggestions = () => {
   const [users, setUsers] = useState([]);
-  const { auth, homePosts } = useSelector((state) => ({
+  const { auth, suggest } = useSelector((state) => ({
     auth: state.auth,
-    homePosts: state.homePosts,
+    suggest: state.suggest,
   }));
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
-    setUsers(homePosts.users.slice(0, 5));
-  }, []);
+    dispatch(getSuggestedUsers(auth.token));
+  }, [auth.token, dispatch]);
+
+  useEffect(()=>{
+    if(suggest.users){
+      setUsers(suggest.users)
+    }
+  },[suggest.users])
+
   return (
     <div className="col-4 suggestions">
-      <UserCard
-        user={auth.user}
-        size="avatar-md"
-      />
+      <UserCard user={auth.user} size="avatar-md" />
       <h6 className="my-4">Gợi ý cho bạn</h6>
       <div className="suggest-list">
         {users &&
           users.map((user, index) => (
-            <UserCard
-              key={index}
-              user={user}
-              follow
-            />
+            <UserCard key={index} user={user} follow />
           ))}
       </div>
-      <small style={{
-        display:'block',
-        marginTop:'24px',
-        color:'#c7c7c7'
-      }}>
-      © 2023 DREAMERS FROM DREAMER TEAM
+      <small
+        style={{
+          display: "block",
+          marginTop: "24px",
+          color: "#c7c7c7",
+        }}
+      >
+        © 2023 DREAMERS FROM DREAMER TEAM
       </small>
     </div>
   );

@@ -28,7 +28,7 @@ const DeletePostModal = ({ post, setShowDelete }) => {
           >
             Xóa
           </button>
-          <button className="btn w-100" onClick={() => handleDeletePost(false)}>
+          <button className="btn w-100" onClick={() => setShowDelete(false)}>
             Hủy
           </button>
         </div>
