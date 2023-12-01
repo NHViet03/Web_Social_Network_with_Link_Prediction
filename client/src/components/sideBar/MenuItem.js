@@ -26,7 +26,7 @@ const MenuItem = ({ link, active }) => {
             className="material-icons nav-icon"
             style={{
               rotate: link.path === "/message" ? "-30deg" : "",
-              marginLeft: link.path === "/message" ? "2px" : "",
+              transform: link.path === "/message" ? "translate(3px,-2px)" : "",
             }}
           >
             {active ? (link.active ? link.active : link.icon) : link.icon}

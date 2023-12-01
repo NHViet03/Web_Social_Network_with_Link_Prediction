@@ -1,6 +1,18 @@
 const Posts = require("../models/postModel");
 const Comments = require("../models/commentModel");
 
+class APIfeatures {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
+  paginating() {
+    const limit = this.queryString.limit * 1 || 10;
+    this.query = this.query.limit(limit);
+    return this;
+  }
+}
+
 const postCtrl = {
   createPost: async (req, res) => {
     try {
@@ -27,10 +39,15 @@ const postCtrl = {
     }
   },
   getPosts: async (req, res) => {
-    try {
-      const posts = await Posts.find({
+    const features = new APIfeatures(
+      Posts.find({
         user: [...req.user.following, req.user._id],
-      })
+      }),
+      req.query
+    ).paginating();
+
+    try {
+      const posts = await features.query
         .sort("-createdAt")
         .populate("user", "avatar username fullname")
         .populate({
@@ -134,7 +151,35 @@ const postCtrl = {
       return res.status(500).json({ msg: error.message });
     }
   },
-};
+  getExplorePosts: async (req, res) => {
+    try {
+      const exceptArr = [...req.user.following, req.user._id];
 
+      const features = new APIfeatures(
+        Posts.find({
+          user: { $nin: exceptArr },
+        }),
+        req.query
+      ).paginating();
+
+      const posts = await features.query
+        .populate("user", "avatar username fullname")
+        .populate({
+          path: "comments",
+          populate: {
+            path: "user",
+            select: "avatar username fullname",
+          },
+        });
+
+      return res.json({
+        posts,
+        result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+};
 
 module.exports = postCtrl;

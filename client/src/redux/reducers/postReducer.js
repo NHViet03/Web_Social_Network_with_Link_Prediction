@@ -75,6 +75,7 @@ const initialState = {
         "https://i.pinimg.com/564x/22/60/3a/22603ab665885115366fdc481c652628.jpg",
     },
   ],
+  firstLoad:false
 };
 
 const postReducer = (state = initialState, action) => {
@@ -89,6 +90,7 @@ const postReducer = (state = initialState, action) => {
         ...state,
         posts: action.payload.posts,
         result: action.payload.result,
+        firstLoad:true
       };
     case POST_TYPES.UPDATE_POST:
       return {

@@ -167,3 +167,7 @@ a:hover {
 
 /*---------------MESSAGE---------------------*/
 @import url("./message.css");
+
+
+/*---------------LOAD MORE---------------------*/
+@import url("./load_more.css");

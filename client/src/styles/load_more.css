@@ -1,0 +1,22 @@
+.load_more{
+    display: flex;
+    justify-content: center;
+}
+
+.load_more svg{
+    width:32px;
+    height:32px;
+    animation-name: rotate;
+    animation-timing-function: steps(12);
+    animation-duration: 0.8s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}

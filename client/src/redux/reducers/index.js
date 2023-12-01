@@ -8,6 +8,7 @@ import notify from "./notifyReducer";
 import addPostModal from "./addPostModalReducer";
 import alert from "./alertReducer";
 import suggest from "./suggestReducer";
+import explore from "./exploreReducer";
 
 export default combineReducers({
   auth,
@@ -19,4 +20,5 @@ export default combineReducers({
   notify,
   addPostModal,
   suggest,
+  explore,
 });

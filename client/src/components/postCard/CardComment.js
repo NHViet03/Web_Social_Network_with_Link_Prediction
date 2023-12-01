@@ -11,7 +11,7 @@ import {
   deleteComment,
 } from "../../redux/actions/commentAction";
 
-const CardComment = ({ post, comment, loadComment, handleClose }) => {
+const CardComment = ({ post, comment, loadComment, handleClose,explore }) => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [isLike, setIsLike] = useState(false);
@@ -29,20 +29,20 @@ const CardComment = ({ post, comment, loadComment, handleClose }) => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(true);
-    await dispatch(likeComment({ post, comment, auth }));
+    await dispatch(likeComment({ post, comment, auth,explore }));
     setLoadLike(false);
   };
   const handleUnLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(false);
-    await dispatch(unLikeComment({ post, comment, auth }));
+    await dispatch(unLikeComment({ post, comment, auth,explore }));
     setLoadLike(false);
   };
 
   const handleDeleteComment = () => {
     if (post.user._id === auth.user._id || comment.user._id === auth.user._id) {
-      dispatch(deleteComment({ post, comment, auth }));
+      dispatch(deleteComment({ post, comment, auth,explore }));
     }
   };
 

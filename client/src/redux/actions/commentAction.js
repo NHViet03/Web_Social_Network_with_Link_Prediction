@@ -1,5 +1,6 @@
 import { GLOBAL_TYPES } from "./globalTypes";
 import { POST_TYPES } from "./postAction";
+import { EXPLORE_TYPES } from "./exploreAction";
 import {
   postDataAPI,
   patchDataAPI,
@@ -7,24 +8,39 @@ import {
 } from "../../utils/fetchData";
 
 export const createComment =
-  ({ post, newComment, auth }) =>
+  ({ post, newComment, auth, explore }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
       comments: [...post.comments, newComment],
     };
-    dispatch({
-      type: POST_TYPES.UPDATE_POST,
-      payload: newPost,
-    });
+
+    if (explore) {
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    } else {
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    }
 
     try {
       const res = await postDataAPI("create_comment", newComment, auth.token);
 
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: res.data.newPost,
-      });
+      if (explore) {
+        dispatch({
+          type: EXPLORE_TYPES.UPDATE_POST,
+          payload: res.data.newPost,
+        });
+      } else {
+        dispatch({
+          type: POST_TYPES.UPDATE_POST,
+          payload: res.data.newPost,
+        });
+      }
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -36,7 +52,7 @@ export const createComment =
   };
 
 export const likeComment =
-  ({ post, comment, auth }) =>
+  ({ post, comment, auth, explore }) =>
   async (dispatch) => {
     const newComment = {
       ...comment,
@@ -50,10 +66,17 @@ export const likeComment =
       ),
     };
 
-    dispatch({
-      type: POST_TYPES.UPDATE_POST,
-      payload: newPost,
-    });
+    if (explore) {
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    } else {
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    }
 
     try {
       await patchDataAPI(`like_comment/${comment._id}`, null, auth.token);
@@ -68,7 +91,7 @@ export const likeComment =
   };
 
 export const unLikeComment =
-  ({ post, comment, auth }) =>
+  ({ post, comment, auth, explore }) =>
   async (dispatch) => {
     const newComment = {
       ...comment,
@@ -82,10 +105,17 @@ export const unLikeComment =
       ),
     };
 
-    dispatch({
-      type: POST_TYPES.UPDATE_POST,
-      payload: newPost,
-    });
+    if (explore) {
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    } else {
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    }
 
     try {
       await patchDataAPI(`unlike_comment/${comment._id}`, null, auth.token);
@@ -100,17 +130,24 @@ export const unLikeComment =
   };
 
 export const deleteComment =
-  ({ post, comment, auth }) =>
+  ({ post, comment, auth, explore }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
       comments: post.comments.filter((cm) => cm._id !== comment._id),
     };
 
-    dispatch({
-      type: POST_TYPES.UPDATE_POST,
-      payload: newPost,
-    });
+    if (explore) {
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    } else {
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    }
 
     try {
       await deleteDataAPI(

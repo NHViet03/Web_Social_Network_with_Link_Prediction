@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 
 const GalleryPost = ({ posts }) => {
@@ -17,7 +17,10 @@ const GalleryPost = ({ posts }) => {
   }, [posts]);
 
   const handleShowPost = (post) => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
+    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: {
+      postId:post._id,
+      explore:true
+    } });
   };
 
   return (
@@ -32,6 +35,9 @@ const GalleryPost = ({ posts }) => {
                   onClick={() => handleShowPost(cluster[4])}
                 >
                   <img src={cluster[4].images[0].url} alt="Post" />
+                  {cluster[4].images.length > 1 && (
+                    <i className="fa-solid fa-images" />
+                  )}
                   <div className="gallery_overlay">
                     <span className="me-4">
                       <i className="fas fa-heart" /> {cluster[4].likes.length}
@@ -51,6 +57,9 @@ const GalleryPost = ({ posts }) => {
                     onClick={() => handleShowPost(post)}
                   >
                     <img src={post.images[0].url} alt="Post" />
+                    {post.images.length > 1 && (
+                      <i className="fa-solid fa-images" />
+                    )}
                     <div className="gallery_overlay">
                       <span className="me-4">
                         <i className="fas fa-heart" /> {post.likes.length}
@@ -68,6 +77,9 @@ const GalleryPost = ({ posts }) => {
                   onClick={() => handleShowPost(cluster[4])}
                 >
                   <img src={cluster[4].images[0].url} alt="Post" />
+                  {cluster[4].images.length > 1 && (
+                    <i className="fa-solid fa-images" />
+                  )}
                   <div className="gallery_overlay">
                     <span className="me-4">
                       <i className="fas fa-heart" /> {cluster[4].likes.length}

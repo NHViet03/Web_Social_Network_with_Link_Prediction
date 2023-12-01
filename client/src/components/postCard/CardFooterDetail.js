@@ -13,7 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { likePost, unLikePost } from "../../redux/actions/postAction";
 import { createComment } from "../../redux/actions/commentAction";
 
-const CardFooterDetail = ({ post, handleClose }) => {
+const CardFooterDetail = ({ post, explore,handleClose }) => {
   const [comment, setComment] = useState("");
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
@@ -45,14 +45,14 @@ const CardFooterDetail = ({ post, handleClose }) => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(true);
-    await dispatch(likePost({ post, auth }));
+    await dispatch(likePost({ post, auth,explore }));
     setLoadLike(false);
   };
   const handleUnLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(false);
-    await dispatch(unLikePost({ post, auth }));
+    await dispatch(unLikePost({ post, auth,explore }));
     setLoadLike(false);
   };
 
@@ -81,7 +81,7 @@ const CardFooterDetail = ({ post, handleClose }) => {
       createdAt: new Date().toISOString(),
     };
 
-    await dispatch(createComment({ post, newComment, auth }));
+    await dispatch(createComment({ post, newComment, auth,explore }));
     setLoadComment(false);
   };
 
@@ -142,6 +142,7 @@ const CardFooterDetail = ({ post, handleClose }) => {
                 post={post}
                 comment={comment}
                 loadComment={!comment._id ? loadComment : false}
+                explore={explore}
                 handleClose={handleClose}
               />
             ))}

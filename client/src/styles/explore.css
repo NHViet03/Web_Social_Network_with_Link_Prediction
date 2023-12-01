@@ -61,3 +61,12 @@
     display: none;
 }   
 
+.gallery_group .fa-images{
+  position: absolute;
+  color:#fff;
+  z-index: 2;
+  font-size: 20px;
+  top:16px;
+  right: 16px;
+  filter: drop-shadow(0 0 0.75px rgba(0,0,0,.42)) drop-shadow(0 1px 0.5px rgba(0,0,0,.18)) drop-shadow(0 2px 3px rgba(0,0,0,.2));
+}

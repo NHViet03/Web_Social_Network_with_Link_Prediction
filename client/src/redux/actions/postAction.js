@@ -6,6 +6,7 @@ import {
   patchDataAPI,
   deleteDataAPI,
 } from "../../utils/fetchData";
+import { EXPLORE_TYPES } from "./exploreAction";
 
 export const POST_TYPES = {
   CREATE_POST: "CREATE_POST",
@@ -114,17 +115,24 @@ export const deletePost =
   };
 
 export const likePost =
-  ({ post, auth }) =>
+  ({ post, auth, explore }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
       likes: [...post.likes, auth.user._id],
     };
 
-    dispatch({
-      type: POST_TYPES.UPDATE_POST,
-      payload: newPost,
-    });
+    if (explore) {
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    } else {
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    }
 
     try {
       await patchDataAPI(`like_post/${post._id}`, null, auth.token);
@@ -139,17 +147,24 @@ export const likePost =
   };
 
 export const unLikePost =
-  ({ post, auth }) =>
+  ({ post, auth, explore }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
       likes: post.likes.filter((like) => like !== auth.user._id),
     };
 
-    dispatch({
-      type: POST_TYPES.UPDATE_POST,
-      payload: newPost,
-    });
+    if (explore) {
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    } else {
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: newPost,
+      });
+    }
 
     try {
       await patchDataAPI(`unlike_post/${post._id}`, null, auth.token);

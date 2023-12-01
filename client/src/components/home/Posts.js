@@ -3,44 +3,35 @@ import { useSelector } from "react-redux";
 import CardBody from "../postCard/CardBody";
 import CardHeader from "../postCard/CardHeader";
 import CardFooter from "../postCard/CardFooter";
+import LoadMore from "../LoadMore";
 
 const Posts = () => {
-  const  homePosts = useSelector((state) => state.homePosts);
+  const homePosts = useSelector((state) => state.homePosts);
   const [posts, setPosts] = useState([]);
-  const [showPosts, setShowPosts] = useState([]);
   const [next, setNext] = useState(2);
 
   useEffect(() => {
     setPosts(homePosts.posts);
-  
   }, [homePosts]);
-
-  useEffect(() => {
-    setShowPosts(posts.slice(0, next > posts.length ? posts.length : next));
-  }, [posts, next]);
 
   return (
     <div className="home-posts">
-      {!showPosts.length && (
+      {!homePosts.firstLoad && <LoadMore />}
+
+      {!posts.length && (
         <div className="text-center home-posts-empty">
           Không có bài viết nào
         </div>
       )}
 
-      {showPosts &&
-        showPosts.map((post, index) => (
+      {posts &&
+        posts.map((post, index) => (
           <div className="mb-3 home-post-item" key={index}>
-            <CardHeader user={post.user} post={post}/>
+            <CardHeader user={post.user} post={post} />
             <CardBody post={post} />
             <CardFooter post={post} />
           </div>
         ))}
-      {next < posts.length && (
-        <div className="home-posts-readMore" onClick={() => setNext(next + 10)}>
-          <span>Xem thêm</span>
-          <i className="fa-solid fa-angles-down" />
-        </div>
-      )}
     </div>
   );
 };

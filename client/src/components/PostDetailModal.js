@@ -6,19 +6,25 @@ import CardBody from "./postCard/CardBody";
 import CardFooterDetail from "./postCard/CardFooterDetail";
 
 const PostDetailModal = () => {
-  const { homePosts, postDetail } = useSelector((state) => ({
+  const { homePosts, explore, postDetail } = useSelector((state) => ({
     postDetail: state.postDetail,
     homePosts: state.homePosts,
+    explore: state.explore,
   }));
   const [post, setPost] = useState(false);
 
   useEffect(() => {
     if (postDetail) {
-      const post = homePosts.posts.find((item) => item._id === postDetail);
+      let post = {};
+      if (postDetail.explore) {
+        post = explore.posts.find((item) => item._id === postDetail.postId);
+      } else {
+        post = homePosts.posts.find((item) => item._id === postDetail);
+      }
 
       setPost(post);
     }
-  }, [homePosts.posts, postDetail]);
+  }, [explore.posts, homePosts.posts, postDetail]);
 
   const dispatch = useDispatch();
 
@@ -37,7 +43,11 @@ const PostDetailModal = () => {
             <div className="px-2">
               <CardHeader user={post.user} post={post} />
             </div>
-            <CardFooterDetail post={post} handleClose={handleClose} />
+            <CardFooterDetail
+              post={post}
+              handleClose={handleClose}
+              explore={postDetail.explore}
+            />
           </div>
           <span className="material-icons modal-close" onClick={handleClose}>
             close
