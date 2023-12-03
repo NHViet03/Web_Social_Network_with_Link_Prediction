@@ -2,7 +2,9 @@ import React from "react";
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageRender from "./customRouter/PageRender";
+import PrivateRouter from "./customRouter/PrivateRouter";
 import Login from "./pages/login";
+import Register from "./pages/register";
 import Home from "./pages/home";
 import SideBar from "./components/sideBar/SideBar";
 import PostDetailModal from "./components/PostDetailModal";
@@ -52,7 +54,6 @@ function App() {
   });
 
   const {auth} = useSelector((state) => state);
-  const firstLogin = localStorage.getItem("firstLogin");
   const dispatch = useDispatch();
    useEffect (() => {
     dispatch(refreshToken());
@@ -71,8 +72,9 @@ function App() {
           <div className="main_container">
             <Routes>
               <Route  path="/" element={auth.token ? <Home/> : <Login/>} />
-              <Route path="/:page" element={<PageRender />} />
-              <Route path="/:page/:id" element={<PageRender />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/:page" element={<PageRender />}  />
+              <Route path="/:page/:id" element={<PageRender />}  />
             </Routes>
           </div>
           </div>
