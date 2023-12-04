@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { logout } from "../../redux/actions/authAction";
 
 const MenuItemDropdown = () => {
   const [show, setShow] = useState(false);
@@ -67,7 +68,7 @@ const MenuItemDropdown = () => {
             <hr className="dropdown-divider" />
           </li>
           <li>
-            <Link className="dropdown-item px-2 py-3" to={"/"}>
+            <Link className="dropdown-item px-2 py-3 " to={"/"} onClick={() => dispatch(logout)}>
               Đăng xuất
             </Link>
           </li>

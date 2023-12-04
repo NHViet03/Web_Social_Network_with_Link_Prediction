@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
       default: "",
       maxlength: 200,
     },
+    website: {
+      type: String,
+      default: "",
+    },
     followers: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "user" }],
   },

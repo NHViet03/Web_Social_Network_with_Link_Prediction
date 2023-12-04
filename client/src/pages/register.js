@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link,useNavigate} from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import RegisterFirst from "../components/register/RegisterFirst";
 import RegisterSecond from "../components/register/RegisterSecond";
 import RegisterThird from "../components/register/RegisterThird";
 
 const Register = () => {
-  const firstLogin = localStorage.getItem("firstLogin");
   const {auth} = useSelector(state=> state)
   const navigate=useNavigate();
    useEffect(() =>{

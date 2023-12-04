@@ -1,3 +1,17 @@
+
+export const checkImage = (file) =>{
+    let err = ""
+    if(!file) return err = "Ảnh không tồn tại"
+
+    if(file.size > 1024*1024)
+    err = "Dung lượng ảnh quá lớn, tối đa 1MB"
+
+    if(file.type !== 'image/jpeg' && file.type !== 'image/png')
+    err = "Định dạng ảnh không hợp lệ";
+    
+    return err;
+}
+
 export const imageUpload=async(images)=>{
     let imgArr=[];
 

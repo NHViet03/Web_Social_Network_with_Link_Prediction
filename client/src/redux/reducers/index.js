@@ -9,6 +9,7 @@ import addPostModal from "./addPostModalReducer";
 import alert from "./alertReducer";
 import suggest from "./suggestReducer";
 import explore from "./exploreReducer";
+import profile from "./profileReducer";
 
 export default combineReducers({
   auth,
@@ -21,4 +22,5 @@ export default combineReducers({
   addPostModal,
   suggest,
   explore,
+  profile,
 });

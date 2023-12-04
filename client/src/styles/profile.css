@@ -1,0 +1,146 @@
+/* INFO */
+.info{
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px 10px;
+}
+.info_container{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.info_content{
+    min-width: 250px;
+    max-width: 400px;
+    width: 100%;
+    flex: 1;
+}
+.info_content_title{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.info_content_title h2{
+    font-size: 20px;
+    font-weight: 450;
+    transform: translateY(5px);
+    flex: 2;
+}
+.info_content_title button{
+    font-size: 14px;
+    flex: 2;
+    font-weight: 600;
+    color: white;
+    background-color: #DB4E20;
+    &:hover{
+        background-color: #DB4E20;
+        opacity: 0.7;
+        color: white;
+    }
+}
+.profile_follow_post{
+    margin: 20px 0;
+    display: flex;
+}
+.profile_follow_post > div{
+    display: flex;
+    margin-right: 20px;
+    &:hover{
+        cursor: pointer;
+    }
+}
+.profile_follow_post > div > div{
+    margin-right: 5px;
+    font-weight: 600;
+    font-size: 17px;
+}
+.profile_follow_post > div > span{
+    font-size: 17px;
+}
+.profile_fb{
+    color: #4267B2;
+    &:hover{
+        text-decoration: underline;
+    }
+}
+
+/* Profile Edit */
+.edit_profile{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #d2cfcfbc;
+    z-index: 10;
+    overflow: auto;
+}
+.edit_profile form{
+    max-width: 450px;
+    width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    margin: 20px auto; 
+}
+
+.edit_profile .btn_close{
+    position: absolute;
+    top: 1rem;
+    right: 1rem
+}
+.edit_profile_btn_save{
+    background-color: #DB4E20;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+  
+    border-radius: 20px;
+    &:hover{
+        background-color: #DB4E20;
+        opacity: 0.7;
+        color: white;
+    }
+}
+.edit_profile .info_avatar{
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+    border-radius: 50%;
+    position: relative;
+    margin: 15px auto;
+    border: 1px solid #ddd;
+}
+.edit_profile .info_avatar img{
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+.edit_profile .info_avatar span{
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    text-align: center;
+    color: #DB4E20;
+    transition: 0.3s ease-in-out;
+    background-color: #eaeaea;
+}
+.edit_profile .info_avatar:hover span{
+    bottom: -17%;
+}
+.edit_profile .info_avatar #file_up{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    opacity: 0;
+}
+::-webkit-file-upload-button{
+    cursor: pointer;
+}

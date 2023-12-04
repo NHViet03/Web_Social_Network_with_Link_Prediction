@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Avatar from "./Avatar";
+import { useSelector } from "react-redux";
 
 const UserCard = ({user, size, follow }) => {
+  const {auth} = useSelector(state => state)
   return (
     <div className=" d-flex justify-content-between align-items-center userCard">
-      <Link to={`/profile/abc`} className="d-flex align-items-center">
+      <Link to={`/profile/${auth.user._id}`} className="d-flex align-items-center">
         <Avatar src={user.avatar} size={size ? size : "avatar-sm"} />
         <div
           className="userCard-content"

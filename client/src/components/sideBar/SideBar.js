@@ -75,8 +75,8 @@ const SideBar = () => {
           </nav>
           <MenuItemDropdown />
 
-          <SearchModal isShowSearch={isShowSearch} />
-          <NotifyModal isShowNotify={isShowNotify} />
+          <SearchModal isShowSearch={isShowSearch} setIsShowSearch={setIsShowSearch}/>
+          <NotifyModal isShowNotify={isShowNotify}/>
         </div>
       </div>
     </ModalSideBarContext.Provider>
