@@ -57,7 +57,7 @@ const Info = () => {
             <p>{user.address}</p>
             <div className="profile_fb mb-4">
             <i class="fa-brands fa-facebook" style={{color: "#2b6fe3", marginRight: "5px"}} ></i>
-              <a href={user.website} target="_blank" rel="noreferrer" >
+              <a href={"https:/"+user.website} target="_blank"  >
                 Trang cá nhân facebook
               </a>
             </div>

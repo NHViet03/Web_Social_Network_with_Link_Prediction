@@ -5,11 +5,11 @@ import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 import { Link } from "react-router-dom";
 import UserCard from "./UserCard";
 
-function SearchModal({isShowSearch}) {
+function SearchModal({ isShowSearch, setIsShowSearch }) {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState([]);
-  const {auth} = useSelector(state=>state);
-  const [load, setLoad] = useState(false)
+  const { auth } = useSelector((state) => state);
+  const [load, setLoad] = useState(false);
   const dispatch = useDispatch();
   // useEffect(() => {
   //   if(search){
@@ -23,38 +23,51 @@ function SearchModal({isShowSearch}) {
   //   }
   // },[search, auth.token, dispatch])
 
-  
   const handleSearch = async (e) => {
-    e.preventDefault()
-    if(!search) return;
+    e.preventDefault();
+    if (!search) return;
     try {
-        const res = await getDataAPI(`search?username=${search}`, auth.token)
-        setUsers(res.data.users)
+      const res = await getDataAPI(`search?username=${search}`, auth.token);
+      setUsers(res.data.users);
     } catch (err) {
-        dispatch({
-            type: GLOBAL_TYPES.ALERT, payload: {error: err.response.data.msg}
-        })
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
     }
-}
+  };
 
   // const homePosts = useSelector((state) => state.homePosts);
 
   return (
-    <form className={`sideBar_modal search_modal ${isShowSearch && 'show'}`} onSubmit={handleSearch}>
+    <form
+      className={`sideBar_modal search_modal ${isShowSearch && "show"}`}
+      onSubmit={handleSearch}
+    >
       <h3>Tìm kiếm</h3>
       <div className="px-3 search_input">
         {search.length === 0 && (
-          <i className="fa-solid fa-magnifying-glass search_icon" style={{cursor: "pointer"}} />
+          <i
+            className="fa-solid fa-magnifying-glass search_icon"
+            style={{ cursor: "pointer" }}
+          />
         )}
         <input
           className="form-control"
           type="text"
           placeholder="Tìm kiếm"
           value={search}
-          onChange={(e) => setSearch(e.target.value.toLowerCase().replace(/ /g, ' '))}
+          onChange={(e) =>
+            setSearch(e.target.value.toLowerCase().replace(/ /g, " "))
+          }
         />
-        
-        {search.length > 0 && <i className="fa-solid fa-circle-xmark" onClick={()=>setSearch("")}/>}
+
+        {search.length > 0 && (
+          <i
+            className="fa-solid fa-circle-xmark"
+            onClick={() => setSearch("")}
+          />
+        )}
       </div>
       <div className="search_result">
         <h6 className="mb-3">Gần đây</h6>
@@ -65,7 +78,12 @@ function SearchModal({isShowSearch}) {
           </div>
         ))} */}
         {users.map((user, index) => (
-          <Link key={user._id} to={`/profile/${user._id}`} className="mb-2 search_result_card p-2">
+          <Link
+            key={user._id}
+            to={`/profile/${user._id}`}
+            className="mb-2 search_result_card p-2"
+            onClick={() => setIsShowSearch(false)}
+          >
             <UserCard user={user} size="avatar-middle" />
             {/* <i className="fa-solid fa-xmark" /> */}
           </Link>
@@ -73,7 +91,6 @@ function SearchModal({isShowSearch}) {
       </div>
     </form>
   );
-  
 }
 
 export default SearchModal;

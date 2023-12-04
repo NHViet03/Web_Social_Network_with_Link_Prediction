@@ -73,7 +73,7 @@ const SideBar = () => {
           </nav>
           <MenuItemDropdown />
 
-          <SearchModal isShowSearch={isShowSearch}/>
+          <SearchModal isShowSearch={isShowSearch} setIsShowSearch={setIsShowSearch}/>
           <NotifyModal isShowNotify={isShowNotify}/>
         </div>
       </div>
