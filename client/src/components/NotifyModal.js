@@ -32,7 +32,7 @@ function NotifyModal({isShowNotify}) {
                 {moment(item.createdAt).fromNow()}
               </span>
             </p>
-            <FollowButton />
+            {/* <FollowButton /> conflict với phần profile nên comment lại sửa tiếp */}
           </div>
         ))}
       </div>

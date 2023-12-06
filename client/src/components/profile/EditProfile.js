@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { checkImage } from "../../utils/imageUpload"; 
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { updateProfileUsers } from "../../redux/actions/profileAction";
-
+import moment from "moment";
 const EditProfile = ({ setOnEdit }) => {
   const initState = {
     fullname: "",
@@ -18,12 +18,13 @@ const EditProfile = ({ setOnEdit }) => {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState(initState);
   const { fullname, username, story, gender, birthday, website, email } = userData;
-
   const [avatar, setAvatar] = useState("");
   const { auth, theme } = useSelector((state) => state);
   useEffect(() =>{
     setUserData(auth.user)
   },[auth.user])
+
+  
   const changeAvatar = (e) => {
    
     const file = e.target.files[0];
@@ -38,12 +39,23 @@ const EditProfile = ({ setOnEdit }) => {
   };
   const handleInput = (e) => {
     const { name, value } = e.target;
-    setUserData({ ...userData, [name]: value });
+
+    if (name === "birthday") {
+      const formattedDate = moment(value).format('YYYY-MM-DD');
+      setUserData({ ...userData, [name]: formattedDate });
+    } else {
+      setUserData({ ...userData, [name]: value });
+    }
+
+    // setUserData({ ...userData, [name]: value });
   };
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateProfileUsers({userData, avatar}))
+    dispatch(updateProfileUsers({userData, avatar, auth}))
+    setOnEdit(false)
+     // Reload the page
+    // window.location.reload();
   }
 
   return (
@@ -179,7 +191,7 @@ const EditProfile = ({ setOnEdit }) => {
                 className="form-check-input mx-2"
                 id="male"
                 name="gender"
-                value={gender}
+                value="male"
                 checked={gender === "male"}
                 onChange={handleInput}
               />
@@ -190,8 +202,8 @@ const EditProfile = ({ setOnEdit }) => {
                 type="radio"
                 className="form-check-input mx-2"
                 id="female"
-                name={gender}
-                value="Nữ"
+                name="gender"
+                value="famale"
                 checked={gender === "famale"}
                 onChange={handleInput}
               />
@@ -207,7 +219,7 @@ const EditProfile = ({ setOnEdit }) => {
               className="form-control"
               id="birthday"
               name="birthday"
-              value={birthday}
+              value={birthday ||''}
               onChange={handleInput}
             />
           </div>

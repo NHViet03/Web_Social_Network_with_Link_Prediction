@@ -8,7 +8,7 @@ const auth=async(req,res,next)=>{
             return res.status(400).json({msg:"Xác thực không hợp lệ"})
         }
 
-        const decoded=await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);
+        const decoded = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET);
         if(!decoded){
             return res.status(400).json({msg:"Xác thực không hợp lệ"})
         }
