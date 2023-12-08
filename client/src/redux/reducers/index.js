@@ -10,6 +10,7 @@ import alert from "./alertReducer";
 import suggest from "./suggestReducer";
 import explore from "./exploreReducer";
 import profile from "./profileReducer";
+import modal from "./modalReducer";
 
 export default combineReducers({
   auth,
@@ -23,4 +24,5 @@ export default combineReducers({
   suggest,
   explore,
   profile,
+  modal,
 });

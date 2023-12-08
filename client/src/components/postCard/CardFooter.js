@@ -46,7 +46,7 @@ const CardFooter = ({ post }) => {
   };
 
   const handleShowPostDetail = () => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post._id });
+    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post._id }); 
   };
   const handleShowSharePost = () => {
     dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });

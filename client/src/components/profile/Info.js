@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import Avatar from "../Avatar";
-import { getProfileUsers } from "../../redux/actions/profileAction";
 import EditProfile from "./EditProfile";
 import FollowButton from "../FollowButton";
 import Following from "./Following";
 import Followers from "./Followers";
-const Info = () => {
-  const { id } = useParams();
-  const { auth, profile, theme } = useSelector((state) => state);
-  const dispatch = useDispatch();
+const Info = ({id, auth, profile, dispatch}) => {
+  const { theme } = useSelector((state) => state);
   const [userData, setUserData] = useState([]);
   const [onEdit, setOnEdit] = useState(false);
   const [onSetting, setOnSetting] = useState(false);
@@ -21,11 +17,20 @@ const Info = () => {
     if (id === auth.user._id) {
       setUserData([auth.user]);
     } else {
-      dispatch(getProfileUsers({ users: profile.users, id, auth }));
+
       const newData = profile.users.filter((user) => user._id === id);
       setUserData(newData);
     }
   }, [id, auth, dispatch, profile.users]);
+  
+  useEffect(() => {
+    if (showFollowers || showFollowing || onEdit || onSetting ) {
+      dispatch({ type: "ADD_MODAL", payload: true });
+    }else{
+      dispatch({ type: "ADD_MODAL", payload: false });
+    }
+  },[showFollowers, showFollowing, onEdit, onSetting, dispatch])
+
   return (
     <div className="info">
       {userData.map((user) => (
@@ -105,7 +110,7 @@ const Info = () => {
                   }}
                 ></i>
                 <a
-                  href={"https:/" + user.website}
+                  href={"" + user.website}
                   target="_blank"
                   style={{ filter: theme ? "invert(1)" : "invert(0)" }} rel="noreferrer"
                 >

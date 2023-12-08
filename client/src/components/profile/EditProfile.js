@@ -64,7 +64,7 @@ const EditProfile = ({ setOnEdit }) => {
         className="btn btn-danger btn_close"
         onClick={() => setOnEdit(false)}
       >
-        Close
+        Đóng
       </button>
       <form onSubmit={handleSubmit}>
         <div className="info_avatar mb-2">
@@ -224,7 +224,7 @@ const EditProfile = ({ setOnEdit }) => {
             />
           </div>
         </div>
-        <button className="btn btn-info w-100 edit_profile_btn_save mt-2" type="Submit"> Save</button>
+        <button className="btn btn-info w-100 edit_profile_btn_save mt-2" type="Submit"> Lưu</button>
       </form>
     </div>
   );

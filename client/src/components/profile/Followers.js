@@ -19,7 +19,7 @@ const Followers = ({users, setShowFollowers}) => {
                     ))
                 }
            </div>
-            <i class="fa-solid fa-xmark close" onClick={() => setShowFollowers(false)}></i>
+            <i className="fa-solid fa-xmark close" onClick={() => setShowFollowers(false)}></i>
         </div>
     </div>
   )

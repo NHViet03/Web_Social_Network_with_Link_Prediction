@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import UserCard from "../UserCard";
+import FollowButton from "../FollowButton"
 
 import { useSelector, useDispatch } from "react-redux";
 import { getSuggestedUsers } from "../../redux/actions/suggestAction";
@@ -30,8 +31,9 @@ const Suggestions = () => {
       <div className="suggest-list">
         {users &&
           users.map((user, index) => (
-            <UserCard key={index} user={user} follow />
-          ))}
+            <UserCard key={index} user={user}> <FollowButton user={user}/></UserCard>
+          ))
+        }
       </div>
       <small
         style={{

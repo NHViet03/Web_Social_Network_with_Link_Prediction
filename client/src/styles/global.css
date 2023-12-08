@@ -168,8 +168,11 @@ a:hover {
 /*---------------MESSAGE---------------------*/
 @import url("./message.css");
 
-
 /*---------------LOAD MORE---------------------*/
 @import url("./load_more.css");
 /*---------------MESSAGE---------------------*/
 @import url("./profile.css");
+
+/*---------------POST_THUMB---------------------*/
+@import url("./post_thumb.css");
+

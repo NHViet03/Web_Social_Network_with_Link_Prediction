@@ -40,15 +40,16 @@ moment.updateLocale("vi", {
 });
 
 function App() {
-  const { postDetail, sharePost, addPostModal,auth } = useSelector((state) => ({
+  const { postDetail, sharePost, addPostModal,auth, modal } = useSelector((state) => ({
     postDetail: state.postDetail,
     sharePost: state.sharePost,
     addPostModal: state.addPostModal,
-    auth:state.auth
+    auth:state.auth,
+    modal: state.modal,
   }));
 
   useEffect(() => {
-    if (postDetail || sharePost || addPostModal) {
+    if (postDetail || sharePost || addPostModal || modal) {
       window.document.body.style.overflow = "hidden";
     } else {
       window.document.body.style.overflow = "auto";
