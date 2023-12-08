@@ -182,7 +182,13 @@ const postCtrl = {
   },
   getUserPosts: async (req, res) => {
     try {
-      const posts = await Posts.find({user : req.params.id}).sort("-createdAt")
+      const features = new APIfeatures(
+        Posts.find({
+          user: req.params.id,
+        }),
+        req.query
+      ).paginating();
+      const posts = await features.query.sort("-createdAt")
       res.json({
         posts,
         result: posts.length,

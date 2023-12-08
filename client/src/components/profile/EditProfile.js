@@ -46,16 +46,11 @@ const EditProfile = ({ setOnEdit }) => {
     } else {
       setUserData({ ...userData, [name]: value });
     }
-
-    // setUserData({ ...userData, [name]: value });
   };
   
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(updateProfileUsers({userData, avatar, auth}))
-    setOnEdit(false)
-     // Reload the page
-    // window.location.reload();
   }
 
   return (

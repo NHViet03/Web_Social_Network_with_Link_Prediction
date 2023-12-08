@@ -12,7 +12,14 @@ const Info = ({id, auth, profile, dispatch}) => {
   const [onSetting, setOnSetting] = useState(false);
   const [showFollowers, setShowFollowers] = useState(false);
   const [showFollowing, setShowFollowing] = useState(false);
-
+  const [numberPost, setNumberPost] = useState(9);
+  useEffect(() => {
+    profile.posts.forEach((data) => {
+      if (data._id === id) {
+        setNumberPost(data.result);
+      }
+    });
+  },[profile.posts, id])
   useEffect(() => {
     if (id === auth.user._id) {
       setUserData([auth.user]);
@@ -78,7 +85,7 @@ const Info = ({id, auth, profile, dispatch}) => {
             </div>
             <div className="profile_follow_post">
               <div>
-                <div>4</div>
+                <div>{numberPost}</div>
                 <span>Bài viết</span>
               </div>
               <div >
