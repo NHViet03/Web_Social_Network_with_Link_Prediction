@@ -1,5 +1,5 @@
 import React from "react";
-import Avatar from "../sideBar/Avatar";
+import Avatar from "../Avatar";
 import { Link } from "react-router-dom";
 export const UserCard = ({ childen, user, border, isInModal,isInRight, indexActive, setIndexActive , index}) => {
  const handleOnClick = (e) => {

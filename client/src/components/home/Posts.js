@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import CardBody from "../postCard/CardBody";
 import CardHeader from "../postCard/CardHeader";
 import CardFooter from "../postCard/CardFooter";
-import LoadMore from "../LoadMore";
+import Loading from "../Loading";
 
 const Posts = () => {
   const homePosts = useSelector((state) => state.homePosts);
@@ -16,7 +16,7 @@ const Posts = () => {
 
   return (
     <div className="home-posts">
-      {!homePosts.firstLoad && <LoadMore />}
+      {!homePosts.firstLoad && <Loading />}
 
       {!posts.length && (
         <div className="text-center home-posts-empty">

@@ -27,6 +27,9 @@ const CardHeader = ({ user, post }) => {
       <Link
         className="d-flex align-items-center card_header-content"
         to={`/profile/${user._id}`}
+        onClick={() =>
+          dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false })
+        }
       >
         <Avatar src={user.avatar} size="avatar-sm" />
         <h6 className="my-0">{user.username}</h6>

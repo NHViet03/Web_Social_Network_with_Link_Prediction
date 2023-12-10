@@ -6,9 +6,10 @@ import {
   patchDataAPI,
   deleteDataAPI,
 } from "../../utils/fetchData";
+import { createNotify, removeNotify } from "./notifyAction";
 
 export const createComment =
-  ({ post, newComment, auth, explore }) =>
+  ({ post, newComment, auth, explore, socket }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
@@ -41,6 +42,23 @@ export const createComment =
           payload: res.data.newPost,
         });
       }
+
+      // Notify
+      const msg = {
+        id: res.data.comment._id,
+        content: ` đã bình luận về bài viết của bạn: "${
+          newComment.content.length > 10
+            ? newComment.content.slice(0, 10) + "..."
+            : newComment.content
+        }".`,
+        recipients: [post.user._id],
+        url: `/post/${post._id}`,
+        image: post.images[0].url,
+        user: auth.user,
+      };
+
+      dispatch(createNotify({ msg, auth, socket }));
+
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -130,7 +148,7 @@ export const unLikeComment =
   };
 
 export const deleteComment =
-  ({ post, comment, auth, explore }) =>
+  ({ post, comment, auth, explore,socket }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
@@ -148,6 +166,16 @@ export const deleteComment =
         payload: newPost,
       });
     }
+
+     // Notify
+     const msg = {
+      id:comment._id,
+      recipients: [post.user],
+      url: `/post/${post._id}`,
+      user: auth.user,
+    };
+
+    dispatch(removeNotify({ msg, auth, socket }));
 
     try {
       await deleteDataAPI(

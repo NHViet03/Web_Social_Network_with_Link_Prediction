@@ -4,9 +4,11 @@ import { deletePost } from "../redux/actions/postAction";
 
 const DeletePostModal = ({ post, setShowDelete }) => {
   const auth = useSelector((state) => state.auth);
+  const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
+  
   const handleDeletePost = () => {
-    dispatch(deletePost({ post, auth }));
+    dispatch(deletePost({ post, auth, socket }));
     setShowDelete(false);
   };
 

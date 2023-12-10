@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { UserCard } from "./UserCard";
 import ModalAddMessage from "./ModalAddMessage";
+
 export const LeftSide = ({setOpenModal}) => {
   const { auth } = useSelector((state) => state);
   const dispatch = useDispatch();

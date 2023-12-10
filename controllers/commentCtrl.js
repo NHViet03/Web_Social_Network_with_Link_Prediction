@@ -36,6 +36,7 @@ const commentCtrl = {
       return res.json({
         msg: "Đã tạo bình luận thành công",
         newPost: post,
+        comment:newComment
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });

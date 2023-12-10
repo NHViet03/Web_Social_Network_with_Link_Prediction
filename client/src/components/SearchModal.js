@@ -1,34 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import UserCard from "./UserCard";
+import Loading from "./Loading";
+
 import { useSelector, useDispatch } from "react-redux";
 import { getDataAPI } from "../utils/fetchData";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
-import { Link } from "react-router-dom";
-import UserCard from "./UserCard";
 
 function SearchModal({ isShowSearch, setIsShowSearch }) {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState([]);
   const { auth } = useSelector((state) => state);
-  const [load, setLoad] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   if(search){
-  //     if(search && auth.token){
-  //      getDataAPI(`search?username=${search}`, auth.token)
-  //       .then(res=> console.log(res))
-  //       .catch(err=>{
-  //         dispatch({ type: GLOBAL_TYPES.ALERT, payload:{error:err.response.data.msg}})
-  //       })
-  //     }
-  //   }
-  // },[search, auth.token, dispatch])
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!search) return;
     try {
+      setLoading(true);
       const res = await getDataAPI(`search?username=${search}`, auth.token);
       setUsers(res.data.users);
+      setLoading(false);
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -36,8 +29,6 @@ function SearchModal({ isShowSearch, setIsShowSearch }) {
       });
     }
   };
-
-  // const homePosts = useSelector((state) => state.homePosts);
 
   return (
     <form
@@ -71,12 +62,7 @@ function SearchModal({ isShowSearch, setIsShowSearch }) {
       </div>
       <div className="search_result">
         <h6 className="mb-3">Gần đây</h6>
-        {/* {homePosts.users.map((user, index) => (
-          <div key={index} className="mb-2 search_result_card">
-            <UserCard user={user} size="avatar-middle" />
-            <i className="fa-solid fa-xmark" />
-          </div>
-        ))} */}
+        {loading && <Loading />}
         {users.map((user, index) => (
           <Link
             key={user._id}

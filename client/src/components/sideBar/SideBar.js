@@ -1,14 +1,29 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect, createContext, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Menu from "./Menu";
-import logoImg from "../../images/logo.svg";
+import logoImg from "../../images/auth/logo-2.png";
 import logoSmallImg from "../../images/logo.png";
 import MenuItemDropdown from "./MenuItemDropdown";
 import SearchModal from "../SearchModal";
 import NotifyModal from "../NotifyModal";
 
 export const ModalSideBarContext = createContext(null);
+
+function useOutsideAlert(ref, setIsShowNotify, setIsShowSearch) {
+  useEffect(() => {
+    function handleClickOutSide(e) {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setIsShowNotify(false);
+        setIsShowSearch(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutSide);
+
+    return () => document.removeEventListener("mousedown", handleClickOutSide);
+  }, [ref, setIsShowNotify, setIsShowSearch]);
+}
 
 const SideBar = () => {
   const auth = useSelector((state) => state.auth);
@@ -18,6 +33,9 @@ const SideBar = () => {
   const [isShowSearch, setIsShowSearch] = useState(false);
   const [isShowNotify, setIsShowNotify] = useState(false);
   const theme = useSelector((state) => state.theme);
+
+  const sideBarRef = useRef(null);
+  useOutsideAlert(sideBarRef, setIsShowNotify, setIsShowSearch);
 
   useEffect(() => {
     const idEvent = window.addEventListener(
@@ -38,7 +56,7 @@ const SideBar = () => {
   }, []);
 
   useEffect(() => {
-    if (isShowSearch || isShowNotify || pathname === "/message")
+    if (isShowSearch || isShowNotify || pathname.includes("/message"))
       setLogo(logoSmallImg);
     else setLogo(logoImg);
   }, [isShowNotify, isShowSearch, pathname]);
@@ -51,8 +69,12 @@ const SideBar = () => {
       value={{ isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify }}
     >
       <div
+        ref={sideBarRef}
         className={`col-3 side-bar ${
-          isSmall || isShowSearch || isShowNotify || pathname === "/message"
+          isSmall ||
+          isShowSearch ||
+          isShowNotify ||
+          pathname.includes("/message")
             ? "small"
             : ""
         }`}
@@ -75,8 +97,11 @@ const SideBar = () => {
           </nav>
           <MenuItemDropdown />
 
-          <SearchModal isShowSearch={isShowSearch} setIsShowSearch={setIsShowSearch}/>
-          <NotifyModal isShowNotify={isShowNotify}/>
+          <SearchModal
+            isShowSearch={isShowSearch}
+            setIsShowSearch={setIsShowSearch}
+          />
+          <NotifyModal isShowNotify={isShowNotify} setIsShowNotify={setIsShowNotify} />
         </div>
       </div>
     </ModalSideBarContext.Provider>

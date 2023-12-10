@@ -2,19 +2,46 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 import UserCard from "./UserCard";
+import Loading from "./Loading";
+
+import { getDataAPI } from "../utils/fetchData";
 
 const SharePostModal = ({ post }) => {
-  const homePosts = useSelector((state) => state.homePosts);
+  const auth = useSelector((state) => state.auth);
   const sharePost = useSelector((state) => state.sharePost);
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [selectUsers, setSelectUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fake API
-    setUsers(homePosts.users);
-  }, [homePosts.users]);
+    if (search.trim().length === 0) {
+      const newArr = auth.user.followers;
+      auth.user.following.forEach((user) => {
+        if (!newArr.find((item) => item._id === user._id)) {
+          newArr.push(user);
+        }
+      });
+      setUsers(newArr);
+    } else {
+      const handleSearch = async () => {  
+        try {
+          setLoading(true);
+          const res = await getDataAPI(`search?username=${search}`, auth.token);
+          setUsers(res.data.users);
+          setLoading(false);
+        } catch (err) {
+          dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: { error: err.response.data.msg },
+          });
+        }
+      };
+
+      handleSearch();
+    }
+  }, [auth.token, auth.user.followers, auth.user.following, dispatch, search]);
 
   const handleClose = () => {
     if (sharePost) dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: false });
@@ -65,12 +92,11 @@ const SharePostModal = ({ post }) => {
           <h6 className="px-3 py-2" style={{ fontWeight: "600" }}>
             Gợi ý
           </h6>
+          {loading && <Loading />}
           {users &&
             users.map((user, index) => (
               <div key={index} className="mb-3 sharePost_modal-user">
-                <UserCard
-                  user={user}
-                />
+                <UserCard user={user} />
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -88,7 +114,10 @@ const SharePostModal = ({ post }) => {
             Gửi
           </button>
         </div>
-        <span className="material-icons modal-close sharePost-close" onClick={handleClose}>
+        <span
+          className="material-icons modal-close sharePost-close"
+          onClick={handleClose}
+        >
           close
         </span>
       </div>

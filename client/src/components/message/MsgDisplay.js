@@ -1,5 +1,5 @@
 import React from 'react'
-import Avatar from '../sideBar/Avatar'
+import Avatar from '../Avatar'
 
 const MsgDisplay = () => {
   return (

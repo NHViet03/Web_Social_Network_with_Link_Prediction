@@ -4,14 +4,22 @@ import BookMarkButton from "./BookMarkButton";
 
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
-import { likePost, unLikePost } from "../../redux/actions/postAction";
+import {
+  likePost,
+  unLikePost,
+  savePost,
+  unSavePost,
+} from "../../redux/actions/postAction";
 
 const CardFooter = ({ post }) => {
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [readMore, setReadMore] = useState(false);
   const [loadLike, setLoadLike] = useState(false);
+  const [loadSave, setLoadSave] = useState(false);
+
   const auth = useSelector((state) => state.auth);
+  const socket=useSelector(state=>state.socket)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -22,27 +30,43 @@ const CardFooter = ({ post }) => {
     }
   }, [auth.user._id, post]);
 
+  useEffect(() => {
+    if (auth.user.saved.find((save) => save._id === post._id)) {
+      setIsBookmark(true);
+    } else {
+      setIsBookmark(false);
+    }
+  }, [auth.user._id, auth.user.saved, post]);
+
   const handleLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(true);
-    await dispatch(likePost({ post, auth }));
+    await dispatch(likePost({ post, auth,socket }));
     setLoadLike(false);
   };
   const handleUnLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(false);
-    await dispatch(unLikePost({ post, auth }));
+    await dispatch(unLikePost({ post, auth,socket }));
     setLoadLike(false);
   };
 
-  const handleBookmark = () => {
+  const handleBookmark = async () => {
+    if (loadSave) return;
+    setLoadSave(true);
     setIsBookmark(true);
+    await dispatch(savePost({ post, auth }));
+    setLoadSave(false);
   };
 
-  const handleUnBookmark = () => {
+  const handleUnBookmark = async () => {
+    if (loadSave) return;
+    setLoadSave(true);
     setIsBookmark(false);
+    await dispatch(unSavePost({ post, auth }));
+    setLoadSave(false);
   };
 
   const handleShowPostDetail = () => {

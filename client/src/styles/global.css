@@ -169,7 +169,7 @@ a:hover {
 @import url("./message.css");
 
 
-/*---------------LOAD MORE---------------------*/
-@import url("./load_more.css");
+/*---------------LOADING---------------------*/
+@import url("./loading_v2.css");
 /*---------------MESSAGE---------------------*/
 @import url("./profile.css");

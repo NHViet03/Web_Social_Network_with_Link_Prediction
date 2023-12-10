@@ -6,6 +6,7 @@ import { ModalSideBarContext } from "./SideBar";
 
 const SideBar = () => {
   const auth = useSelector((state) => state.auth);
+  const notify = useSelector((state) => state.notify);
   const dispatch = useDispatch();
 
   const { isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify } =
@@ -57,6 +58,9 @@ const SideBar = () => {
         label: "Thông báo",
         icon: "favorite_border",
         active: "favorite",
+        newNotify:
+          notify.notifies.filter((notify) => notify.isRead === false).length >
+          0,
         onClick: handleShowNotify,
       },
       {
@@ -76,6 +80,7 @@ const SideBar = () => {
       handleShowAddModal,
       handleShowNotify,
       handleShowSearch,
+      notify.notifies,
     ]
   );
 
@@ -106,13 +111,32 @@ const SideBar = () => {
                 ${link.label === "Thông báo" && isShowNotify ? "active" : ""}
                 `}
                 onClick={link.onClick}
+                style={{
+                  cursor: "pointer",
+                }}
               >
-                <div className="d-flex align-items-center">
-                  <span className="material-icons nav-icon">
-                    {link.label === "Thông báo" && isShowNotify
-                      ? link.active
-                      : link.icon}
-                  </span>
+                <div className="d-flex align-items-center ">
+                  <div className="position-relative">
+                    <span className="material-icons nav-icon ">
+                      {link.label === "Thông báo" && isShowNotify
+                        ? link.active
+                        : link.icon}
+                    </span>
+                    {link.label === "Thông báo" && link.newNotify && (
+                      <i
+                        className="fa-solid fa-circle position-absolute"
+                        style={{
+                          color: "var(--primary-color)",
+                          top: 0,
+                          right: "2px",
+                          fontSize: "8px",
+                          border: "1px solid #fff",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    )}
+                  </div>
+
                   <span className="nav-text ms-3">{link.label}</span>
                 </div>
               </li>

@@ -1,9 +1,9 @@
-.load_more{
+.loading_v2{
     display: flex;
     justify-content: center;
 }
 
-.load_more svg{
+.loading_v2 svg{
     width:32px;
     height:32px;
     animation-name: rotate;

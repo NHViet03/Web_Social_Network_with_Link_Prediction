@@ -1,5 +1,6 @@
 const Posts = require("../models/postModel");
 const Comments = require("../models/commentModel");
+const Users = require("../models/userModel");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -61,6 +62,25 @@ const postCtrl = {
       return res.json({
         posts,
         result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  getPost: async (req, res) => {
+    try {
+      const post = await Posts.findOne({ _id: req.params.id })
+        .populate("user", "avatar username fullname")
+        .populate({
+          path: "comments",
+          populate: {
+            path: "user",
+            select: "avatar username fullname",
+          },
+        });
+
+      return res.json({
+        post,
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -175,6 +195,60 @@ const postCtrl = {
       return res.json({
         posts,
         result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  savePost: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await Users.find({
+        _id: req.user._id,
+        saved: id,
+      });
+      if (user.length > 0) {
+        return res.status(400).json({
+          msg: "Bạn đã lưu bài viết này",
+        });
+      }
+
+      await Users.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          $push: {
+            saved: id,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      return res.json({
+        msg: "Đã lưu bài viết",
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  unSavePost: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      await Users.findOneAndUpdate(
+        { _id: req.user._id },
+        {
+          $pull: {
+            saved: id,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      return res.json({
+        msg: "Đã hủy lưu bài viết",
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import GalleryPost from "../components/GalleryPost";
-import LoadMore from "../components/LoadMore";
+import Loading from "../components/Loading";
 
 import { useSelector, useDispatch } from "react-redux";
 import { getDiscoverPosts } from "../redux/actions/exploreAction";
@@ -61,7 +61,7 @@ const Explore = () => {
   return (
     <div className="explore_container">
       <GalleryPost posts={posts} />
-      {loading && <LoadMore />}
+      {loading && <Loading />}
       <button
         className="btn w-100 mt-5"
         ref={pageEnd}

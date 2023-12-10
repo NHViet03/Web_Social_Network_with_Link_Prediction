@@ -1,8 +1,8 @@
 import React from 'react'
 
-const LoadMore = () => {
+const Loading = () => {
   return (
-    <div className="load_more">
+    <div className="loading_v2">
       <svg aria-label="Đang tải..." class="xemfg65 xa4qsjk x1ka1v4i xbv57ra" role="img" viewBox="0 0 100 100">
         <rect class="x1i210e2" height="6" opacity="0" rx="3" ry="3" transform="rotate(-90 50 50)" width="25" x="72" y="47"></rect>
         <rect class="x1i210e2" height="6" opacity="0.08333333333333333" rx="3" ry="3" transform="rotate(-60 50 50)" width="25" x="72" y="47"></rect>
@@ -18,4 +18,4 @@ const LoadMore = () => {
   )
 }
 
-export default LoadMore
+export default Loading

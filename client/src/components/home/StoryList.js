@@ -6,16 +6,15 @@ import Avatar from "../Avatar";
 import StoryModal from "./StoryModal";
 
 const StoryList = () => {
-  const homePosts = useSelector((state) => state.homePosts);
+  const auth = useSelector((state) => state.auth);
   const [stories, setStories] = useState([]);
   const [isShowStoryModal, setIsShowStoryModal] = useState(false);
   const [storySelected, setStorySelected] = useState(null);
   const [storySelectedList, setStorySelectedList] = useState([]);
 
   useEffect(() => {
-    // Fake API
-    setStories(homePosts.users);
-  }, [homePosts]);
+    setStories(auth.user.following);
+  }, [auth]);
 
   const responsive = {
     desktop: {
@@ -72,6 +71,7 @@ const StoryList = () => {
         draggable={false}
         customRightArrow={<CustomRightArrow />}
         customLeftArrow={<CustomLeftArrow />}
+        transitionDuration={300}
       >
         {stories &&
           stories.map((story, index) => (
@@ -88,7 +88,7 @@ const StoryList = () => {
                     : true
                 }
               />
-              <span className="mt-1 text-center d-block">{story.username}</span>
+              <span className="mt-1 text-center d-block">{story.username.length>10 ? story.username.slice(0,10)+'...': story.username}</span>
             </div>
           ))}
       </Carousel>

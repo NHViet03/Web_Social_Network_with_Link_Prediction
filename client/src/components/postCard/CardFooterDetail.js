@@ -10,18 +10,25 @@ import Avatar from "../Avatar";
 
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { useSelector, useDispatch } from "react-redux";
-import { likePost, unLikePost } from "../../redux/actions/postAction";
+import {
+  likePost,
+  unLikePost,
+  unSavePost,
+  savePost,
+} from "../../redux/actions/postAction";
 import { createComment } from "../../redux/actions/commentAction";
 
-const CardFooterDetail = ({ post, explore,handleClose }) => {
+const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
   const [comment, setComment] = useState("");
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadLike, setLoadLike] = useState(false);
+  const [loadSave, setLoadSave] = useState(false);
   const [loadComment, setLoadComment] = useState(false);
 
   const auth = useSelector((state) => state.auth);
+  const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
 
   const commentRef = useRef();
@@ -34,6 +41,14 @@ const CardFooterDetail = ({ post, explore,handleClose }) => {
     }
   }, [auth.user._id, post]);
 
+  useEffect(() => {
+    if (auth.user.saved.find((save) => save._id === post._id)) {
+      setIsBookmark(true);
+    } else {
+      setIsBookmark(false);
+    }
+  }, [auth.user._id, auth.user.saved, post]);
+
   const handleShowPostDetail = () => {
     dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
   };
@@ -45,23 +60,31 @@ const CardFooterDetail = ({ post, explore,handleClose }) => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(true);
-    await dispatch(likePost({ post, auth,explore }));
+    await dispatch(likePost({ post, auth, explore, socket }));
     setLoadLike(false);
   };
   const handleUnLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(false);
-    await dispatch(unLikePost({ post, auth,explore }));
+    await dispatch(unLikePost({ post, auth, explore, socket }));
     setLoadLike(false);
   };
 
-  const handleBookmark = () => {
+  const handleBookmark = async () => {
+    if (loadSave) return;
+    setLoadSave(true);
     setIsBookmark(true);
+    await dispatch(savePost({ post, auth }));
+    setLoadSave(false);
   };
 
-  const handleUnBookmark = () => {
+  const handleUnBookmark = async () => {
+    if (loadSave) return;
+    setLoadSave(true);
     setIsBookmark(false);
+    await dispatch(unSavePost({ post, auth }));
+    setLoadSave(false);
   };
 
   const handleComment = async (e) => {
@@ -81,10 +104,17 @@ const CardFooterDetail = ({ post, explore,handleClose }) => {
       createdAt: new Date().toISOString(),
     };
 
-    await dispatch(createComment({ post, newComment, auth,explore }));
+    if (setPost) {
+      setPost({
+        ...post,
+        comments: [...post.comments, newComment],
+      });
+    }
+
+    const res= await dispatch(createComment({ post, newComment, auth, explore, socket }));
+
     setLoadComment(false);
   };
-
 
   const handleEmojiSelect = (emoji) => {
     setComment(comment + emoji.native);

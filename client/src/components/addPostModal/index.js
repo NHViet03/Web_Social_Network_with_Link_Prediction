@@ -9,9 +9,10 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { createPost, updatePost } from "../../redux/actions/postAction";
 
 function AddPostModal() {
-  const { auth, addPostModal } = useSelector((state) => ({
+  const { auth, addPostModal,socket } = useSelector((state) => ({
     auth: state.auth,
     addPostModal: state.addPostModal,
+    socket:state.socket
   }));
   const dispatch = useDispatch();
 
@@ -36,7 +37,7 @@ function AddPostModal() {
   const handleCreatePost = async () => {
     setLoading(true);
     setAddStep(4);
-    await dispatch(createPost({ post, auth }));
+    await dispatch(createPost({ post, auth,socket }));
     setLoading(false);
   };
 

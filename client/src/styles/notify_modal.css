@@ -37,3 +37,10 @@
     margin:0 12px;
 }
 
+.notify_modal .notify_card-img{
+    width:54px;
+    height: 54px;
+    border-radius: 2px;
+    object-fit: cover;
+}
+

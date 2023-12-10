@@ -5,4 +5,5 @@ export const GLOBAL_TYPES = {
     SHARE_POST: 'SHARE_POST',
     ADD_POST_MODAL:'ADD_POST_MODAL',
     THEME: 'THEME',
+    SOCKET:'SOCKET'
 }
