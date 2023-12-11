@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import Avatar from "./Avatar";
 import { useSelector } from "react-redux";
 
-const UserCard = ({user, size, follow }) => {
-  const {auth} = useSelector(state => state)
+const UserCard = ({children,user, size, follow, setShowFollowers , setShowFollowing}) => {
+  const handleCloseAll = () => {
+     if (setShowFollowers)  setShowFollowers(false)
+     if (setShowFollowing) setShowFollowing(false)
+  }
   return (
     <div className=" d-flex justify-content-between align-items-center userCard">
-      <Link to={`/profile/${auth.user._id}`} className="d-flex align-items-center">
+      <Link to={`/profile/${user._id}`} className="d-flex align-items-center" onClick={handleCloseAll}>
         <Avatar src={user.avatar} size={size ? size : "avatar-sm"} />
         <div
           className="userCard-content"
@@ -31,6 +34,7 @@ const UserCard = ({user, size, follow }) => {
           </span>
         </div>
       )}
+      { children}
     </div>
   );
 };

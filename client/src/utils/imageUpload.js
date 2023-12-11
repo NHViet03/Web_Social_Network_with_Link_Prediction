@@ -12,7 +12,7 @@ export const checkImage = (file) =>{
     return err;
 }
 
-export const imageUpload=async(images)=>{
+export const imageUpload = async(images)=>{
     let imgArr=[];
 
     for(const image of images){

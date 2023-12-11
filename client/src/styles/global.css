@@ -173,3 +173,7 @@ a:hover {
 @import url("./loading_v2.css");
 /*---------------MESSAGE---------------------*/
 @import url("./profile.css");
+
+/*---------------POST_THUMB---------------------*/
+@import url("./post_thumb.css");
+

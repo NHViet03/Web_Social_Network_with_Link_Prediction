@@ -11,6 +11,7 @@ import suggest from "./suggestReducer";
 import explore from "./exploreReducer";
 import profile from "./profileReducer";
 import socket from "./socketReducer";
+import modal from "./modalReducer";
 
 export default combineReducers({
   auth,
@@ -25,4 +26,5 @@ export default combineReducers({
   explore,
   profile,
   socket,
+  modal,
 });

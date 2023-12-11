@@ -12,7 +12,7 @@
 }
 .info_content{
     min-width: 250px;
-    max-width: 400px;
+    max-width: 450px;
     width: 100%;
     flex: 1;
 }
@@ -143,4 +143,76 @@
 }
 ::-webkit-file-upload-button{
     cursor: pointer;
+}
+/* SETTING */
+.setting{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #d2cfcfbc;
+    z-index: 10;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.setting-info{
+    max-width: 450px;
+    width: 50%;
+    background: white;
+   
+    border-radius: 20px;
+    align-items: center;
+}
+.setting_item{
+    display: flex;
+    justify-content: center;
+    padding: 20px;  
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+.setting_item_red{
+    color: #DB4E20;
+}
+/* Follow */
+.follow{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #d2cfcfbc;
+    z-index: 10;
+}
+.follow_box{
+    width: 400px;
+    height: 600px;
+    background-color: white;
+    padding: 20px 20px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    overflow: auto;
+}
+.follow_box > h5 {
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+}
+.follow_box .close{
+    position: absolute;
+    top: 22px;
+    right: 20px;
+    font-size: 18px;
+}
+.follow_box_usercard{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

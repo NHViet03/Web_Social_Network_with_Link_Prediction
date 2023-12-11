@@ -254,6 +254,23 @@ const postCtrl = {
       return res.status(500).json({ msg: error.message });
     }
   },
+  getUserPosts: async (req, res) => {
+    try {
+      const features = new APIfeatures(
+        Posts.find({
+          user: req.params.id,
+        }),
+        req.query
+      ).paginating();
+      const posts = await features.query.sort("-createdAt")
+      res.json({
+        posts,
+        result: posts.length,
+      })
+    } catch (err) {
+      return res.status(500).json({msg: err.message})
+    }
+  }
 };
 
 module.exports = postCtrl;
