@@ -27,16 +27,18 @@ function NotifyModal({ isShowNotify, setIsShowNotify }) {
     <div className={`sideBar_modal notify_modal ${isShowNotify && "show"}`}>
       <h3>Thông báo</h3>
       <div className="notify_content">
-        <p
-          className="mb-2 text-end fw-medium"
-          style={{
-            color: "var(--primary-color)",
-            cursor: "pointer",
-          }}
-          onClick={handleDeleteAll}
-        >
-          Xóa tất cả thông báo
-        </p>
+        {notify.notifies.length > 0 && (
+          <p
+            className="mb-2 text-end fw-medium"
+            style={{
+              color: "var(--primary-color)",
+              cursor: "pointer",
+            }}
+            onClick={handleDeleteAll}
+          >
+            Xóa tất cả thông báo
+          </p>
+        )}
         <h6>Tháng này</h6>
         {notify.notifies.map((item, index) => (
           <Link
@@ -66,10 +68,13 @@ function NotifyModal({ isShowNotify, setIsShowNotify }) {
             {item.image ? (
               <img className="notify_card-img" src={item.image} alt="notify" />
             ) : (
-              <FollowButton />
+              <FollowButton user={item.user} />
             )}
           </Link>
         ))}
+        {notify.notifies.length === 0 && (
+          <p className="text-center fw-medium mt-3">Không có thông báo nào</p>
+        )}
       </div>
     </div>
   );

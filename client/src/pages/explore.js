@@ -55,8 +55,7 @@ const Explore = () => {
       }
     };
     getPosts();
-  },[auth, dispatch, explore.result, page]);
-
+  }, [auth, dispatch, explore.result, page]);
 
   return (
     <div className="explore_container">

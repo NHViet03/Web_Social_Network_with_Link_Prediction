@@ -58,6 +58,7 @@ export const createComment =
       };
 
       dispatch(createNotify({ msg, auth, socket }));
+      return res.data.newPost;
 
     } catch (error) {
       dispatch({
@@ -70,7 +71,7 @@ export const createComment =
   };
 
 export const likeComment =
-  ({ post, comment, auth, explore }) =>
+  ({ post, comment, auth, explore,socket }) =>
   async (dispatch) => {
     const newComment = {
       ...comment,
@@ -96,6 +97,22 @@ export const likeComment =
       });
     }
 
+    // Notify
+    const msg = {
+      id: comment._id,
+      content: ` đã thích bình luận của bạn: "${
+        comment.content.length > 10
+          ? comment.content.slice(0, 10) + "..."
+          : comment.content
+      }".`,
+      recipients: [comment.user._id],
+      url: `/post/${post._id}`,
+      image: post.images[0].url,
+      user: auth.user,
+    };
+
+    dispatch(createNotify({ msg, auth, socket }));
+
     try {
       await patchDataAPI(`like_comment/${comment._id}`, null, auth.token);
     } catch (error) {
@@ -109,7 +126,7 @@ export const likeComment =
   };
 
 export const unLikeComment =
-  ({ post, comment, auth, explore }) =>
+  ({ post, comment, auth, explore,socket }) =>
   async (dispatch) => {
     const newComment = {
       ...comment,
@@ -134,6 +151,16 @@ export const unLikeComment =
         payload: newPost,
       });
     }
+
+    // Notify
+    const msg = {
+      id:comment._id,
+      recipients: [comment.user],
+      url: `/post/${post._id}`,
+      user: auth.user,
+    };
+
+    dispatch(removeNotify({ msg, auth, socket }));
 
     try {
       await patchDataAPI(`unlike_comment/${comment._id}`, null, auth.token);
@@ -182,6 +209,7 @@ export const deleteComment =
         `comment/${comment._id}/${comment.postId}`,
         auth.token
       );
+      return newPost;
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,

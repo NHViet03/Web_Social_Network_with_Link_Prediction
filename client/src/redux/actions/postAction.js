@@ -61,25 +61,30 @@ export const createPost =
     }
   };
 
-export const getPosts = (auth) => async (dispatch) => {
-  try {
-    const res = await getDataAPI("posts", auth.token);
+export const getPosts =
+  ({ auth, page =1}) =>
+  async (dispatch) => {
+    try {
+      const res = await getDataAPI(
+        `posts?limit=${page*5}`,
+        auth.token
+      );
 
-    dispatch({
-      type: POST_TYPES.GET_POSTS,
-      payload: {
-        ...res.data,
-      },
-    });
-  } catch (error) {
-    dispatch({
-      type: GLOBAL_TYPES.ALERT,
-      payload: {
-        error: error.response.data.msg,
-      },
-    });
-  }
-};
+      dispatch({
+        type: POST_TYPES.GET_POSTS,
+        payload: {
+          ...res.data,
+        },
+      });
+    } catch (error) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: error.response.data.msg,
+        },
+      });
+    }
+  };
 
 export const updatePost =
   ({ post, auth }) =>

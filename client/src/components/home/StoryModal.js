@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useTimer } from "react-timer-hook";
 import Avatar from "../Avatar";
+import { Link } from "react-router-dom";
 
 const StoryModal = ({ story, setIsShowStoryModal }) => {
   const [input, setInput] = useState("");
@@ -46,10 +47,13 @@ const StoryModal = ({ story, setIsShowStoryModal }) => {
               />
             </div>
             <div className="story_modal_card-header-content">
-              <div className="d-flex align-items-center">
+              <Link
+                to={`/profile/${story._id}`}
+                className="d-flex align-items-center"
+              >
                 <Avatar src={story.avatar} size="avatar-sm" />
                 <span className="ms-2">{story.username}</span>
-              </div>
+              </Link>
               <div>
                 {isRunning ? (
                   <i

@@ -111,9 +111,14 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
       });
     }
 
-    const res= await dispatch(createComment({ post, newComment, auth, explore, socket }));
-
+    const res = await dispatch(
+      createComment({ post, newComment, auth, explore, socket })
+    );
     setLoadComment(false);
+
+    if (setPost) {
+      setPost(res);
+    }
   };
 
   const handleEmojiSelect = (emoji) => {
@@ -170,6 +175,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
               <CardComment
                 key={index}
                 post={post}
+                setPost={setPost ? setPost : false}
                 comment={comment}
                 loadComment={!comment._id ? loadComment : false}
                 explore={explore}

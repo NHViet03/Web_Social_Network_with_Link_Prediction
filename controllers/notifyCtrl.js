@@ -28,6 +28,8 @@ const notifyCtrl = {
             _id: req.user._id,
             username: req.user.username,
             avatar: req.user.avatar,
+            followers: req.user.followers,
+            following: req.user.following,
           },
         },
       });
@@ -53,7 +55,7 @@ const notifyCtrl = {
         recipients: req.user._id,
       })
         .sort("-createdAt")
-        .populate("user", "avatar username");
+        .populate("user", "avatar username followers following");
 
       return res.json({ notifies });
     } catch (error) {

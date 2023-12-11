@@ -11,7 +11,14 @@ import {
   deleteComment,
 } from "../../redux/actions/commentAction";
 
-const CardComment = ({ post, comment, loadComment, handleClose,explore }) => {
+const CardComment = ({
+  post,
+  setPost,
+  comment,
+  loadComment,
+  handleClose,
+  explore,
+}) => {
   const auth = useSelector((state) => state.auth);
   const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
@@ -30,20 +37,26 @@ const CardComment = ({ post, comment, loadComment, handleClose,explore }) => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(true);
-    await dispatch(likeComment({ post, comment, auth,explore,socket }));
+    await dispatch(likeComment({ post, comment, auth, explore, socket }));
     setLoadLike(false);
   };
   const handleUnLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(false);
-    await dispatch(unLikeComment({ post, comment, auth,explore,socket }));
+    await dispatch(unLikeComment({ post, comment, auth, explore, socket }));
     setLoadLike(false);
   };
 
-  const handleDeleteComment = () => {
+  const handleDeleteComment = async () => {
     if (post.user._id === auth.user._id || comment.user._id === auth.user._id) {
-      dispatch(deleteComment({ post, comment, auth,explore,socket }));
+      const res = await dispatch(
+        deleteComment({ post, comment, auth, explore, socket })
+      );
+
+      if (setPost) {
+        setPost(res);
+      }
     }
   };
 

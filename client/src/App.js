@@ -79,7 +79,7 @@ function App() {
 
   useEffect(() => {
     if (auth.token) {
-      dispatch(getPosts(auth));
+      dispatch(getPosts({auth}));
       dispatch(getNotifies(auth.token));
     }
   }, [auth, dispatch]);

@@ -183,7 +183,8 @@ const postCtrl = {
       ).paginating();
 
       const posts = await features.query
-        .populate("user", "avatar username fullname")
+        .sort("-createdAt")
+        .populate("user", "avatar username fullname followers following")
         .populate({
           path: "comments",
           populate: {
@@ -262,15 +263,15 @@ const postCtrl = {
         }),
         req.query
       ).paginating();
-      const posts = await features.query.sort("-createdAt")
+      const posts = await features.query.sort("-createdAt");
       res.json({
         posts,
         result: posts.length,
-      })
+      });
     } catch (err) {
-      return res.status(500).json({msg: err.message})
+      return res.status(500).json({ msg: err.message });
     }
-  }
+  },
 };
 
 module.exports = postCtrl;
