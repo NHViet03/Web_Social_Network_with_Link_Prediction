@@ -216,3 +216,39 @@
     flex-direction: column;
     gap: 10px;
 }
+
+/* SAVE TAB */
+.profile_tab{
+    margin: auto;
+    width: 65%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    gap: 50px;
+}
+.profile_tab button{
+    outline: none;
+    border: none;
+    background-color: white;
+    text-transform: uppercase;
+    padding: 10px 0px;
+    font-weight: 500;
+    opacity: 0.5;
+}
+
+.profile_tab button.active{
+    border-top: 1px solid #615d5d;
+    opacity: 1;
+}
+.profile_saved_icon{
+    margin-right: 5px;
+
+}
+.grid{
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    margin-right: 5px;
+    margin-top: -2px;
+}

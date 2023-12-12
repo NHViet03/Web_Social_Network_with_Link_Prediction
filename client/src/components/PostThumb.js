@@ -9,7 +9,6 @@ const PostThumb = ({posts, result}) => {
     const {theme} = useSelector(state => state)
     const dispatch = useDispatch();
   return (
-    // onClick={() =>  dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post._id }) }
     <div className='post_thumb'>
         {
             posts.map(post => (
