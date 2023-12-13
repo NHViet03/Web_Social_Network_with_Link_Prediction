@@ -1,0 +1,46 @@
+.customer_detail {
+}
+
+.customer_detail header {
+  padding: 12px 16px;
+  border-radius: 4px;
+}
+
+.customer_cards {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 24px;
+  gap:24px;
+}
+
+.customer_cards > div {
+  flex: 1;
+  border-right: 1px solid var(--border-color);
+}
+
+.customer_cards > div:last-child {
+  border-right: unset;
+}
+
+.customer_side{
+    gap:24px;
+}
+
+.customer_side_left{
+    flex-basis:33%;
+}
+
+.customer_side_left >div{
+    border:1px solid var(--border-color);
+    border-radius: 4px;
+    padding:12px;
+}
+
+.customer_side_right{
+    flex:1;
+}
+
+.customer_orders{
+    border:1px solid var(--border-color);
+    border-radius: 4px;
+    padding:12px;
+}
