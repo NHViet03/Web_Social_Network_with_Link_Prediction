@@ -1,5 +1,6 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import NotFound from "../components/NotFound";
 
 const generatePage = (pageName) => {
@@ -13,6 +14,7 @@ const generatePage = (pageName) => {
 };
 
 function PageRender() {
+  const { auth } = useSelector((state) => state);
   const { page, id } = useParams();
   let pageName = "";
 
@@ -22,7 +24,7 @@ function PageRender() {
     pageName = `${page}`;
   }
 
-  return generatePage(pageName);
+  return auth.token ? generatePage(pageName) : <Navigate to="/" />;
 }
 
 export default PageRender;

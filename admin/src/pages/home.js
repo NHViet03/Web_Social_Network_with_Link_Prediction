@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import CardItem from "../components/Home/CardItem";
+import { useSelector, useDispatch } from "react-redux";
+import { getCardsData,getTop5Users } from "../redux/actions/homeAction";
+import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 
 import Chart from "chart.js/auto";
 import { Tooltip, Legend } from "chart.js";
@@ -77,65 +80,12 @@ const PostsStatistic = [
   ],
 ];
 
-const usersData = [
-  {
-    _id: "1",
-    username: "anle123",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1701768061/DreamerDB/kejzf2gig4h5ycfanwfp.jpg",
-    fullname: "Lê Văn An",
-    email: "An789@gmail.com",
-    followers: 120000,
-    likes: 230000,
-    posts: 120,
-  },
-  {
-    _id: "1",
-    username: "tucute123",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1701775180/DreamerDB/f4iwxihq1ha27dtdrexe.png",
-    fullname: "Trần Văn Tú",
-    email: "Tu567@gmail.com",
-    followers: 100000,
-    likes: 200000,
-    posts: 110,
-  },
-  {
-    _id: "1",
-    username: "nhviet03",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1701862207/DreamerDB/tffpbpkhsbeqsyzzivdl.jpg",
-    fullname: "Nguyễn Hoàng Việt",
-    email: "Viet123@gmail.com",
-    followers: 90000,
-    likes: 230000,
-    posts: 100,
-  },
-  {
-    _id: "1",
-    username: "huongpham",
-    avatar:
-      "https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png",
-    fullname: "Phạm Thị Hương",
-    email: "Huong012@gmail.com",
-    followers: 80000,
-    likes: 230000,
-    posts: 20,
-  },
-  {
-    _id: "1",
-    username: "maitran",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1702040340/DreamerDB/unwcqgsecqcdoiezs4ca.jpg",
-    fullname: "Trần Thị Mai",
-    email: "Mai456@gmail.com",
-    followers: 80000,
-    likes: 21000,
-    posts: 30,
-  },
-];
 
 const Home = () => {
+  const home = useSelector((state) => state.home);
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   const [cardsData, setCardsData] = useState([]);
   const [filter, setFilter] = useState({
     interval: "7days",
@@ -175,11 +125,39 @@ const Home = () => {
       },
     ],
   });
-  const [users, setusers] = useState(usersData);
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    setCardsData(fakeCardData);
-  }, []);
+    if (!home.loadCardsData) {
+      dispatch(getCardsData({ auth }));
+    }
+    setCardsData(home.cardsData);
+  }, [auth, dispatch, home.cardsData, home.loadCardsData]);
+
+  useEffect(() => {
+    window.location.hash = filter.interval;
+    dispatch({
+      type:GLOBAL_TYPES.LOADING,
+      payload:true
+    })
+    dispatch(getCardsData({ interval: filter.interval, auth })).then(()=>{
+      dispatch({
+        type:GLOBAL_TYPES.LOADING,
+        payload:false
+      })
+    });
+  }, [auth, dispatch, filter.interval]);
+
+  useEffect(() => {
+    if (!home.loadUsers) {
+      dispatch(getTop5Users({ auth }));
+    }
+    setCardsData(home.cardsData);
+  }, [auth, dispatch, home.cardsData, home.loadUsers]);
+
+  useEffect(()=>{
+    setUsers(home.users)
+  },[home.users])
 
   return (
     <div className="home">

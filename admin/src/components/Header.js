@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import Avatar from '../components/Avatar'
 
 function Header({ setShowSideBar }) {
   const auth = useSelector((state) => state.auth);
@@ -42,6 +43,8 @@ function Header({ setShowSideBar }) {
     return navigate;
   }, [pathname]);
 
+  if(pathname==='/login' || !auth.token) return null;
+
   return (
     <div className="d-flex justify-content-between align-items-center  box_shadow header">
       <div className="d-flex align-items-center">
@@ -66,7 +69,7 @@ function Header({ setShowSideBar }) {
             <p className="mb-0">Quản trị viên</p>
             <p className="mb-0 fw-medium">{auth.user.fullname}</p>
           </div>
-          <img src={auth.user.avatar} alt="Avatar" />
+          <Avatar src={auth.user.avatar} size="avatar-middle"/>
         </div>
       </div>
     </div>

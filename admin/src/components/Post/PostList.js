@@ -52,7 +52,7 @@ const OrderList = ({ posts, postSmall }) => {
             <td>{formatNumber(post.likes)}</td>
             <td>{formatNumber(post.comments)}</td>
             {!postSmall ? <td>{post.images}</td> : <td>
-              <img src={post.images[0].url} alt="Post" style={{
+              <img src={post.images.url} alt="Post" style={{
                 width:'56px',
                 height:'56px',
                 borderRadius:'2px',

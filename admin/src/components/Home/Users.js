@@ -55,7 +55,9 @@ function Users({ users }) {
             const newData = formatUserInfo(user);
 
             return (
-              <tr key={index} onClick={()=>navigate(`/users/${user._id}`)}>
+              <tr key={index} onClick={()=>navigate(`/users/${user._id}`)} style={{
+                cursor:'pointer'
+              }}>
                 <td className="d-flex align-items-center gap-2">
                   <Avatar src={newData.avatar} size="avatar-sm" border />
                   {newData.username}

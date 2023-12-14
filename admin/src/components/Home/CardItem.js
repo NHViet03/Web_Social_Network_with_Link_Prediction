@@ -1,5 +1,5 @@
 import React from "react";
-import formatNumber from '../../utils/formatNumber'
+import formatNumber from "../../utils/formatNumber";
 
 function CardItem({ card }) {
   return (
@@ -27,7 +27,14 @@ function CardItem({ card }) {
           >
             <span>
               {"( "}
-              {card.percent + "% "}
+              {card.percent ? (
+                <span>{card.percent + "% "}</span>
+              ) : (
+                <span>
+                  {card.increase ? "Tăng " : "Giảm "}
+                  {card.gap}{" "}
+                </span>
+              )}
               <i
                 className={`fa-solid ${
                   card.increase ? "fa-arrow-up-long" : "fa-arrow-down-long"

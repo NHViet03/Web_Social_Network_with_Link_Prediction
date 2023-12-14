@@ -1,29 +1,36 @@
-import axios from 'axios';
+import axios from "axios";
 
-const target ='http://localhost:5031';
+export const getDataAPI = async (url, token) => {
+  const res = await axios.get(`/api/${url}`, {
+    headers: { Authorization: token },
+  });
+  return res;
+};
 
+export const postDataAPI = async (url, post, token) => {
+  const res = await axios.post(`/api/${url}`, post, {
+    headers: { Authorization: token },
+  });
+  return res;
+};
 
-export const getDataAPI=async(url)=>{
-    const res=await axios.get(`${target}/${url}`)
-    return res;
-}
+export const putDataAPI = async (url, post, token) => {
+  const res = await axios.put(`/api/${url}`, post, {
+    headers: { Authorization: token },
+  });
+  return res;
+};
 
-export const postDataAPI=async(url,post)=>{
-    const res=await axios.post(`${target}/${url}`,post)
-    return res;
-}
+export const patchDataAPI = async (url, post, token) => {
+  const res = await axios.patch(`/api/${url}`, post, {
+    headers: { Authorization: token },
+  });
+  return res;
+};
 
-export const putDataAPI=async(url,post)=>{
-    const res=await axios.put(`${target}/${url}`,post)
-    return res;
-}
-
-export const patchDataAPI=async(url,post)=>{
-    const res=await axios.patch(`${target}/${url}`,post)
-    return res;
-}
-
-export const deleteDataAPI=async(url,post)=>{
-    const res=await axios.delete(`${target}/${url}`,post)
-    return res;
-}
+export const deleteDataAPI = async (url, token) => {
+  const res = await axios.delete(`/api/${url}`, {
+    headers: { Authorization: token },
+  });
+  return res;
+};

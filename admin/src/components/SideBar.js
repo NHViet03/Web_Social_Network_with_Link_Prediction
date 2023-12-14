@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
+import {useSelector} from 'react-redux'
 import Logo from "../images/logo.png";
 
 function SideBar({ showSideBar }) {
+  const auth=useSelector(state=> state.auth)
   const [active, setActive] = useState(0);
   const MenuItems = useMemo(
     () => [
@@ -36,6 +38,8 @@ function SideBar({ showSideBar }) {
   );
 
   const { pathname } = useLocation();
+
+    if(pathname==='/login' || !auth.token) return null;
 
   const resetActive = () => {
     setActive(-1);
