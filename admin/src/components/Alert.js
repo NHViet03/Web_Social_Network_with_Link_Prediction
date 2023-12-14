@@ -37,6 +37,7 @@ function Alert() {
             zIndex:'9999',
             marginTop: "8px",
             maxWidth: "350px",
+            backgroundColor:'#fff'
           }}
         >
           <div class="toast-header">

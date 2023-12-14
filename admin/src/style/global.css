@@ -220,7 +220,7 @@ body {
 @import url("./avatar.css");
 
 /* --------- USER DETAIL -----------*/
-@import url("./customer_detail.css");
+@import url("./user_detail.css");
 
 /* --------- TABLE -----------*/
 @import url("./table.css");

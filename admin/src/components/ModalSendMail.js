@@ -2,27 +2,27 @@ import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-// import { useDispatch } from "react-redux";
-// import { sendMail } from "../redux/actions/mailAction";
+import { useDispatch } from "react-redux";
+import { sendMail } from "../redux/actions/mailAction";
 
-const ModalSendMail = ({ customer, setShowModal }) => {
+const ModalSendMail = ({ user, setShowModal }) => {
   const [email, setEmail] = useState({
-    from: "dreamtechuit@gmail.com",
-    to: customer.email,
-    subject: "DreamTech - ",
-    html: `<h4>Xin chào quý khách ${customer.name},</h4>
+    from: "dreamers@gmail.com",
+    to: user.email,
+    subject: "Dreamers - ",
+    html: `<h4>Xin chào người dùng ${user.fullname},</h4>
     <p>
-      Chúng tôi là DreamTech,
+      Chúng tôi là Dreamers,
     <p>
     <br/>
-    <h5><em>Mọi chi tiết xin vui lòng liên hệ qua website <u>dreametech.com</u> hoặc số điện thoại <u>+84 123 456 789.</u></em>
+    <h5><em>Mọi thắc xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamers@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
     </h5>
     <p>Trân trọng,<br/>Đội ngũ Dreamers Team
     </p>`,
     attachFiles: [],
   });
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setShowModal(false);
@@ -58,8 +58,8 @@ const ModalSendMail = ({ customer, setShowModal }) => {
     });
   };
 
-  const handleSendMail =  () => {
-    //  dispatch(sendMail(email));
+  const handleSendMail = () => {
+     dispatch(sendMail(email));
   };
 
   return (
@@ -73,7 +73,7 @@ const ModalSendMail = ({ customer, setShowModal }) => {
         <div className="d-flex justify-content-between align-items-center modal_header">
           <h6 className="fw-medium">
             <i className="fa-solid fa-caret-right me-2" />
-            Email tới {customer.name}
+            Email tới {user.username} - {user.fullname}
           </h6>
           <button
             className="btn "
@@ -112,7 +112,7 @@ const ModalSendMail = ({ customer, setShowModal }) => {
             theme="snow"
             value={email.html}
             style={{
-              minHeight: "200px",
+              minHeight: "200px"
             }}
             onChange={handleChange}
           />

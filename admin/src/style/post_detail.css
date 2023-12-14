@@ -64,3 +64,29 @@
 .post_detail_user-info > div:last-child {
   border-bottom: none;
 }
+
+/* Modal Delete Post */
+.post_detail_modal_card{
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding:12px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+}
+
+.post_detail_modal_card:last-child{
+  border-bottom: none;
+}
+
+.post_detail_modal_card.active{
+  background-color: #c433024d;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.post_detail_modal_card i{
+  font-size: 22px;
+  color:rgba(0, 0, 0, 0.5);
+}

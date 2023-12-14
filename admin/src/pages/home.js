@@ -79,6 +79,7 @@ const PostsStatistic = [
 
 const usersData = [
   {
+    _id: "1",
     username: "anle123",
     avatar:
       "https://res.cloudinary.com/dswg5in7u/image/upload/v1701768061/DreamerDB/kejzf2gig4h5ycfanwfp.jpg",
@@ -89,6 +90,7 @@ const usersData = [
     posts: 120,
   },
   {
+    _id: "1",
     username: "tucute123",
     avatar:
       "https://res.cloudinary.com/dswg5in7u/image/upload/v1701775180/DreamerDB/f4iwxihq1ha27dtdrexe.png",
@@ -99,6 +101,7 @@ const usersData = [
     posts: 110,
   },
   {
+    _id: "1",
     username: "nhviet03",
     avatar:
       "https://res.cloudinary.com/dswg5in7u/image/upload/v1701862207/DreamerDB/tffpbpkhsbeqsyzzivdl.jpg",
@@ -109,6 +112,7 @@ const usersData = [
     posts: 100,
   },
   {
+    _id: "1",
     username: "huongpham",
     avatar:
       "https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png",
@@ -119,6 +123,7 @@ const usersData = [
     posts: 20,
   },
   {
+    _id: "1",
     username: "maitran",
     avatar:
       "https://res.cloudinary.com/dswg5in7u/image/upload/v1702040340/DreamerDB/unwcqgsecqcdoiezs4ca.jpg",

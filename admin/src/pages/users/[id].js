@@ -1,139 +1,146 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import moment from "moment";
-import CusCard from "../../components/Customer/CusCard";
-import formatMoney from "../../utils/formatNumber";
+import UserCard from "../../components/User/UserCard";
+import formatNumber from "../../utils/formatNumber";
 import ModalSendMail from "../../components/ModalSendMail";
+import Avatar from "../../components/Avatar";
+import PostList from "../../components/Post/PostList";
+import Filter from "../../components/Post/Filter";
 
-const cusData = {
-  id: "KH01",
-  name: "Nguyễn Hoàng Việt",
-  email: "vietdota12@gmail.com",
-  phone: "0848044777",
-  total: 20000000,
-  shippingAddress: "Quang Trung, Hà Đông, Hà Nội",
-  orders: [
+const userData = {
+  _id: "1",
+  username: "tucute123",
+  avatar:
+    "https://res.cloudinary.com/dswg5in7u/image/upload/v1701775180/DreamerDB/f4iwxihq1ha27dtdrexe.png",
+  fullname: "Trần Văn Tú",
+  email: "Tu567@gmail.com",
+  followers: 100000,
+  likes: 200000,
+  posts: [
     {
-      id: "HD-012",
-      quantity: 10,
-      totalAmount: 38990000,
-      orderDate: new Date(),
-      address: "Quang Trung, Hà Đông, Hà Nội",
-      userId: "KH01",
-      status: "Đã giao hàng",
+      _id: "65697a6e8c234125384779fd",
+      likes: 1200,
+      comments: 60,
+      images: [
+        {
+          public_id: "DreamerDB/e3j8ijogzok2n6hgyfgf",
+          url: "https://res.cloudinary.com/dswg5in7u/image/upload/v1701411436/DreamerDB/e3j8ijogzok2n6hgyfgf.jpg",
+        },
+      ],
+      createdAt: new Date(2021, 5, 4),
     },
     {
-      id: "HD-013",
-      quantity: 7,
-      totalAmount: 28990000,
-      orderDate: new Date(2023, 5, 4),
-      address: "Trần Phú, Hà Đông, Hà Nội",
-      userId: "KH01",
-      status: "Đang giao hàng",
+      _id: "65697a6e8c234125384779ab",
+      likes: 1100,
+      comments: 40,
+      images: [
+        {
+          public_id: "DreamerDB/e3j8ijogzok2n6hgyfgf",
+          url: "https://res.cloudinary.com/dswg5in7u/image/upload/v1701411437/DreamerDB/mjpumpfp4v74b1t3gbos.jpg",
+        },
+      ],
+      createdAt: new Date(2022, 5, 4),
     },
     {
-      id: "HD-013",
-      quantity: 15,
-      totalAmount: 18990000,
-      orderDate: new Date(2023, 3, 1),
-      address: "Thủ Đức, Hồ Chí Minh",
-      userId: "KH01",
-      status: "Đã hủy đơn",
+      _id: "65697a6e8c234125384779cd",
+      likes: 1000,
+      comments: 30,
+      images: [
+        {
+          public_id: "DreamerDB/e3j8ijogzok2n6hgyfgf",
+          url: "https://res.cloudinary.com/dswg5in7u/image/upload/v1701411637/DreamerDB/ctj491vbrhilsmfhqk3t.jpg",
+        },
+      ],
+      createdAt: new Date(2023, 5, 4),
     },
   ],
-  orderSuccess: 3,
-  orderCancel: 0,
+  following: 20,
+  createdAt: new Date(2023, 11, 2),
 };
 
-function Customer() {
-  const [customer, setCustomer] = useState({});
+function UserDetail() {
+  const [user, setUser] = useState({});
   const [filter, setFilter] = useState({
     sort: "default",
-    status: "all",
-    date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
   });
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    setCustomer(cusData);
+    setUser(userData);
   }, []);
-
-  useEffect(() => {
-    if (!customer.orders) return;
-    let newOrders = [...customer.orders];
-    switch (filter.sort) {
-      case "total_high_to_low":
-        newOrders.sort((a, b) => b.totalAmount - a.totalAmount);
-        break;
-      case "total_low_to_high":
-        newOrders.sort((a, b) => a.totalAmount - b.totalAmount);
-        break;
-      case "date_newest_to_oldest":
-        newOrders.sort((a, b) => b.orderDate - a.orderDate);
-        break;
-      case "date_oldest_to_newest":
-        newOrders.sort((a, b) => a.orderDate - b.orderDate);
-        break;
-      default:
-        let newArr = [];
-        for (let i = 0; i < 3; i++) {
-          newArr.push(...cusData.orders);
-          newOrders = newArr;
-        }
-    }
-    setCustomer({
-      ...customer,
-      orders: newOrders,
-    });
-  }, [filter.sort]);
 
   const navigate = useNavigate();
 
   const cusCards = useMemo(() => {
-    if (!customer) return [];
+    if (!user) return [];
 
     return [
       {
-        title: "Doanh thu",
-        value: "$ " + formatMoney(customer?.total) + "đ",
-        subTitle: "Doanh thu mới trong 365 ngày",
+        title: "Thời gian lập tài khoản",
+        value: moment.duration(moment().diff(user.createdAt)).humanize(),
+        icon: "fa-solid fa-calendar-week",
       },
       {
-        title: "Tổng đơn hàng",
-        value: customer.orders?.length,
-        icon: "fa-solid fa-circle",
+        title: "Lượt theo dõi",
+        value: formatNumber(user.followers),
+        icon: "fa-solid fa-user-plus",
         color: "waiting",
-        subTitle: "Tổng đơn hàng trong 365 ngày",
       },
       {
-        title: "Đơn hàng thành công",
-        value: customer.orderSuccess,
-        icon: "fa-solid fa-circle",
-        color: "success",
-        subTitle: "Đơn hàng thành công trong 365 ngày",
-      },
-      {
-        title: "Đơn hàng bị hủy",
-        value: customer.orderCancel,
-        icon: "fa-solid fa-circle",
+        title: "Luợt yêu thích",
+        value: formatNumber(user.likes),
+        icon: "fa-solid fa-heart",
         color: "cancel",
-        subTitle: "Đơn hàng bị hủy trong 365 ngày",
+      },
+      {
+        title: "Số bài viết",
+        value: user.posts?.length,
+        icon: "fa-solid fa-image",
+        color: "success",
       },
     ];
-  }, [customer]);
+  }, [user]);
+
+  useEffect(() => {
+    if (!user.posts) return;
+    let newPosts = [...user.posts];
+    switch (filter.sort) {
+      case "likes_high_to_low":
+        newPosts.sort((a, b) => b.likes - a.likes);
+        break;
+      case "likes_low_to_high":
+        newPosts.sort((a, b) => a.likes - b.likes);
+        break;
+      case "date_newest_to_oldest":
+        newPosts.sort((a, b) => b.createdAt - a.createdAt);
+        break;
+      case "date_oldest_to_newest":
+        newPosts.sort((a, b) => a.createdAt - b.createdAt);
+        break;
+      default:
+        newPosts = [...user.posts];
+    }
+    setUser({
+      ...user,
+      posts: newPosts,
+    });
+  }, [filter.sort]);
 
   return (
-    <div className="customer_detail">
+    <div className="user_detail">
       <header className="box_shadow d-flex justify-content-between align-items-center mb-4 bg-white">
         <div className="d-flex align-items-center">
           <Link to="/users" className="btn btn_normal px-3">
             <i className="fa-solid fa-arrow-left" />
           </Link>
-          <h4 className="fw-medium ms-3">{customer.name}</h4>
+          <h4 className="fw-medium ms-3">
+            {user.username} - {user.fullname}
+          </h4>
         </div>
         <div className="d-flex gap-3">
           <div className="btn btn_normal">
-            {moment(new Date(2023, 3, 1)).format("MM/YYYY")} -{" "}
+            {moment(user.createdAt).format("MM/YYYY")} -{" "}
             {moment(new Date()).format("MM/YYYY")}
           </div>
           <div className="dropdown">
@@ -153,34 +160,41 @@ function Customer() {
         </div>
       </header>
       <div className="mb-4 bg-white p-4 rounded">
-        <div className="mb-4 d-flex justify-content-between align-items-center customer_cards">
+        <div className="mb-4 d-flex justify-content-between align-items-center user_cards">
           {cusCards.map((card, index) => (
-            <CusCard key={index} card={card} />
+            <UserCard key={index} card={card} />
           ))}
         </div>
-        <div className="mb-4 d-flex flex-wrap customer_side">
-          <div className="customer_side_left">
-            <h5 className="fw-medium mb-3">Thông tin khách hàng</h5>
-            <div className="mb-3 fs-6">
-              <div className="mb-2 d-flex justify-content-between align-items-center">
-                <div>
-                  <p>Tên</p>
-                  <p className="mt-1 fw-medium">{customer.name}</p>
+        <div className="mb-4 d-flex flex-wrap user_side">
+          <div className="user_side_left">
+            <h5
+              className="fw-medium mb-3"
+              style={{
+                height: "38px",
+                lineHeight: "38px",
+              }}
+            >
+              Thông tin người dùng
+            </h5>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <div className="d-flex mb-2 gap-1">
+                  <p>Tên người dùng: </p>
+                  <p className="mt-0 fw-medium">{user.username}</p>
                 </div>
-                <i className="fa-solid fa-circle-user fs-2" />
+                <div className="d-flex mb-2 gap-1">
+                  <p>Họ và tên: </p>
+                  <p className="mt-0 fw-medium">{user.fullname}</p>
+                </div>
+                <div className="d-flex mb-2 gap-1">
+                  <p>Email: </p> <p className="mt-0 fw-medium">{user.email}</p>
+                </div>
+                <div className="d-flex mb-2 gap-1">
+                  <p>Đang theo dõi: </p>
+                  <p className="mt-0 fw-medium">{user.following}</p>
+                </div>
               </div>
-              <div className="mb-2">
-                <p>Email</p>
-                <p className="mt-1 fw-medium">{customer.email}</p>
-              </div>
-              <div className="mb-2">
-                <p>Số điện thoại</p>
-                <p className="mt-1 fw-medium">{customer.phone}</p>
-              </div>
-              <div className="mb-2">
-                <p>Địa chỉ giao hàng</p>
-                <p className="mt-1 fw-medium">{customer.shippingAddress}</p>
-              </div>
+              <Avatar src={user.avatar} size="avatar-lg" border />
             </div>
             <button
               className="btn btn_normal btn_accept w-100"
@@ -189,22 +203,20 @@ function Customer() {
               Gửi Email
             </button>
           </div>
-          <div className="customer_side_right">
-            <h5 className="fw-medium mb-3">Danh sách đơn hàng</h5>
-            <div className="mb-4 d-flex align-items-center justify-content-between">
-              {/* <Filter filter={filter} setFilter={setFilter} filterSmall /> */}
+          <div className="user_side_right">
+            <div className="mb-3 d-flex justify-content-between align-items-center">
+              <h5 className="fw-medium">Danh sách bài viết</h5>
+              <Filter filter={filter} setFilter={setFilter} filterSmall />
             </div>
-            <div className="customer_orders">
-              {/* <OrderList orders={customer.orders || []} orderSmall /> */}
+            <div className="user_posts">
+              <PostList posts={user.posts || []} postSmall />
             </div>
           </div>
         </div>
       </div>
-      {showModal && (
-        <ModalSendMail customer={customer} setShowModal={setShowModal} />
-      )}
+      {showModal && <ModalSendMail user={user} setShowModal={setShowModal} />}
     </div>
   );
 }
 
-export default Customer;
+export default UserDetail;

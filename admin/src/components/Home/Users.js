@@ -1,9 +1,11 @@
 import React, { useCallback } from "react";
+import {useNavigate} from 'react-router-dom'
 import ExportCSV from "../ExportCSV";
 import formatUserInfo from "../../utils/formatUserInfo";
 import Avatar from "../Avatar";
 
 function Users({ users }) {
+  const navigate=useNavigate()
   const customExport = useCallback(() => {
     return users.map((users) => ({
       "Tên người dùng": users.username,
@@ -14,6 +16,8 @@ function Users({ users }) {
       "Số bài viết": users.posts,
     }));
   }, [users]);
+
+  
 
   return (
     <div className="mb-5 box_shadow home_users">
@@ -51,7 +55,7 @@ function Users({ users }) {
             const newData = formatUserInfo(user);
 
             return (
-              <tr key={index}>
+              <tr key={index} onClick={()=>navigate(`/users/${user._id}`)}>
                 <td className="d-flex align-items-center gap-2">
                   <Avatar src={newData.avatar} size="avatar-sm" border />
                   {newData.username}

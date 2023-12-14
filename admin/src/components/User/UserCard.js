@@ -12,9 +12,10 @@ const CusCard = ({ card }) => {
         {card.value}
         {card.icon && (
           <i
-            className={`${card.icon} ms-2 fs-6`}
+            className={`${card.icon} ms-2`}
             style={{
               color: `var(--${card.color}-color)`,
+              fontSize:'24px'
             }}
           />
         )}

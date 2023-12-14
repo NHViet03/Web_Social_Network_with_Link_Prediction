@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { DateRangePicker } from "rsuite";
 
-function Filter({ filter, setFilter }) {
+function Filter({ filter, setFilter, filterSmall }) {
   const handlePickDate = (value) => {
     if (value === null) {
       setFilter({
@@ -17,18 +17,20 @@ function Filter({ filter, setFilter }) {
 
   return (
     <>
-      <div className="d-flex align-items-center gap-4">
-        <h6 className="mb-0">Bộ lọc</h6>
-        <div className="d-flex align-items-center gap-1">
-          <p className="mb-0 fs-6" style={{ minWidth: "80px" }}>
-            Ngày đăng
-          </p>
-          <DateRangePicker
-            defaultValue={filter.date}
-            onChange={handlePickDate}
-          />
+      {!filterSmall && (
+        <div className="d-flex align-items-center gap-4">
+          <h6 className="mb-0">Bộ lọc</h6>
+          <div className="d-flex align-items-center gap-1">
+            <p className="mb-0 fs-6" style={{ minWidth: "80px" }}>
+              Ngày đăng
+            </p>
+            <DateRangePicker
+              defaultValue={filter.date}
+              onChange={handlePickDate}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <div className=" d-flex align-items-center gap-4">
         <h6
           className="mb-0"

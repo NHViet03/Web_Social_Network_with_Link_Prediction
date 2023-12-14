@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import formatMoney from "../../utils/formatNumber";
 import Avatar from "../../components/Avatar";
 import Carousel from "../../components/Post/Carousel";
 import ModalDeletePost from "../../components/ModalDeletePost";
+import ModalSendMail from "../../components/ModalSendMail";
 
 const fakePosts = {
   _id: "65697a6e8c234125384779fd",
@@ -67,9 +67,9 @@ function PostDetail() {
   const [post, setPost] = useState(fakePosts);
   const [search, setSearch] = useState("");
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const navigate = useNavigate();
+  const [showModalMail, setShowModalMail] = useState(false);
 
-  const handleExportPDF = () => {};
+  const navigate = useNavigate();
 
   return (
     <div className="mb-4 post_detail">
@@ -84,7 +84,7 @@ function PostDetail() {
             Bài viết:{" "}
           </span>
           <span>
-            {moment(post.orderDate).format("L")} - {post.user.username}
+            {moment(post.createdAt).format("L")} - {post.user.username}
           </span>
         </div>
         <div className="d-flex gap-3">
@@ -110,7 +110,7 @@ function PostDetail() {
                   style={{
                     cursor: "pointer",
                   }}
-                  onClick={handleExportPDF}
+                  onClick={() => setShowModalMail(true)}
                 >
                   <i className="fa-solid fa-envelope me-1" />
                   Gửi email tới người dùng
@@ -272,6 +272,9 @@ function PostDetail() {
       </div>
       {showModalDelete && (
         <ModalDeletePost post={post} setShowModalDelete={setShowModalDelete} />
+      )}
+      {showModalMail && (
+        <ModalSendMail user={post.user} setShowModal={setShowModalMail} />
       )}
     </div>
   );
