@@ -1,49 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import moment from "moment";
-import { Link } from "react-router-dom";
 import ExportCSV from "../../components/ExportCSV";
-import formatNumber from "../../utils/formatNumber";
 import PostList from "../../components/Post/PostList";
 import Filter from "../../components/Post/Filter";
 
-const fakePosts = [
-  {
-    _id: "65697a6e8c234125384779fd",
-    likes: 1200,
-    comments: 60,
-    images: 3,
-    createdAt: new Date(2021, 5, 4),
-    user: {
-      username: "anle123",
-      avatar:
-        "https://res.cloudinary.com/dswg5in7u/image/upload/v1701768061/DreamerDB/kejzf2gig4h5ycfanwfp.jpg",
-    },
-  },
-  {
-    _id: "65697a6e8c234125384779ab",
-    likes: 1100,
-    comments: 40,
-    images: 3,
-    createdAt: new Date(2022, 5, 4),
-    user: {
-      username: "tucute123",
-      avatar:
-        "https://res.cloudinary.com/dswg5in7u/image/upload/v1701775180/DreamerDB/f4iwxihq1ha27dtdrexe.png",
-    },
-  },
-  {
-    _id: "65697a6e8c234125384779cd",
-    likes: 1000,
-    comments: 30,
-    images: 3,
-    createdAt: new Date(2023, 5, 4),
-    user: {
-      username: "nhviet03",
-      avatar:
-        "https://res.cloudinary.com/dswg5in7u/image/upload/v1701862207/DreamerDB/tffpbpkhsbeqsyzzivdl.jpg",
-    },
-  },
-];
+import { useSelector, useDispatch } from "react-redux";
+import { getPosts } from "../../redux/actions/postAction";
 
 function Posts() {
   const [posts, setPosts] = useState([]);
@@ -51,19 +13,33 @@ function Posts() {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState({
     sort: "default",
-    status: "all",
     date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
   });
 
-  const pages = [1, 2, 3, 4, 5];
+  const auth = useSelector((state) => state.auth);
+  const postsData = useSelector((state) => state.postsData);    
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    let newArr = [];
-    for (let i = 0; i < 3; i++) {
-      newArr.push(...fakePosts);
+    const getPostsData = async () => {
+      await dispatch(getPosts({from:filter.date[0],to:filter.date[1], page: page - 1, auth }));
+    };
+
+    getPostsData();
+  }, [auth, dispatch, filter.date, page]);
+
+  useEffect(() => {
+    setFilter({ ...filter, sort: "default" });
+    setPosts(postsData.posts);
+  }, [postsData.posts]);
+
+  const pages = useMemo(() => {
+    let pages = [];
+    for (let i = 1; i <= Math.ceil(postsData.totalPosts / 10); i++) {
+      pages.push(i);
     }
-    setPosts(newArr);
-  }, []);
+    return pages;
+  }, [postsData.totalPosts]);
 
   const customData = useCallback(() => {
     return posts.map((post) => ({
@@ -87,20 +63,27 @@ function Posts() {
         newPosts.sort((a, b) => a.likes - b.likes);
         break;
       case "date_newest_to_oldest":
-        newPosts.sort((a, b) => b.createdAt - a.createdAt);
+        newPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "date_oldest_to_newest":
-        newPosts.sort((a, b) => a.createdAt - b.createdAt);
+        newPosts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         break;
       default:
-        let newArr = [];
-        for (let i = 0; i < 3; i++) {
-          newArr.push(...fakePosts);
-          newPosts = newArr;
-        }
+        newPosts = [...postsData.posts];
     }
     setPosts(newPosts);
   }, [filter.sort]);
+
+  useEffect(() => {
+    window.location.hash = `?date_from=${moment(filter.date[0]).format('l')}&date_to=${moment(filter.date[1]).format('l')}&page=${page}`;
+  }, [page,filter.date]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    window.location.hash = `?search=${search}&date_from=${moment(filter.date[0]).format('l')}&date_to=${moment(filter.date[1]).format('l')}&page=${page}`;
+    await dispatch(getPosts({ search, auth }));
+    setPage(1);
+  };
 
   return (
     <div className="mb-3 table">
@@ -108,8 +91,11 @@ function Posts() {
         <div className="mb-3 ">
           <div className="d-flex justify-content-between align-items-center mb-3 ">
             <h5>Danh sách Bài viết</h5>
-            <div className="d-flex align-items-center gap-4">
-              <div className="d-flex justify-content-between align-items-center table_search">
+            <div className="d-flex align-items-center">
+              <form
+                className="d-flex justify-content-between align-items-center table_search me-2"
+                onSubmit={handleSearch}
+              >
                 <input
                   type="text"
                   placeholder="Tìm kiếm bài viết..."
@@ -118,6 +104,17 @@ function Posts() {
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <i class="fa-solid fa-magnifying-glass" />
+              </form>
+              <div className="d-flex align-items-center me-4">
+                <p className="fw-medium fs-6 me-1">Theo: </p>
+                <select
+                  class="form-select"
+                  style={{
+                    width: "fit-content",
+                  }}
+                >
+                  <option value="username">Tên người dùng</option>
+                </select>
               </div>
               <ExportCSV
                 csvData={customData()}
@@ -135,7 +132,9 @@ function Posts() {
       </div>
       <div className="d-flex justify-content-between align-items-center ">
         <p>
-          Hiển thị {1} đến {10} trong tổng số {50} bài viết
+          Hiển thị {postsData.result === 0 ? 0 : 1 + (page - 1) * 10} đến{" "}
+          {postsData.result + (page - 1) * 10} trong tổng số{" "}
+          {postsData.totalPosts} bài viết
         </p>
         <div className="pagination">
           <button
