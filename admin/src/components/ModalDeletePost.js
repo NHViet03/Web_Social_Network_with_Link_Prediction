@@ -1,21 +1,26 @@
 import React, { useState } from "react";
+import {useNavigate} from 'react-router-dom'
 import policyData from "../utils/policyData";
 
-import {useDispatch} from 'react-redux'
+import { useSelector, useDispatch } from "react-redux";
 import { deletePost } from "../redux/actions/postAction";
 
 const ModalDeletePost = ({ post, setShowModalDelete }) => {
   const [reason, setReason] = useState("");
   const [showAnotherReason, setShowAnotherReason] = useState(false);
-  
-  const dispatch=useDispatch()
+  const navigate=useNavigate();
+
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setShowModalDelete(false);
   };
 
-  const handleDelete = () => {
-    dispatch(deletePost({post,reason}))
+  const handleDelete =async () => {
+    await dispatch(deletePost({ post, reason, auth }));
+    setShowModalDelete(false);
+    navigate(-1);
   };
 
   return (

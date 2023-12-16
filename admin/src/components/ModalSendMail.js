@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { sendMail } from "../redux/actions/mailAction";
 
 const ModalSendMail = ({ user, setShowModal }) => {
   const [email, setEmail] = useState({
-    from: "dreamers@gmail.com",
+    from: "dreamerssocialuit@gmail.com",
     to: user.email,
     subject: "Dreamers - ",
     html: `<h4>Xin chào người dùng ${user.fullname},</h4>
@@ -15,13 +15,14 @@ const ModalSendMail = ({ user, setShowModal }) => {
       Chúng tôi là Dreamers,
     <p>
     <br/>
-    <h5><em>Mọi thắc xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamers@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
+    <h5><em>Mọi thắc xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
     </h5>
-    <p>Trân trọng,<br/>Đội ngũ Dreamers Team
+    <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network
     </p>`,
     attachFiles: [],
   });
 
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -59,7 +60,7 @@ const ModalSendMail = ({ user, setShowModal }) => {
   };
 
   const handleSendMail = () => {
-     dispatch(sendMail(email));
+    dispatch(sendMail({ email, auth }));
   };
 
   return (
@@ -112,7 +113,7 @@ const ModalSendMail = ({ user, setShowModal }) => {
             theme="snow"
             value={email.html}
             style={{
-              minHeight: "200px"
+              minHeight: "200px",
             }}
             onChange={handleChange}
           />

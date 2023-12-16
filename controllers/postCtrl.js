@@ -108,7 +108,7 @@ const postCtrl = {
       const { id } = req.params;
 
       await Comments.deleteMany({ postId: id });
-      await Posts.findOneAndDelete({ _id: id, user: req.user._id });
+      await Posts.findOneAndDelete({ _id: id });
 
       return res.json({
         msg: "Đã xóa bài viết thành công",

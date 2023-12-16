@@ -4,11 +4,13 @@ import alert from './alertReducer'
 import loading from './loadingReducer'
 import home from './homeReducer'
 import postsData from './postReducer'
+import usersData from './userReducer'
 
 export default combineReducers({
   auth,
   loading,
   alert,
   home,
-  postsData
+  postsData,
+  usersData
 });

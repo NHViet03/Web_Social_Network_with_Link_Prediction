@@ -8,11 +8,11 @@ function Filter({ filter, setFilter, filterSmall }) {
         ...filter,
         date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
       });
-    }
-    setFilter({
-      ...filter,
-      date: value,
-    });
+    } else
+      setFilter({
+        ...filter,
+        date: value,
+      });
   };
 
   return (

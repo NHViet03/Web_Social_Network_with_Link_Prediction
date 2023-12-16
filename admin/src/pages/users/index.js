@@ -1,68 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import ExportCSV from "../../components/ExportCSV";
 import Filter from "../../components/User/Filter";
 import UserList from "../../components/User/UserList";
 import moment from "moment";
 
-const usersData = [
-  {
-    _id: "1",
-    username: "anle123",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1701768061/DreamerDB/kejzf2gig4h5ycfanwfp.jpg",
-    fullname: "Lê Văn An",
-    email: "An789@gmail.com",
-    followers: 120000,
-    posts: 120,
-    createdAt: new Date(2021, 3, 5),
-  },
-  {
-    _id: "1",
-    username: "tucute123",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1701775180/DreamerDB/f4iwxihq1ha27dtdrexe.png",
-    fullname: "Trần Văn Tú",
-    email: "Tu567@gmail.com",
-    followers: 100000,
-    likes: 200000,
-    posts: 110,
-    createdAt: new Date(2021, 3, 2),
-  },
-  {
-    _id: "1",
-    username: "nhviet03",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1701862207/DreamerDB/tffpbpkhsbeqsyzzivdl.jpg",
-    fullname: "Nguyễn Hoàng Việt",
-    email: "Viet123@gmail.com",
-    followers: 90000,
-    posts: 100,
-    createdAt: new Date(2021, 3, 8),
-  },
-  {
-    _id: "1",
-    username: "huongpham",
-    avatar:
-      "https://static-00.iconduck.com/assets.00/avatar-default-symbolic-icon-2048x1949-pq9uiebg.png",
-    fullname: "Phạm Thị Hương",
-    email: "Huong012@gmail.com",
-    followers: 80000,
-    posts: 20,
-    createdAt: new Date(2022, 3, 5),
-  },
-  {
-    _id: "1",
-    username: "maitran",
-    avatar:
-      "https://res.cloudinary.com/dswg5in7u/image/upload/v1702040340/DreamerDB/unwcqgsecqcdoiezs4ca.jpg",
-    fullname: "Trần Thị Mai",
-    email: "Mai456@gmail.com",
-    followers: 80000,
-    posts: 30,
-    createdAt: new Date(2020, 3, 5),
-  },
-];
+import { useSelector, useDispatch } from "react-redux";
+import { getUsers } from "../../redux/actions/userAction";
 
 function Customers() {
   const [users, setUsers] = useState([]);
@@ -73,15 +16,31 @@ function Customers() {
     date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
   });
   const [page, setPage] = useState(1);
-  const pages = [1, 2, 3, 4, 5];
+
+  const auth = useSelector((state) => state.auth);
+  const usersData = useSelector((state) => state.usersData);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    let newArr = [];
-    for (let i = 0; i < 2; i++) {
-      newArr.push(...usersData);
-    }
-    setUsers(newArr);
-  }, []);
+    const getUsersData = async () => {
+      await dispatch(
+        getUsers({
+          page: page - 1,
+          from: filter.date[0],
+          to: filter.date[1],
+          f_followers: filter.followers[0],
+          t_followers: filter.followers[1],
+          auth,
+        })
+      );
+    };
+
+    getUsersData();
+  }, [auth, dispatch, filter.date, filter.followers, page]);
+
+  useEffect(() => {
+    setUsers(usersData.users);
+  }, [usersData.users]);
 
   useEffect(() => {
     if (users.length === 0) return;
@@ -100,20 +59,24 @@ function Customers() {
         newUsers.sort((a, b) => -b.username.localeCompare(a.username));
         break;
       case "date_newest_to_oldest":
-        newUsers.sort((a, b) => b.createdAt - a.createdAt);
+        newUsers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case "date_oldest_to_newest":
-        newUsers.sort((a, b) => a.createdAt - b.createdAt);
+        newUsers.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         break;
       default:
-        let newArr = [];
-        for (let i = 0; i < 3; i++) {
-          newArr.push(...usersData);
-          newUsers = newArr;
-        }
+        newUsers = [...usersData.users];
     }
     setUsers(newUsers);
   }, [filter.sort]);
+
+  const pages = useMemo(() => {
+    let pages = [];
+    for (let i = 1; i <= Math.ceil(usersData.totalUsers / 10); i++) {
+      pages.push(i);
+    }
+    return pages;
+  }, [usersData.totalUsers]);
 
   const customExport = useCallback(() => {
     return users.map((user) => ({
@@ -127,6 +90,29 @@ function Customers() {
     }));
   }, [users]);
 
+  useEffect(() => {
+    if (filter.date !== null) {
+      window.location.hash = `?date_from=${moment(filter.date[0]).format(
+        "l"
+      )}&date_to=${moment(filter.date[1]).format("l")}&f_from=${
+        filter.followers[0]
+      }&f_to=${filter.followers[1]}&$&page=${page}`;
+    } else {
+      window.location.hash = `?page=${page}`;
+    }
+  }, [page, filter.date, filter.followers]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    window.location.hash = `?search=${search}&date_from=${moment(
+      filter.date[0]
+    ).format("l")}&date_to=${moment(filter.date[1]).format("l")}&page=${page}`;
+    await dispatch(
+      getUsers({ search, from: filter.date[0], to: filter.date[1], auth })
+    );
+    setPage(1);
+  };
+
   return (
     <div className="mb-3 table">
       <div className="box_shadow mb-3 table_container">
@@ -134,7 +120,10 @@ function Customers() {
           <div className="d-flex justify-content-between align-items-center mb-3 ">
             <h5>Danh sách Người dùng</h5>
             <div className="d-flex align-items-center gap-4">
-              <div className="d-flex justify-content-between align-items-center table_search">
+              <form
+                className="d-flex justify-content-between align-items-center table_search"
+                onSubmit={handleSearch}
+              >
                 <input
                   type="text"
                   placeholder="Tìm kiếm người dùng..."
@@ -143,7 +132,7 @@ function Customers() {
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <i class="fa-solid fa-magnifying-glass" />
-              </div>
+              </form>
               <ExportCSV
                 csvData={customExport()}
                 filename={"danh-sach-nguoi-dung"}
@@ -160,7 +149,9 @@ function Customers() {
       </div>
       <div className="d-flex justify-content-between align-items-center ">
         <p>
-          Hiển thị {1} đến {10} trong tổng số {50} người dùng
+          Hiển thị {usersData.result === 0 ? 0 : 1 + (page - 1) * 10} đến{" "}
+          {usersData.result + (page - 1) * 10} trong tổng số{" "}
+          {usersData.totalUsers} người dùng
         </p>
         <div className="pagination">
           <button

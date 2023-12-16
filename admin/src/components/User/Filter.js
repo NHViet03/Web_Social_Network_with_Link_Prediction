@@ -1,25 +1,27 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { DateRangePicker } from "rsuite";
 import formatMoney from "../../utils/formatNumber";
 
 const Filter = ({ filter, setFilter }) => {
+  const [followers, setFollowers] = useState(filter.followers);
+
   const revenueFilterData = useMemo(
     () => [
       {
-        title: "Dưới 10 nghìn",
-        value: [0, 10000],
+        title: "Dưới 1 nghìn",
+        value: [0, 1000],
       },
       {
-        title: "Từ 10 - 50 nghìn",
-        value: [10000, 50000],
+        title: "Từ 1 - 10 nghìn",
+        value: [1000, 10000],
       },
       {
-        title: "Từ 50 - 100 nghìn",
-        value: [50000, 100000],
+        title: "Từ 10 - 20 nghìn",
+        value: [10000, 20000],
       },
       {
-        title: "Trên 100 nghìn",
-        value: [100000, 1000000],
+        title: "Trên 20 nghìn",
+        value: [20000, 1000000],
       },
     ],
     []
@@ -31,12 +33,34 @@ const Filter = ({ filter, setFilter }) => {
         ...filter,
         date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
       });
+    } else {
+      setFilter({
+        ...filter,
+        date: value,
+      });
     }
+  };
+
+  const handleChangeFollowers = (e, from, to) => {
+    e.stopPropagation();
+    setFollowers([from, to]);
+  };
+
+  const handleReset = () => {
+    setFollowers([0, 0]);
     setFilter({
       ...filter,
-      date: value,
+      followers: [0, 0],
     });
   };
+
+  const handleSubmit = () => {
+    setFilter({
+      ...filter,
+      followers: followers,
+    });
+  };
+
   return (
     <>
       <div className="d-flex align-items-center gap-4">
@@ -56,12 +80,12 @@ const Filter = ({ filter, setFilter }) => {
               className="form-control dropdown-toggle"
               data-bs-toggle="dropdown"
             >
-              {filter.followers[0] === 0 && filter.followers[1] === 0 ? (
+              {followers[0] === 0 && followers[1] === 0 ? (
                 "Mức theo dõi"
               ) : (
                 <span>
-                  Từ {formatMoney(filter.followers[0]) + " người"} -{" "}
-                  {formatMoney(filter.followers[1]) + " người"}
+                  Từ {formatMoney(followers[0]) + " người"} -{" "}
+                  {formatMoney(followers[1]) + " người"}
                 </span>
               )}
             </button>
@@ -78,18 +102,15 @@ const Filter = ({ filter, setFilter }) => {
                     <button
                       key={index}
                       className="btn btn_normal"
-                      onClick={() =>
-                        setFilter({
-                          ...filter,
-                          followers: item.value,
-                        })
+                      onClick={(e) =>
+                        handleChangeFollowers(e, item.value[0], item.value[1])
                       }
                       style={{
                         padding: "8px",
                         fontSize: "14px",
                         borderColor:
-                          item.value[0] === filter.followers[0] &&
-                          item.value[1] === filter.followers[1]
+                          item.value[0] === followers[0] &&
+                          item.value[1] === followers[1]
                             ? "var(--primary-color)"
                             : "",
                       }}
@@ -106,10 +127,11 @@ const Filter = ({ filter, setFilter }) => {
                       placeholder="VD: 1000"
                       className="form-control"
                       onChange={(e) =>
-                        setFilter({
-                          ...filter,
-                          followers: [e.target.value, filter.followers[1]],
-                        })
+                        handleChangeFollowers(
+                          e,
+                          e.target.value,
+                          filter.followers[1]
+                        )
                       }
                     />
                     <span>người</span>
@@ -121,26 +143,25 @@ const Filter = ({ filter, setFilter }) => {
                       placeholder="VD: 5000"
                       className="form-control"
                       onChange={(e) =>
-                        setFilter({
-                          ...filter,
-                          followers: [filter.followers[0], e.target.value],
-                        })
+                        handleChangeFollowers(
+                          e,
+                          filter.followers[0],
+                          e.target.value
+                        )
                       }
                     />
                     <span>người</span>
                   </div>
                 </div>
                 <div className=" mt-3 text-center">
+                  <button className="btn btn_normal me-3" onClick={handleReset}>
+                    Bỏ chọn
+                  </button>
                   <button
                     className="btn btn_normal btn_accept"
-                    onClick={() =>
-                      setFilter({
-                        ...filter,
-                        followers: [0, 0],
-                      })
-                    }
+                    onClick={handleSubmit}
                   >
-                    Bỏ chọn
+                    Xác nhận
                   </button>
                 </div>
               </div>

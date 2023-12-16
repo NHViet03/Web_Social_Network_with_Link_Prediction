@@ -59,7 +59,7 @@ const authCtrl = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-      const user = await Users.findOne({ email: email })
+      const user = await Users.findOne({ email: email,})
         .populate("followers following", "-password")
         .populate("saved", "images likes comments");
 
@@ -109,7 +109,7 @@ const authCtrl = {
         async (err, result) => {
           if (err) return res.status(400).json({ msg: "Please login now." });
 
-          const user = await Users.findById(result.id)
+          const user = await Users.findOne({ _id: result.id})
             .select("-password")
             .populate(
               "followers following",

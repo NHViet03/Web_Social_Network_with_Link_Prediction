@@ -16,13 +16,21 @@ function Posts() {
     date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
   });
 
+
   const auth = useSelector((state) => state.auth);
-  const postsData = useSelector((state) => state.postsData);    
+  const postsData = useSelector((state) => state.postsData);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const getPostsData = async () => {
-      await dispatch(getPosts({from:filter.date[0],to:filter.date[1], page: page - 1, auth }));
+      await dispatch(
+        getPosts({
+          from:  filter.date[0] ,
+          to: filter.date[1],
+          page: page - 1,
+          auth,
+        })
+      );
     };
 
     getPostsData();
@@ -75,13 +83,19 @@ function Posts() {
   }, [filter.sort]);
 
   useEffect(() => {
-    window.location.hash = `?date_from=${moment(filter.date[0]).format('l')}&date_to=${moment(filter.date[1]).format('l')}&page=${page}`;
-  }, [page,filter.date]);
+    window.location.hash = `?date_from=${moment(filter.date[0]).format(
+      "l"
+    )}&date_to=${moment(filter.date[1]).format("l")}&page=${page}`;
+  }, [page, filter.date]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    window.location.hash = `?search=${search}&date_from=${moment(filter.date[0]).format('l')}&date_to=${moment(filter.date[1]).format('l')}&page=${page}`;
-    await dispatch(getPosts({ search, auth }));
+    window.location.hash = `?search=${search}&date_from=${moment(
+      filter.date[0]
+    ).format("l")}&date_to=${moment(filter.date[1]).format("l")}&page=${page}`;
+    await dispatch(
+      getPosts({ search, from: filter.date[0], to: filter.date[1], auth })
+    );
     setPage(1);
   };
 
