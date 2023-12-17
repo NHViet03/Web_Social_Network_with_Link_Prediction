@@ -57,6 +57,19 @@ a:hover {
 .text_primary {
   color: var(--primary-color);
 }
+.btn_normal {
+  padding: 8px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  font-weight: 500;
+}
+.btn_normal.btn_accept {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
 .btn_primary {
   background-color: var(--primary-color);
   color: #fff;
@@ -164,6 +177,9 @@ a:hover {
 
 /*---------------DELETE POST MODAL ---------------------*/
 @import url("./delete_post_modal.css");
+
+/*---------------REPORT POST MODAL ---------------------*/
+@import url("./report_post_modal.css");
 
 /*---------------MESSAGE---------------------*/
 @import url("./message.css");

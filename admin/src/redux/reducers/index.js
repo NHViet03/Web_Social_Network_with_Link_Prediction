@@ -1,10 +1,11 @@
 import { combineReducers } from "redux";
 import auth from "./authReducer";
-import alert from './alertReducer'
-import loading from './loadingReducer'
-import home from './homeReducer'
-import postsData from './postReducer'
-import usersData from './userReducer'
+import alert from "./alertReducer";
+import loading from "./loadingReducer";
+import home from "./homeReducer";
+import postsData from "./postReducer";
+import usersData from "./userReducer";
+import reportsData from "./reportReducer";
 
 export default combineReducers({
   auth,
@@ -12,5 +13,6 @@ export default combineReducers({
   alert,
   home,
   postsData,
-  usersData
+  usersData,
+  reportsData,
 });

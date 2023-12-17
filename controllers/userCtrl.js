@@ -66,7 +66,7 @@ const userCtrl = {
 
       const users = await Users.aggregate([
         {
-          $match: { _id: { $nin: exceptUsers } },
+          $match: { _id: { $nin: exceptUsers },role: "user" },
         },
         {
           $sample: { size: num },

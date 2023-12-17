@@ -22,6 +22,7 @@ function App() {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+
   useEffect(() => {
     dispatch(refreshToken());
   }, [dispatch]);
@@ -47,6 +48,7 @@ function App() {
           >
             <Routes>
               <Route path="/" element={auth.token ? <Home /> : <Login />} />
+
               <Route path="/:page" element={<PageRender />} />
               <Route path="/:page/:id" element={<PageRender />} />
             </Routes>

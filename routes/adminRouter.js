@@ -13,4 +13,9 @@ router.get("/admin/post/:id",auth, adminCtrl.getDetailPost);
 
 router.post("/admin/send_mail",auth, adminCtrl.sendMail);
 
+router.get("/admin/reports", adminCtrl.getReports);
+router.patch("/admin/report/:id", adminCtrl.updateReport);
+router.delete("/admin/report/:id", adminCtrl.deleteReport);
+
+
 module.exports = router;

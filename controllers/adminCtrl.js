@@ -1,6 +1,5 @@
 const Users = require("../models/userModel");
 const Posts = require("../models/postModel");
-const Comments = require("../models/commentModel");
 const Reports = require("../models/reportModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 const nodemailer = require("nodemailer");
@@ -606,10 +605,10 @@ const adminCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  sendMail: async (req,res)=>{
+  sendMail: async (req, res) => {
     try {
       const { from, to, subject, html, attachFiles } = req.body;
-  
+
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -617,18 +616,19 @@ const adminCtrl = {
           pass: "pwxdinwdinhfjwvf",
         },
       });
-  
+
       const mailOptions = {
         from: "dreamerssocialuit@gmail.com",
         to: to,
         subject: subject,
-        html:html,
-        attachments: attachFiles.map((file) => ({
-          filename: file.name,
-          path: file.url,
-        })) || [],
+        html: html,
+        attachments:
+          attachFiles.map((file) => ({
+            filename: file.name,
+            path: file.url,
+          })) || [],
       };
-  
+
       try {
         await transporter.sendMail(mailOptions);
         return res.status(200).json({ message: "Gửi Email thành công." });
@@ -637,6 +637,151 @@ const adminCtrl = {
       }
     } catch (error) {
       return res.status(500).json({ message: error.message });
+    }
+  },
+  getReports: async (req, res) => {
+    const { skip, id, from, to, status } = req.query;
+
+    try {
+      let reports = await Reports.aggregate([
+        {
+          $match: {
+            type: "post",
+            status: {
+              $regex: status,
+              $options: "i",
+            },
+            createdAt: {
+              $gte: new Date(from),
+              $lte: new Date(to),
+            },
+          },
+        },
+        {
+          $project: {
+            id: 1,
+            status: 1,
+            reason: 1,
+            reporter: 1,
+            createdAt: 1,
+          },
+        },
+        {
+          $skip: Number(skip) || 0,
+        },
+        {
+          $limit: 10,
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+        {
+          $lookup: {
+            from: "posts",
+            localField: "id",
+            foreignField: "_id",
+            pipeline: [
+              {
+                $project: {
+                  user: 1,
+                },
+              },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "user",
+                  foreignField: "_id",
+                  pipeline: [
+                    {
+                      $project: {
+                        username: 1,
+                        avatar: 1,
+                      },
+                    },
+                  ],
+                  as: "user",
+                },
+              },
+            ],
+            as: "post",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "reporter",
+            foreignField: "_id",
+            pipeline: [
+              {
+                $project: {
+                  username: 1,
+                },
+              },
+            ],
+            as: "reporter",
+          },
+        },
+      ]);
+
+      reports = reports.filter((report) => (report.id + "").includes(id));
+
+      reports = reports.map((report) => ({
+        ...report,
+        post: {
+          ...report.post[0],
+          user: report.post[0].user[0],
+        },
+        reporter: report.reporter[0],
+      }));
+
+      let totalReports = await Reports.find({
+        type: "post",
+        status: {
+          $regex: status,
+          $options: "i",
+        },
+        createdAt: {
+          $gte: new Date(from),
+          $lte: new Date(to),
+        },
+      }).lean();
+
+      totalReports = totalReports.filter((report) =>
+        (report.id + "").includes(id)
+      );
+
+      return res.json({
+        reports,
+        result: reports.length,
+        totalReports: totalReports.length,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  updateReport: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      await Reports.findOneAndUpdate({ _id: id }, { status: status });
+
+      return res.json({ msg: "Cập nhật thành công." });
+    } catch (error) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  deleteReport : async (req, res) => {
+    try {
+      const {id}=req.params;
+
+      await Reports.findOneAndDelete({_id:id});
+
+      return res.json({msg:"Xóa thành công."})
+    } catch (error) {
+      return res.status(500).json({ msg: err.message });
     }
   }
 };

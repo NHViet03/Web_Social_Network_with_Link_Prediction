@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {useSelector} from 'react-redux'
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/actions/authAction";
 import Logo from "../images/logo.png";
 
 function SideBar({ showSideBar }) {
-  const auth=useSelector(state=> state.auth)
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const [active, setActive] = useState(0);
   const MenuItems = useMemo(
     () => [
@@ -39,10 +41,14 @@ function SideBar({ showSideBar }) {
 
   const { pathname } = useLocation();
 
-    if(pathname==='/login' || !auth.token) return null;
+  if (pathname === "/login" || !auth.token) return null;
 
   const resetActive = () => {
     setActive(-1);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout);
   };
 
   return (
@@ -90,7 +96,7 @@ function SideBar({ showSideBar }) {
             </Link>
           </li>
           <li className="nav-item mb-3">
-            <button className={`nav-link`}>
+            <button className={`nav-link`} onClick={handleLogout}>
               <span className="icon_wrapper">
                 <i class="fa-solid fa-right-from-bracket" />
               </span>

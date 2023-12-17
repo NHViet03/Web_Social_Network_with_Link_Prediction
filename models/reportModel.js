@@ -3,18 +3,18 @@ const mongoose = require("mongoose");
 const reportSchema = new mongoose.Schema(
   {
     id: mongoose.Types.ObjectId,
-    content: String,
+    reason: String,
     type: {
       type: String,
       default: "post",
     },
-    userId: {
+    status: {
+      type: String,
+      default: "pending",
+    },
+    reporter: {
       type: mongoose.Types.ObjectId,
       ref: "user",
-    },
-    postId: {
-      type: mongoose.Types.ObjectId,
-      ref: "post",
     },
   },
   {

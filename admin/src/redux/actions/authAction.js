@@ -34,7 +34,6 @@ export const login = (data) => async (dispatch) => {
 };
 export const logout = async (dispatch) => {
   try {
-    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
     localStorage.removeItem("firstLogin");
     const res = await postDataAPI("logout");
     window.location.href = "/";

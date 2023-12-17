@@ -12,6 +12,7 @@ const generatePage = (pageName) => {
     return <NotFound />;
   }
 };
+const firstLogin = localStorage.getItem("firstLogin");
 
 function PageRender() {
   const { auth } = useSelector((state) => state);
@@ -24,7 +25,7 @@ function PageRender() {
     pageName = `${page}`;
   }
 
-  return auth.token ? generatePage(pageName) : <Navigate to="/" />;
+  return firstLogin ? generatePage(pageName) : <Navigate to="/" />;
 }
 
 export default PageRender;

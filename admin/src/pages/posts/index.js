@@ -27,6 +27,7 @@ function Posts() {
         getPosts({
           from:  filter.date[0] ,
           to: filter.date[1],
+          search,
           page: page - 1,
           auth,
         })

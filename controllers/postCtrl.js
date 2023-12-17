@@ -1,6 +1,7 @@
 const Posts = require("../models/postModel");
 const Comments = require("../models/commentModel");
 const Users = require("../models/userModel");
+const Reports = require("../models/reportModel");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -270,6 +271,25 @@ const postCtrl = {
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
+    }
+  },
+  reportPost: async (req, res) => {
+    try {
+      const { id, reason, reporter } = req.body;
+
+      const newReport = new Reports({
+        id,
+        reason,
+        reporter,
+      });
+
+      await newReport.save();
+
+      res.json({
+        msg: "Đã gửi báo cáo thành công",
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
     }
   },
 };

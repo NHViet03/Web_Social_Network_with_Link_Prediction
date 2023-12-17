@@ -62,13 +62,10 @@ export const createPost =
   };
 
 export const getPosts =
-  ({ auth, page =1}) =>
+  ({ auth, page = 1 }) =>
   async (dispatch) => {
     try {
-      const res = await getDataAPI(
-        `posts?limit=${page*5}`,
-        auth.token
-      );
+      const res = await getDataAPI(`posts?limit=${page * 5}`, auth.token);
 
       dispatch({
         type: POST_TYPES.GET_POSTS,
@@ -273,6 +270,31 @@ export const unSavePost =
 
     try {
       await patchDataAPI(`unsave_post/${post._id}`, null, auth.token);
+    } catch (error) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: error.response.data.msg,
+        },
+      });
+    }
+  };
+
+export const reportPost =
+  ({ post, reason, auth }) =>
+  async (dispatch) => {
+    const newReport = {
+      id: post._id,
+      reason,
+      reporter: auth.user._id,
+    };
+
+    try {
+      await postDataAPI("report_post", newReport, auth.token);
+      dispatch({
+        type: POST_TYPES.DELETE_POST,
+        payload: post,
+      });
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,

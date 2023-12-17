@@ -170,7 +170,7 @@ export const unfollow =
     if (users.every((item) => item._id !== user._id)) {
       newUser = {
         ...user,
-        followers: DeleteData(user.followers, auth.user._id),
+        followers: DeleteData(user.followers || [], auth.user._id),
       };
     } else {
       users.forEach((item) => {
@@ -182,6 +182,7 @@ export const unfollow =
         }
       });
     }
+
     dispatch({
       type: PROFILE_TYPES.UNFOLLOW,
       payload: newUser,

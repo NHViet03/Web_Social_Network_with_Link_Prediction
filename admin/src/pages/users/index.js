@@ -28,6 +28,7 @@ function Customers() {
           page: page - 1,
           from: filter.date[0],
           to: filter.date[1],
+          search,
           f_followers: filter.followers[0],
           t_followers: filter.followers[1],
           auth,

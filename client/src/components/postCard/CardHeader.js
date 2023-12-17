@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 import Avatar from "../Avatar";
 import DeletePostModal from "../DeletePostModal";
+import ReportPostModal from "./reportPostModal";
 import FollowButton from "../FollowButton";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -11,8 +12,8 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 const CardHeader = ({ user, post, follow }) => {
   const auth = useSelector((state) => state.auth);
   const [showDelete, setShowDelete] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const dispatch = useDispatch();
-
 
   const handleUpdatePost = () => {
     dispatch({
@@ -21,6 +22,14 @@ const CardHeader = ({ user, post, follow }) => {
         post,
         onEdit: true,
       },
+    });
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(`${window.location.origin}/post/${post._id}`);
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: { success: "Đã sao chép liên kết bài viết" },
     });
   };
 
@@ -69,11 +78,12 @@ const CardHeader = ({ user, post, follow }) => {
             <div
               className="dropdown-item"
               style={{ color: "var(--primary-color)" }}
+              onClick={() => setShowReport(true)}
             >
               <span className="material-icons">report_problem</span>
               <span>Báo cáo</span>
             </div>
-            <div className="dropdown-item">
+            <div className="dropdown-item" onClick={handleCopy}>
               <span className="material-icons">content_copy</span>
               <span>Sao chép liên kết</span>
             </div>
@@ -82,6 +92,9 @@ const CardHeader = ({ user, post, follow }) => {
       </div>
       {showDelete && (
         <DeletePostModal post={post} setShowDelete={setShowDelete} />
+      )}
+      {showReport && (
+        <ReportPostModal postData={post} setShowReport={setShowReport} />
       )}
     </div>
   );
