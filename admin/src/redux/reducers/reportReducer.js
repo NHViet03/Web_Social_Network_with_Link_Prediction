@@ -4,6 +4,7 @@ const initialState = {
   reports: [],
   result: 0,
   totalReports: 0,
+  firstLoad: false,
 };
 
 const reportReducer = (state = initialState, action) => {
@@ -14,6 +15,7 @@ const reportReducer = (state = initialState, action) => {
         reports: action.payload.reports,
         result: action.payload.result,
         totalReports: action.payload.totalReports,
+        firstLoad: true,
       };
     }
     case REPORTS_TYPES.UPDATE_REPORT: {
@@ -32,6 +34,12 @@ const reportReducer = (state = initialState, action) => {
         ),
         result: state.result - 1,
         totalReports: state.totalReports - 1,
+      };
+    }
+    case REPORTS_TYPES.FIRST_LOAD: {
+      return {
+        ...state,
+        firstLoad: action.payload,
       };
     }
     default:

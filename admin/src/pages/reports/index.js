@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import moment from "moment";
 import ExportCSV from "../../components/ExportCSV";
 import Filter from "../../components/Report/Filter";
 import ReportList from "../../components/Report/ReportList";
-import moment from "moment";
 
 import { useSelector, useDispatch } from "react-redux";
 import { getReports } from "../../redux/actions/reportAction";
+import { REPORTS_TYPES } from "../../redux/actions/reportAction";
 
 function Reports() {
   const [reports, setReports] = useState([]);
@@ -23,6 +24,8 @@ function Reports() {
 
   useEffect(() => {
     const getReportsData = async () => {
+      if (reportsData.firstLoad) return;
+
       await dispatch(
         getReports({
           from: filter.date[0],
@@ -36,12 +39,28 @@ function Reports() {
     };
 
     getReportsData();
-  }, [auth, dispatch, filter.date, filter.status, page]);
+  }, [auth, dispatch, filter.date, filter.status, page, reportsData.firstLoad]);
 
   useEffect(() => {
     setFilter({ ...filter, sort: "default" });
     setReports(reportsData.reports);
   }, [reportsData.reports]);
+
+  useEffect(() => {
+    if (reports.length === 0) return;
+    let newReports = [...reports];
+    switch (filter.sort) {
+      case "date_newest_to_oldest":
+        newReports.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "date_oldest_to_newest":
+        newReports.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      default:
+        newReports = [...reportsData.reports];
+    }
+    setReports(newReports);
+  }, [filter.sort]);
 
   const customData = useCallback(() => {
     return reports.map((report) => ({
@@ -91,6 +110,20 @@ function Reports() {
     setPage(1);
   };
 
+  const handleRefresh = () => {
+    dispatch({
+      type: REPORTS_TYPES.FIRST_LOAD,
+      payload: false,
+    });
+  };
+
+  const handleChangePage = (value) => {
+    if(value!==page){
+      setPage(value);
+      handleRefresh();
+    }
+  }
+
   return (
     <div className="mb-3 table">
       <div className="box_shadow mb-3 table_container">
@@ -118,7 +151,11 @@ function Reports() {
             </div>
           </div>
           <div className="d-flex justify-content-between mb-3 ">
-            <Filter filter={filter} setFilter={setFilter} />
+            <Filter
+              filter={filter}
+              setFilter={setFilter}
+              handleRefresh={handleRefresh}
+            />
           </div>
         </div>
         <div className="mb-3">
@@ -135,7 +172,7 @@ function Reports() {
           <button
             className="btn btn_page"
             disabled={page <= 1 && true}
-            onClick={() => setPage(page - 1)}
+            onClick={()=>handleChangePage(page-1)}
           >
             Trước
           </button>
@@ -143,7 +180,7 @@ function Reports() {
             <button
               key={id}
               className={`btn btn_page ${id === page ? "active" : ""} `}
-              onClick={() => setPage(id)}
+              onClick={() => handleChangePage(id)}
             >
               {id}
             </button>
@@ -151,7 +188,7 @@ function Reports() {
           <button
             className="btn btn_page"
             disabled={page >= pages.length && true}
-            onClick={() => setPage(page + 1)}
+            onClick={() => handleChangePage(page + 1)}
           >
             Sau
           </button>

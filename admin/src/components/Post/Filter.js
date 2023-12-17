@@ -1,18 +1,21 @@
 import React, { useMemo } from "react";
 import { DateRangePicker } from "rsuite";
 
-function Filter({ filter, setFilter, filterSmall }) {
+function Filter({ filter, setFilter, filterSmall, handleRefresh }) {
   const handlePickDate = (value) => {
     if (value === null) {
       setFilter({
         ...filter,
         date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
       });
-    } else
+      handleRefresh();
+    } else if (value[0] !== filter.date[0] || value[1] !== filter.date[1]) {
       setFilter({
         ...filter,
         date: value,
       });
+      handleRefresh();
+    }
   };
 
   return (

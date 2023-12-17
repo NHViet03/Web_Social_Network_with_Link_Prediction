@@ -3,6 +3,7 @@ import { getDataAPI } from "../../utils/fetchData";
 
 export const USER_TYPES = {
   GET_USERS: "GET_USERS",
+  FIRST_LOAD: "FIRST_LOAD_USERS",
 };
 
 export const getUsers =

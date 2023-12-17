@@ -6,6 +6,7 @@ import moment from "moment";
 
 import { useSelector, useDispatch } from "react-redux";
 import { getUsers } from "../../redux/actions/userAction";
+import { USER_TYPES } from "../../redux/actions/userAction";
 
 function Customers() {
   const [users, setUsers] = useState([]);
@@ -23,6 +24,7 @@ function Customers() {
 
   useEffect(() => {
     const getUsersData = async () => {
+      if (usersData.firstLoad) return;
       await dispatch(
         getUsers({
           page: page - 1,
@@ -37,7 +39,7 @@ function Customers() {
     };
 
     getUsersData();
-  }, [auth, dispatch, filter.date, filter.followers, page]);
+  }, [auth, dispatch, filter.date, filter.followers, page,usersData.firstLoad]);
 
   useEffect(() => {
     setUsers(usersData.users);
@@ -114,6 +116,20 @@ function Customers() {
     setPage(1);
   };
 
+  const handleRefresh = () => {
+    dispatch({
+      type: USER_TYPES.FIRST_LOAD,
+      payload: false,
+    });
+  };
+
+  const handleChangePage = (value) => {
+    if(value!==page){
+      setPage(value);
+      handleRefresh();
+    }
+  }
+
   return (
     <div className="mb-3 table">
       <div className="box_shadow mb-3 table_container">
@@ -141,7 +157,7 @@ function Customers() {
             </div>
           </div>
           <div className="d-flex justify-content-between mb-3 ">
-            <Filter filter={filter} setFilter={setFilter} />
+            <Filter filter={filter} setFilter={setFilter} handleRefresh={handleRefresh} />
           </div>
         </div>
         <div className="mb-3">
@@ -158,7 +174,7 @@ function Customers() {
           <button
             className="btn btn_page"
             disabled={page <= 1 && true}
-            onClick={() => setPage(page - 1)}
+            onClick={() => handleChangePage(page - 1)}
           >
             Trước
           </button>
@@ -166,7 +182,7 @@ function Customers() {
             <button
               key={id}
               className={`btn btn_page ${id === page ? "active" : ""} `}
-              onClick={() => setPage(id)}
+              onClick={() => handleChangePage(id)}
             >
               {id}
             </button>
@@ -174,7 +190,7 @@ function Customers() {
           <button
             className="btn btn_page"
             disabled={page >= pages.length && true}
-            onClick={() => setPage(page + 1)}
+            onClick={() => handleChangePage(page + 1)}
           >
             Sau
           </button>

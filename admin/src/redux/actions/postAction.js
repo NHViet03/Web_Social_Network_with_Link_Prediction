@@ -3,6 +3,7 @@ import { getDataAPI, postDataAPI,deleteDataAPI } from "../../utils/fetchData";
 
 export const POST_TYPES = {
   GET_POSTS: "GET_POSTS",
+  FIRST_LOAD:"FIRST_LOAD_POSTS"
 };
 
 export const getPosts =

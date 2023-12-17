@@ -6,6 +6,7 @@ import Filter from "../../components/Post/Filter";
 
 import { useSelector, useDispatch } from "react-redux";
 import { getPosts } from "../../redux/actions/postAction";
+import { POST_TYPES } from "../../redux/actions/postAction";
 
 function Posts() {
   const [posts, setPosts] = useState([]);
@@ -16,16 +17,16 @@ function Posts() {
     date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
   });
 
-
   const auth = useSelector((state) => state.auth);
   const postsData = useSelector((state) => state.postsData);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const getPostsData = async () => {
+      if (postsData.firstLoad) return;
       await dispatch(
         getPosts({
-          from:  filter.date[0] ,
+          from: filter.date[0],
           to: filter.date[1],
           search,
           page: page - 1,
@@ -35,7 +36,7 @@ function Posts() {
     };
 
     getPostsData();
-  }, [auth, dispatch, filter.date, page]);
+  }, [auth, dispatch, filter.date, page,postsData.firstLoad]);
 
   useEffect(() => {
     setFilter({ ...filter, sort: "default" });
@@ -100,6 +101,20 @@ function Posts() {
     setPage(1);
   };
 
+  const handleRefresh = () => {
+    dispatch({
+      type: POST_TYPES.FIRST_LOAD,
+      payload: false,
+    });
+  };
+
+  const handleChangePage = (value) => {
+    if(value!==page){
+      setPage(value);
+      handleRefresh();
+    }
+  }
+
   return (
     <div className="mb-3 table">
       <div className="box_shadow mb-3 table_container">
@@ -138,7 +153,7 @@ function Posts() {
             </div>
           </div>
           <div className="d-flex justify-content-between mb-3 ">
-            <Filter filter={filter} setFilter={setFilter} />
+            <Filter filter={filter} setFilter={setFilter} handleRefresh={handleRefresh}/>
           </div>
         </div>
         <div className="mb-3">
@@ -155,7 +170,7 @@ function Posts() {
           <button
             className="btn btn_page"
             disabled={page <= 1 && true}
-            onClick={() => setPage(page - 1)}
+            onClick={() => handleChangePage(page - 1)}
           >
             Trước
           </button>
@@ -163,7 +178,7 @@ function Posts() {
             <button
               key={id}
               className={`btn btn_page ${id === page ? "active" : ""} `}
-              onClick={() => setPage(id)}
+              onClick={() => handleChangePage(id)}
             >
               {id}
             </button>
@@ -171,7 +186,7 @@ function Posts() {
           <button
             className="btn btn_page"
             disabled={page >= pages.length && true}
-            onClick={() => setPage(page + 1)}
+            onClick={() => handleChangePage(page + 1)}
           >
             Sau
           </button>

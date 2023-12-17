@@ -89,7 +89,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.3)!important;
   position: fixed;
   top: 0;
   left: 0;
@@ -202,6 +202,16 @@ body {
 }
 .filter_range > div span {
   opacity: 0.5;
+}
+
+
+.rs-picker-has-value .rs-btn .rs-picker-toggle-value, .rs-picker-has-value .rs-picker-toggle .rs-picker-toggle-value {
+  color:var(--primary-color);
+}
+
+.form-check-input:checked{
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 /* --------- SIDE BAR -----------*/

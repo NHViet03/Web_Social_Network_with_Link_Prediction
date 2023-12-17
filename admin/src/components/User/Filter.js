@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { DateRangePicker } from "rsuite";
 import formatMoney from "../../utils/formatNumber";
 
-const Filter = ({ filter, setFilter }) => {
+const Filter = ({ filter, setFilter, handleRefresh }) => {
   const [followers, setFollowers] = useState(filter.followers);
 
   const revenueFilterData = useMemo(
@@ -33,11 +33,13 @@ const Filter = ({ filter, setFilter }) => {
         ...filter,
         date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
       });
-    } else {
+      handleRefresh();
+    } else if (value[0] !== filter.date[0] || value[1] !== filter.date[1]) {
       setFilter({
         ...filter,
         date: value,
       });
+      handleRefresh();
     }
   };
 
@@ -59,6 +61,7 @@ const Filter = ({ filter, setFilter }) => {
       ...filter,
       followers: followers,
     });
+    handleRefresh();
   };
 
   return (

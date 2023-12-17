@@ -4,6 +4,7 @@ const initialState = {
   posts: [],
   result: 0,
   totalPosts: 0,
+  firstLoad: false,
 };
 
 const postReducer = (state = initialState, action) => {
@@ -14,6 +15,13 @@ const postReducer = (state = initialState, action) => {
         posts: action.payload.posts,
         result: action.payload.result,
         totalPosts: action.payload.totalPosts,
+        firstLoad: true,
+      };
+    }
+    case POST_TYPES.FIRST_LOAD: {
+      return {
+        ...state,
+        firstLoad: action.payload,
       };
     }
     default:

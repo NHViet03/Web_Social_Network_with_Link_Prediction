@@ -1,18 +1,21 @@
 import React, { useMemo } from "react";
 import { DateRangePicker } from "rsuite";
 
-function Filter({ filter, setFilter }) {
+function Filter({ filter, setFilter, handleRefresh }) {
   const handlePickDate = (value) => {
     if (value === null) {
       setFilter({
         ...filter,
         date: [new Date(new Date().getFullYear(), 0, 1), new Date()],
       });
-    } else
+      handleRefresh();
+    } else if (value[0] !== filter.date[0] || value[1] !== filter.date[1]) {
       setFilter({
         ...filter,
         date: value,
       });
+      handleRefresh();
+    }
   };
 
   return (
@@ -27,12 +30,15 @@ function Filter({ filter, setFilter }) {
             className="form-select"
             required
             value={filter.status}
-            onChange={(e) =>
-              setFilter({
-                ...filter,
-                status: e.target.value,
-              })
-            }
+            onChange={(e) => {
+              if (filter.status !== e.target.value) {
+                handleRefresh();
+                setFilter({
+                  ...filter,
+                  status: e.target.value,
+                });
+              }
+            }}
           >
             <option value="all">Tất cả</option>
             <option value="pending">Chờ xử lý</option>

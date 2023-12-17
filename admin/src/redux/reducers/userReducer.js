@@ -4,6 +4,7 @@ const initialState = {
   users: [],
   result: 0,
   totalUsers: 0,
+  firstLoad: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -14,6 +15,13 @@ const userReducer = (state = initialState, action) => {
         users: action.payload.users,
         result: action.payload.result,
         totalUsers: action.payload.totalUsers,
+        firstLoad: true,
+      };
+    }
+    case USER_TYPES.FIRST_LOAD: {
+      return {
+        ...state,
+        firstLoad: action.payload,
       };
     }
     default:

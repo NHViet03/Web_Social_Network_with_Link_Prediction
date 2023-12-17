@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CardItem from "../components/Home/CardItem";
 import { useSelector, useDispatch } from "react-redux";
-import { getCardsData,getTop5Users } from "../redux/actions/homeAction";
+import { getCardsData, getTop5Users } from "../redux/actions/homeAction";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 
 import Chart from "chart.js/auto";
@@ -80,7 +80,6 @@ const PostsStatistic = [
   ],
 ];
 
-
 const Home = () => {
   const home = useSelector((state) => state.home);
   const auth = useSelector((state) => state.auth);
@@ -136,17 +135,26 @@ const Home = () => {
 
   useEffect(() => {
     window.location.hash = filter.interval;
-    dispatch({
-      type:GLOBAL_TYPES.LOADING,
-      payload:true
-    })
-    dispatch(getCardsData({ interval: filter.interval, auth })).then(()=>{
+  }, [filter.interval]);
+
+  const handleChangeInterval = (e) => {
+    if (e.target.value !== filter.interval) {
+      setFilter({
+        ...filter,
+        interval: e.target.value,
+      });
       dispatch({
-        type:GLOBAL_TYPES.LOADING,
-        payload:false
-      })
-    });
-  }, [auth, dispatch, filter.interval]);
+        type: GLOBAL_TYPES.LOADING,
+        payload: true,
+      });
+      dispatch(getCardsData({ interval: e.target.value, auth })).then(() => {
+        dispatch({
+          type: GLOBAL_TYPES.LOADING,
+          payload: false,
+        });
+      });
+    }
+  };
 
   useEffect(() => {
     if (!home.loadUsers) {
@@ -155,9 +163,9 @@ const Home = () => {
     setCardsData(home.cardsData);
   }, [auth, dispatch, home.cardsData, home.loadUsers]);
 
-  useEffect(()=>{
-    setUsers(home.users)
-  },[home.users])
+  useEffect(() => {
+    setUsers(home.users);
+  }, [home.users]);
 
   return (
     <div className="home">
@@ -165,12 +173,7 @@ const Home = () => {
         className="mb-3 form-select home_filter"
         required
         value={filter.interval}
-        onChange={(e) =>
-          setFilter({
-            ...filter,
-            interval: e.target.value,
-          })
-        }
+        onChange={handleChangeInterval}
       >
         <option value="7days">Trong 7 ngày gần nhất</option>
         <option value="30days">Trong 30 ngày gần nhất</option>

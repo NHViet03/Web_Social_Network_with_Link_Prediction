@@ -665,13 +665,7 @@ const adminCtrl = {
             reporter: 1,
             createdAt: 1,
           },
-        },
-        {
-          $skip: Number(skip) || 0,
-        },
-        {
-          $limit: 10,
-        },
+        },  
         {
           $sort: {
             createdAt: -1,
@@ -686,6 +680,7 @@ const adminCtrl = {
               {
                 $project: {
                   user: 1,
+                  createdAt: 1,
                 },
               },
               {
@@ -697,7 +692,9 @@ const adminCtrl = {
                     {
                       $project: {
                         username: 1,
+                        fullname:1,
                         avatar: 1,
+                        email: 1,
                       },
                     },
                   ],
@@ -723,6 +720,19 @@ const adminCtrl = {
             as: "reporter",
           },
         },
+        {
+          $match: {
+            post: {
+              $size: 1,
+            },
+          },
+        },
+        {
+          $skip: Number(skip) || 0,
+        },
+        {
+          $limit: 10,
+        },
       ]);
 
       reports = reports.filter((report) => (report.id + "").includes(id));
@@ -736,17 +746,46 @@ const adminCtrl = {
         reporter: report.reporter[0],
       }));
 
-      let totalReports = await Reports.find({
-        type: "post",
-        status: {
-          $regex: status,
-          $options: "i",
+      let totalReports = await Reports.aggregate([
+        {
+          $match: {
+            type: "post",
+            status: {
+              $regex: status,
+              $options: "i",
+            },
+            createdAt: {
+              $gte: new Date(from),
+              $lte: new Date(to),
+            },
+          },
         },
-        createdAt: {
-          $gte: new Date(from),
-          $lte: new Date(to),
+        {
+          $project: {
+            id: 1,
+          },
         },
-      }).lean();
+        {
+          $lookup: {
+            from: "posts",
+            localField: "id",
+            foreignField: "_id",
+            pipeline: [
+              {
+                $project: { _id: 1 },
+              },
+            ],
+            as: "post",
+          },
+        },
+        {
+          $match: {
+            post: {
+              $size: 1,
+            },
+          },
+        },
+      ]);
 
       totalReports = totalReports.filter((report) =>
         (report.id + "").includes(id)
@@ -773,17 +812,17 @@ const adminCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  deleteReport : async (req, res) => {
+  deleteReport: async (req, res) => {
     try {
-      const {id}=req.params;
+      const { id } = req.params;
 
-      await Reports.findOneAndDelete({_id:id});
+      await Reports.findOneAndDelete({ _id: id });
 
-      return res.json({msg:"Xóa thành công."})
+      return res.json({ msg: "Xóa thành công." });
     } catch (error) {
       return res.status(500).json({ msg: err.message });
     }
-  }
+  },
 };
 
 module.exports = adminCtrl;

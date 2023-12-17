@@ -1,15 +1,16 @@
 import { GLOBAL_TYPES } from "./globalTypes";
 import {
   getDataAPI,
-  postDataAPI,
   deleteDataAPI,
   patchDataAPI,
+  postDataAPI,
 } from "../../utils/fetchData";
 
 export const REPORTS_TYPES = {
   GET_REPORTS: "GET_REPORTS",
   UPDATE_REPORT: "UPDATE_REPORT",
   DELETE_REPORT: "DELETE_REPORT",
+  FIRST_LOAD: "FIRST_LOAD_REPORTS",
 };
 
 export const getReports =
@@ -49,7 +50,7 @@ export const getReports =
   };
 
 export const validateReport =
-  ({ report, auth }) =>
+  ({ report, deletePost, auth }) =>
   async (dispatch) => {
     try {
       dispatch({ type: GLOBAL_TYPES.LOADING, payload: true });
@@ -58,6 +59,33 @@ export const validateReport =
         { status: "validated" },
         auth.token
       );
+
+      if (deletePost) {
+        const post = report.post;
+        const email = {
+          to: post.user.email,
+          subject: "Dreamers - Vi phạm chính sách bài viết.",
+          html: `<h4>Xin chào người dùng ${post.user.fullname},</h4>
+        <p>
+          Chúng tôi là Dreamers, chúng tôi đã phát hiện bài viết của bạn (ID: ${
+            post._id
+          }) được đăng tải vào lúc <em>${new Date(
+            post.createdAt
+          ).toLocaleString()}</em> đã vi phạm chính sách bài viết của chúng tôi với lý do <strong>"${
+            report.reason
+          }"</strong>. Vì vậy, bài viết của bạn đã bị xóa vĩnh viễn khỏi hệ thống của chúng tôi.
+        <p>
+        <br/>
+        <h5><em>Mọi thắc xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
+        </h5>
+        <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network
+        </p>`,
+          attachFiles: [],
+        };
+        await deleteDataAPI(`/post/${post._id}`, auth.token);
+        await postDataAPI(`admin/send_mail`, email, auth.token);
+      }
+
       dispatch({
         type: REPORTS_TYPES.UPDATE_REPORT,
         payload: {
