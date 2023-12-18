@@ -31,6 +31,7 @@ app.use("/api", require("./routes/postRouter"));
 app.use("/api", require("./routes/commentRouter"));
 app.use("/api", require("./routes/userRouter"));
 app.use("/api", require("./routes/notifyRouter"));
+app.use("/api", require("./routes/messageRouter"));
 
 //Connect MongoDB
 
@@ -56,3 +57,5 @@ const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+

@@ -1,129 +1,46 @@
-import React, { useRef, useEffect } from "react";
-import { UserCard } from "./UserCard";
-import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import React, {useState} from "react";
+import  UserCard  from "../UserCard";
+import { useSelector ,useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {getDataAPI} from "../../utils/fetchData"
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { addUser } from "../../redux/actions/messageAction";
+import loading from "../../images/loading.gif"
 export const ModalAddMessage = ({ setOpenModal }) => {
-  //   const modalRef = useRef(null);
-  //  Xử lý sự kiện khi bấm ra ngoài modal
-  // useEffect(() => {
-  //     function handleClickOutside(event) {
-  //         if (modalRef.current && !modalRef.current.contains(event.target)) {
-  //             setOpenModal(false);
-  //         }
-  //     }
-  //     document.addEventListener("mousedown", handleClickOutside);
-  //     return () => {
-  //         document.removeEventListener("mousedown", handleClickOutside);
-  //     };
-  // }, [modalRef]);
-  const fetchData = [
-    {
-      id: 1,
-      fullname: "Nguyễn Hoàng Phúc",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 2,
-      fullname: "Nguyễn Hoàng Việt",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: "Nguyễn Hoàng Tuyển",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: "Huỳnh Ngọc Quí",
-      username: "huynhngocqui",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: "Nguyễn Hoàng Tuyển",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: "Huỳnh Ngọc Quí",
-      username: "huynhngocqui",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: "Nguyễn Hoàng Tuyển",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: "Huỳnh Ngọc Quí",
-      username: "huynhngocqui",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: "Nguyễn Hoàng Tuyển",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: "Huỳnh Ngọc Quí",
-      username: "huynhngocqui",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: "Nguyễn Hoàng Tuyển",
-      username: "hoangphuc_seiza",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: "Huỳnh Ngọc Quí",
-      username: "huynhngocqui",
-      avatar:
-        "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-  ];
-  const { auth } = useSelector((state) => state);
+  const navigate = useNavigate()
+  const {auth, message} = useSelector((state) => state);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
-  const [indexActive, setIndexActive] = useState(-2);
-  const [fillterdData, setFillterData] = useState(fetchData);
-  const handleChangeInput = (e) => {
-    const searchText = e.target.value;
-    setIndexActive(-2)
-    setSearch(searchText);
-    const fillterdUsers = fetchData.filter((user) =>
-    user.fullname.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFillterData(fillterdUsers)
+  const [searchUsers, setSearchUser] = useState([])
+  const [load, setLoad] = useState(false);
+  const handleSearch = async (e) => {
+   e.preventDefault();
+   if (!search) return setSearchUser([]);
+   try {
+    setLoad(true);
+    const res = await getDataAPI(`search?username=${search}`, auth.token);
+    setSearchUser(res.data.users);
+    setLoad(false);
+  } catch (err) {
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: { error: err.response.data.msg },
+    });
   }
-  const handleButton = () => {
-    setOpenModal(false);
-    dispatch({type: 'ADD_USER', payload: fillterdData[indexActive]})
   }
+  const handleAddUser = (user) => {
+    dispatch(addUser({user,message}))
+    navigate(`/message/${user._id}`)
+    setOpenModal(false)
+  }
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e);
+    }
+  };
   return (
     <div className="modal-addmess">
-      <div className="modal-addmess_content">
+      <div className="modal-addmess_content" onClick={handleSearch}>
         <div className="modal-addmess_header">
           <h5 className="modal-addmess_content-h5">Tin nhắn mới</h5>
 
@@ -135,16 +52,37 @@ export const ModalAddMessage = ({ setOpenModal }) => {
         </div>
         <div className="modal-addmess_content-search">
           <h5>Đến:</h5>
-          <input type="text" placeholder="Tìm kiếm..." autoFocus onChange={handleChangeInput}   value={search} />
+          <input type="text"
+           placeholder="Tìm kiếm..."  
+           onChange={e => setSearch(e.target.value)}   
+           value={search} 
+            onKeyPress={handleEnter}
+           />
         </div>
         <div className="modal-addmess_message_chat_list">
-          {fillterdData.map((user, index) => (
-            <UserCard user={user} isInModal={true} indexActive={indexActive} setIndexActive={setIndexActive} index={index}/>
-          ))}
+        {
+          load && 
+          <div className=" loading_modalAddMessage">
+            <img className="loading" src={loading} alt="loading" />
+          </div>
+        }
+        {
+          searchUsers.length !== 0 ? <>
+            {
+              searchUsers.map(user => (
+                <div key={user._id} className="message_user mt-2" onClick={()=>handleAddUser(user)}>
+                  <UserCard user={user} size ="avatar-middle" />
+                </div>
+              ))
+            }
+          </> : <>
+            <h6 className="my-3 mx-3 flex">Không có người dùng phù hợp</h6>
+          </>
+        }
         </div>
-        <button className="modal-addmess_btn btn" onClick={handleButton} disabled = {indexActive !== -2  ? false : true}>
+        {/* <button className="modal-addmess_btn btn" type="submit">
           Trò chuyện
-        </button>
+        </button> */}
       </div>
     </div>
   );

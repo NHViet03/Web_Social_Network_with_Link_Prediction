@@ -176,4 +176,5 @@ a:hover {
 
 /*---------------POST_THUMB---------------------*/
 @import url("./post_thumb.css");
-
+/*---------------ICONS---------------------*/
+@import url("./icons.css");

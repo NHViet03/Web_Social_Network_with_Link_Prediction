@@ -1,91 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { UserCard } from "./UserCard";
-import ModalAddMessage from "./ModalAddMessage";
+import UserCard from "../UserCard"
+import { useParams, useNavigate } from "react-router-dom";
+import { getConversations } from "../../redux/actions/messageAction";
+
+
 
 export const LeftSide = ({setOpenModal}) => {
-  const { auth } = useSelector((state) => state);
+  const {auth, message} = useSelector(state => state)
+  const {id} = useParams();
   const dispatch = useDispatch();
-  const fetchData =[
-    {
-      id: 1,
-      fullname: 'Nguyễn Hoàng Phúc',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 2,
-      fullname: 'Nguyễn Hoàng Việt',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: 'Nguyễn Hoàng Tuyển',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: 'Huỳnh Ngọc Quí',
-      username: 'huynhngocqui',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: 'Nguyễn Hoàng Tuyển',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: 'Huỳnh Ngọc Quí',
-      username: 'huynhngocqui',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: 'Nguyễn Hoàng Tuyển',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: 'Huỳnh Ngọc Quí',
-      username: 'huynhngocqui',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: 'Nguyễn Hoàng Tuyển',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: 'Huỳnh Ngọc Quí',
-      username: 'huynhngocqui',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 3,
-      fullname: 'Nguyễn Hoàng Tuyển',
-      username: 'hoangphuc_seiza',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-    {
-      id: 4,
-      fullname: 'Huỳnh Ngọc Quí',
-      username: 'huynhngocqui',
-      avatar: "https://www.pngall.com/wp-content/uploads/5/Profile-Avatar-PNG.png",
-    },
-  ]
+  const navigate = useNavigate()
+  const isActive = (user) =>{
+    if(id === user._id) return "active"
+    return ''
+  }
+  useEffect(() => {
+    if(message.firstLoad) return;
+    dispatch(getConversations({auth}));
+  },[dispatch, message.firstLoad, auth])
   return (
     <>
       <div className="message_header">
         <div className="message_header-swicthAccountandModal">
           <div className="message_header-namedropdown">
-            <h2>_hoang.phuc.seiza_</h2>
+            <h2>{auth.user.username}</h2>
             <i class="fa fa-angle-down" aria-hidden="true" ></i>
           </div>
           <div className="message_header-newchat">
@@ -94,13 +33,22 @@ export const LeftSide = ({setOpenModal}) => {
         </div>
         <div className="message_header-request">
             <h3>Tin nhắn</h3>
-            <h4>Tin nhắn chờ</h4>
+            <h4></h4>
         </div>
       </div>
       <div className="message_chat_list">
-        {fetchData.map((user) => (
-          <UserCard user= {user} hover/>
-        ))}
+       {
+       <div className="message_chat_card"> 
+          {message.users.map((user) => 
+          (
+            <div className={`message_user  ${isActive(user)}`} key={user._id} onClick={() => navigate(`/message/${user._id}`)}>
+                <UserCard user={user} size ="avatar-middle" />
+                <i class="fa-solid fa-circle"></i>
+            </div>
+          )
+          )}
+        </div>
+       }
       </div>
 
     </>

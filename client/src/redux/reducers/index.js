@@ -12,7 +12,7 @@ import explore from "./exploreReducer";
 import profile from "./profileReducer";
 import socket from "./socketReducer";
 import modal from "./modalReducer";
-
+import message from "./messageReducer";
 export default combineReducers({
   auth,
   alert,
@@ -27,4 +27,5 @@ export default combineReducers({
   profile,
   socket,
   modal,
+  message
 });
