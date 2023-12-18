@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NOTIFIES_TYPES } from "./redux/actions/notifyAction";
+import { MESS_TYPES } from "./redux/actions/messageAction";
 
 const SocketClient = () => {
   const auth = useSelector((state) => state.auth);
@@ -34,6 +35,17 @@ const SocketClient = () => {
     return () => socket.off("removeNotifyToClient");
   }, [dispatch, socket]);
 
+  // Message
+  useEffect(() => {
+    socket.on("addMessageToClient", (msg) => {
+      dispatch({
+        type: MESS_TYPES.ADD_MESSAGE,
+        payload: msg,
+      });
+    });
+
+    return () => socket.off("addMessageToClient");
+  }, [dispatch, socket]);
   return <></>;
 };
 

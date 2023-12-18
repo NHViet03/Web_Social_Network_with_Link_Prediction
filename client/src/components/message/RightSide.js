@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import UserCard from "../UserCard"
@@ -15,21 +15,35 @@ const RightSide = () => {
   const {auth, message, theme, socket} = useSelector(state => state)
   const dispatch = useDispatch();
   const {id} = useParams();
+  const refDisplay = useRef()
+  const pageEnd = useRef()
   const [user, setUser] = useState([])
   const [text, setText] = useState("");
+  const [data, setData] = useState([]);
   const [media, setMedia] = useState([])
+  const [page, setPage] = useState(0)
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
   useEffect(() => {
+    const newData = message.data.filter(item => item.sender === auth.user._id || item.sender === id)
+    setData(newData)
+    setPage(1)
+  },[ message.data, auth.user._id, id])
+
+  useEffect(() => {
     if (id) {
       const newUser = message.users.find(user => user._id === id)
-      if (newUser) setUser(newUser)
+      if (newUser) {
+        setUser(newUser)
+      }
     }
   },[id, message.users])
   useEffect(() => {
     if(id) {
       const getMessagesData = async () => {
+        
         await dispatch(getMessages({auth, id}))
+        refDisplay.current && refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
       }
       getMessagesData()
     }
@@ -48,6 +62,7 @@ const RightSide = () => {
     })
     if(err) dispatch({type: GLOBAL_TYPES.ALERT, payload: {error: err}})
     setMedia([...media, ...newMedia])
+    refDisplay.current && refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
   }
   const handleDeleteMedia = (index) => {
     const newArr = [...media]
@@ -72,11 +87,35 @@ const RightSide = () => {
       CreatedAt: new Date().toISOString()
     }
     setLoadMedia(false)
-    dispatch(addMessage({msg, auth, socket}))  
+    await dispatch(addMessage({msg, auth, socket}))  
+    refDisplay.current && refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
   }
   const handleEmojiSelect = (emoji) => {
     setText(text + emoji.native);
   };
+  // Load more
+  useEffect(() => 
+  {
+    const observer = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting){
+        setPage(p => p + 1)
+      }
+    }, {
+      threshold: 0.1
+    })
+    observer.observe(pageEnd.current)
+  }, [setPage])
+
+  useEffect(() => {
+    if(message.resultUsers >= (page - 1) * 9 && page > 1){
+      dispatch(getMessages({auth,id ,page}))
+    }
+  }, [message.resultUsers, page, auth, dispatch])
+  useEffect(() => {
+    if(refDisplay.current){
+      refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
+    }
+  }, [message.data])
   return (
     <div className="conversation-message">
       <div className="conversation-message_header">
@@ -88,9 +127,10 @@ const RightSide = () => {
         </div>
       </div>
       <div className="conversation-message_chat-container">
-         <div className="conversation-message_chat-display">
+         <div className="conversation-message_chat-display" ref={refDisplay}>
+            <button type="button" className="btn btn-warning" style={{opacity: '0'}} ref={pageEnd}>Load More</button>
             {
-              message.data.map((msg, index) => (
+              data.map((msg, index) => (
                 <div key={index}>
 
                 {

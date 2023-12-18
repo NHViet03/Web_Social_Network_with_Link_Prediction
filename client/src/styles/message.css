@@ -98,10 +98,12 @@
     display: flex;
 }
 .message_chat_card .message_user:hover{
-    background-color: #ec9578 ;
+    background-color: #e79174 ;
+    border-radius: 12px;
 }
 .message_chat_card .message_user.active {
-    background-color: #ec9578 ;
+    background-color: #e79174 ;
+    border-radius: 12px;
 }
 
 .message_chat_list .message_chat_card .fa-circle{

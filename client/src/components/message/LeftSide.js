@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import UserCard from "../UserCard"
 import { useParams, useNavigate } from "react-router-dom";
@@ -9,6 +9,8 @@ import { getConversations } from "../../redux/actions/messageAction";
 export const LeftSide = ({setOpenModal}) => {
   const {auth, message} = useSelector(state => state)
   const {id} = useParams();
+  const pageEnd = useRef();
+  const [page, setPage] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const isActive = (user) =>{
@@ -19,6 +21,24 @@ export const LeftSide = ({setOpenModal}) => {
     if(message.firstLoad) return;
     dispatch(getConversations({auth}));
   },[dispatch, message.firstLoad, auth])
+  
+  // Load More
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting){
+        setPage(p => p + 1)
+      }
+    }, {
+      threshold: 0.1
+    })
+    observer.observe(pageEnd.current)
+  },[setPage])
+
+  useEffect(() => {
+    if(message.resultUsers >= (page - 1) * 9 && page > 1){
+      dispatch(getConversations({auth, page}));
+    }
+  },[message.resultUsers, page, auth, dispatch])
   return (
     <>
       <div className="message_header">
@@ -47,6 +67,7 @@ export const LeftSide = ({setOpenModal}) => {
             </div>
           )
           )}
+          <button type="button" className="btn btn-warning" style={{opacity: '0'}} ref={pageEnd}>Load More</button>
         </div>
        }
       </div>
