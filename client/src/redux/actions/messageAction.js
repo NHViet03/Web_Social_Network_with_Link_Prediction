@@ -5,6 +5,7 @@ export const MESS_TYPES ={
     ADD_MESSAGE: 'ADD_MESSAGE',
     GET_CONVERSATIONS: 'GET_CONVERSATIONS',
     GET_MESSAGES: 'GET_MESSAGES',
+    UPDATE_MESSAGES: 'UPDATE_MESSAGES',
 }
 
 export const addUser = ({user, message}) => (dispatch) => {
@@ -58,9 +59,10 @@ export const getConversations = ({auth, page = 1}) => async (dispatch) => {
 export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
     try {
         const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
+        const newData = {...res.data, messages: res.data.messages.reverse()}
         dispatch({
             type: MESS_TYPES.GET_MESSAGES,
-            payload: res.data
+            payload: {...newData , _id: id, page}
             
         })
     } catch (err) {
@@ -70,3 +72,20 @@ export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
         })
     }
 }
+
+ export const loadMoreMessages = ({auth, id, page = 1}) => async (dispatch) => {
+    try {
+        const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
+        const newData = {...res.data, messages: res.data.messages.reverse()}
+        dispatch({
+            type: MESS_TYPES.UPDATE_MESSAGES,
+            payload: {...newData , _id: id, page}
+            
+        })
+    } catch (err) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {error: err.response.data.msg}
+        })
+    }
+}   
