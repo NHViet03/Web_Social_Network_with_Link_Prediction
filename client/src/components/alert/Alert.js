@@ -9,11 +9,11 @@ const Notify = () => {
     return (
     <div>
       { alert.loading && <Loading /> }
-      { alert.error && <Toast msg = { {title: 'Error' , body: alert.error}} 
+      { alert.error && <Toast msg = { {title: 'Lỗi' , body: alert.error}} 
        handleShow={() => dispatch({type: GLOBAL_TYPES.ALERT, payload: {}})} 
        bgColor="bg-danger" /> }
       { alert.success && 
-      <Toast msg = { {title: 'Success' , body: alert.success}} 
+      <Toast msg = { {title: 'Thành công' , body: alert.success}} 
       handleShow={() => dispatch({type: GLOBAL_TYPES.ALERT, payload: {}})} 
       bgColor="bg-success" /> }
     </div>

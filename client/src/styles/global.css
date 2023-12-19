@@ -178,3 +178,5 @@ a:hover {
 @import url("./post_thumb.css");
 /*---------------ICONS---------------------*/
 @import url("./icons.css");
+/*---------------SETTING---------------------*/
+@import url("./changePassword.css");

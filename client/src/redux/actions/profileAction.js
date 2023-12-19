@@ -39,9 +39,7 @@ export const getProfileUsers = ({ users, id, auth }) => async (dispatch) => {
       }
   };
 
-export const updateProfileUsers =
-  ({ userData, avatar, auth }) =>
-  async (dispatch) => {
+export const updateProfileUsers =({ userData, avatar, auth }) => async (dispatch) => {  
     if (!userData.fullname)
       return dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -77,8 +75,7 @@ export const updateProfileUsers =
       dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
       if (avatar) media = await imageUpload([avatar]);
 
-      const res = await patchDataAPI(
-        "user",
+      const res = await patchDataAPI("user",
         {
           ...userData,
           avatar: avatar ? media[0].url : auth.user.avatar,

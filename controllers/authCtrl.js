@@ -63,11 +63,11 @@ const authCtrl = {
         .populate("followers following", "avatar username fullname followers following")
         .populate("saved", "images likes comments");
 
-      if (!user) return res.status(400).json({ msg: "User does not exist" });
+      if (!user) return res.status(400).json({ msg: "Tài khoản không tồn tại" });
 
       const isMatch = await bycrypt.compare(password, user.password);
       if (!isMatch)
-        return res.status(400).json({ msg: "Password is incorrect." });
+        return res.status(400).json({ msg: "Mật khẩu không đúng" });
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
@@ -79,7 +79,7 @@ const authCtrl = {
       });
 
       res.json({
-        msg: "Login Success",
+        msg: "Đăng nhập thành công",
         access_token,
         user: {
           ...user._doc,
@@ -131,6 +131,28 @@ const authCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  changepassword: async (req, res) => {
+    try {
+      const { password, newPassword } = req.body;
+      const user = await Users.findById(req.body.user._id).select("password");
+      const isMatch = await bycrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Mật khẩu hiện tại không đúng." });
+      }
+
+      const newPasswordHash = await bycrypt.hash(newPassword, 12);
+
+      await Users.findOneAndUpdate(
+        { _id: req.body.user._id },
+        {
+          password: newPasswordHash,
+        }
+      );
+      return res.json({ msg: "Thay đổi mật khẩu thành công." });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
 };
 
 const createAccessToken = (payload) => {
@@ -143,5 +165,7 @@ const createRefreshToken = (payload) => {
     expiresIn: "30d",
   });
 };
+
+
 
 module.exports = authCtrl;
