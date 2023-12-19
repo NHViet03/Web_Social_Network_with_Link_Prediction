@@ -21,7 +21,10 @@ const MsgDisplay = ({ user, msg, theme }) => {
             </div>
           ))}
           <div className='chat_time'>
-            {new Date(msg.createdAt).toLocaleString()}
+            {
+              msg.createdAt === undefined ?
+              new Date().toLocaleString() : new Date(msg.createdAt).toLocaleString()
+            }
           </div>
         </>
       )}

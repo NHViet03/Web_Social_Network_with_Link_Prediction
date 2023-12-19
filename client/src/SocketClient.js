@@ -11,9 +11,6 @@ const SocketClient = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    socket.emit("joinUser", auth.user._id);
-  }, [auth.user._id, socket]);
 
   // Notification
   useEffect(() => {
@@ -46,7 +43,13 @@ const SocketClient = () => {
     });
     return () => socket.off("addMessageToClient");
   }, [dispatch, socket]);
-  // Check User Online / Offline
+ 
+  // joinUser
+  useEffect(() => {
+    socket.emit('joinUser', auth.user)
+  },[socket, auth.user])
+  
+    // Check User Online / Offline
   useEffect(() => {
     socket.emit("checkUserOnline", auth.user);
   }, [auth.user, socket]);
@@ -59,9 +62,28 @@ const SocketClient = () => {
         }
       })
     });
-
+ 
     return () => socket.off("checkUserOnlineToMe");
   }, [dispatch, socket, online]);
+
+  useEffect(() => {
+    socket.on("checkUserOnlineToClient", id => {
+      if(!online.includes(id)){
+        dispatch({type: GLOBAL_TYPES.ONLINE, payload: id})
+      }
+    });
+ 
+    return () => socket.off("checkUserOnlineToClient");
+  }, [dispatch, socket, online]);
+
+  // Check User Offline
+  useEffect(() => {
+    socket.on("CheckUserOffline", id => {
+      dispatch({type: GLOBAL_TYPES.OFFLINE, payload: id})
+    });
+ 
+    return () => socket.off("CheckUserOffline");
+  }, [dispatch, socket]);
   return <></>;
 };
 
