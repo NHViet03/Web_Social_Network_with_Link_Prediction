@@ -60,7 +60,7 @@ const authCtrl = {
     try {
       const { email, password } = req.body;
       const user = await Users.findOne({ email: email })
-        .populate("followers following", "-password")
+        .populate("followers following", "avtar username fullname followers following")
         .populate("saved", "images likes comments");
 
       if (!user) return res.status(400).json({ msg: "User does not exist" });

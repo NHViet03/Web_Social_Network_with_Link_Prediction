@@ -55,7 +55,7 @@ export const getConversations = ({auth, page = 1}) => async (dispatch) => {
     }
 }
 
-export const getMessages = ({auth, id, page =1}) => async (dispatch) => {
+export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
     try {
         const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
         dispatch({

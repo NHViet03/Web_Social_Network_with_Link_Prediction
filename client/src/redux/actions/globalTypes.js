@@ -7,6 +7,8 @@ export const GLOBAL_TYPES = {
     THEME: 'THEME',
     SOCKET:'SOCKET',
     MODAL: 'MODAL',
+    ONLINE: 'ONLINE',
+    OFFLINE: 'OFFLINE',
 }
 
 export const EditData = (data,id, post)=> {

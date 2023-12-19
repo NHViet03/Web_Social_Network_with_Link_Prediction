@@ -27,10 +27,15 @@ const SocketServer = (socket) => {
   });
   // Message
   socket.on("addMessage", msg =>{
-    console.log(msg);
     const user = users.find(user => user.id === msg.recipient)
     user && socket.to(`${user.socketId}`).emit("addMessageToClient", msg)
   })
+  // Check User Online / Offline
+  socket.on("checkUserOnline", (data) => {
+   const following = users.filter(user => data.following.find(item => item._id === user.id))
+    socket.emit("checkUserOnlineToMe", following)
+  }
+  );
 };
 
 module.exports = SocketServer;

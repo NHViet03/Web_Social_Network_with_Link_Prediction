@@ -19,35 +19,12 @@ const RightSide = () => {
   const pageEnd = useRef()
   const [user, setUser] = useState([])
   const [text, setText] = useState("");
-  const [data, setData] = useState([]);
+  const [data1, setData] = useState([]);
   const [media, setMedia] = useState([])
   const [page, setPage] = useState(0)
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
-  useEffect(() => {
-    const newData = message.data.filter(item => item.sender === auth.user._id || item.sender === id)
-    setData(newData)
-    setPage(1)
-  },[ message.data, auth.user._id, id])
 
-  useEffect(() => {
-    if (id) {
-      const newUser = message.users.find(user => user._id === id)
-      if (newUser) {
-        setUser(newUser)
-      }
-    }
-  },[id, message.users])
-  useEffect(() => {
-    if(id) {
-      const getMessagesData = async () => {
-        
-        await dispatch(getMessages({auth, id}))
-        refDisplay.current && refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
-      }
-      getMessagesData()
-    }
-  },[dispatch, auth, id])
   const handleChangeMedia = (e) => {
     const files = [...e.target.files]
     let err =""
@@ -62,7 +39,9 @@ const RightSide = () => {
     })
     if(err) dispatch({type: GLOBAL_TYPES.ALERT, payload: {error: err}})
     setMedia([...media, ...newMedia])
-    refDisplay.current && refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
+    if(refDisplay.current){
+      refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
+    }
   }
   const handleDeleteMedia = (index) => {
     const newArr = [...media]
@@ -93,7 +72,33 @@ const RightSide = () => {
   const handleEmojiSelect = (emoji) => {
     setText(text + emoji.native);
   };
+// Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
+  useEffect(() => {
+    const newData = message.data.filter(item => item.sender === auth.user._id || item.sender === id)
+    setData(newData)
+  },[ message.data, auth.user._id, id])
+
+  // Trả về user mà mình nhắn tin
+  useEffect(() => {
+    if (id) {
+      const newUser = message.users.find(user => user._id === id)
+      if (newUser) setUser(newUser)
+    }
+  },[id, message.users])
+  // Xác định id + lấy data đoạn hội thoại từ backend đổ vào redux (có sửa)
+  useEffect(() => {
+    if(id) {
+      const getMessagesData = async () => {
+        setPage(1)
+        await dispatch(getMessages({auth, id}))
+        refDisplay.current && refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
+      }
+      getMessagesData()
+    }
+  },[dispatch, auth, id])
+  
   // Load more
+  // Cấu hình load more (Có sửa)
   useEffect(() => 
   {
     const observer = new IntersectionObserver(entries => {
@@ -106,16 +111,19 @@ const RightSide = () => {
     observer.observe(pageEnd.current)
   }, [setPage])
 
+  // Lướt lên thì trả về thêm message(Có sửa)
   useEffect(() => {
-    if(message.resultUsers >= (page - 1) * 9 && page > 1){
+    if(message.resultData >= (page - 1) * 9 && page > 1){
       dispatch(getMessages({auth,id ,page}))
     }
-  }, [message.resultUsers, page, auth, dispatch])
+  }, [message.resultData, page, id, auth, dispatch])
+
+// Khi gõ thì cuộn lại trang xuống (Có sửa)
   useEffect(() => {
     if(refDisplay.current){
       refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
     }
-  }, [message.data])
+  }, [text])
   return (
     <div className="conversation-message">
       <div className="conversation-message_header">
@@ -130,7 +138,7 @@ const RightSide = () => {
          <div className="conversation-message_chat-display" ref={refDisplay}>
             <button type="button" className="btn btn-warning" style={{opacity: '0'}} ref={pageEnd}>Load More</button>
             {
-              data.map((msg, index) => (
+              data1.map((msg, index) => (
                 <div key={index}>
 
                 {
