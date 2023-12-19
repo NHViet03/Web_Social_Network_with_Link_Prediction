@@ -4,7 +4,7 @@ import { useSelector ,useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {getDataAPI} from "../../utils/fetchData"
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
-import { addUser } from "../../redux/actions/messageAction";
+import { MESS_TYPES } from "../../redux/actions/messageAction";
 import loading from "../../images/loading.gif"
 export const ModalAddMessage = ({ setOpenModal }) => {
   const navigate = useNavigate()
@@ -29,7 +29,7 @@ export const ModalAddMessage = ({ setOpenModal }) => {
   }
   }
   const handleAddUser = (user) => {
-    dispatch(addUser({user,message}))
+    dispatch({ type: MESS_TYPES.ADD_USER, payload: {...user, text: '', media: []} })
     navigate(`/message/${user._id}`)
     setOpenModal(false)
   }

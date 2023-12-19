@@ -2,12 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import UserCard from "../UserCard";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import MsgDisplay from "./MsgDisplay";
 import { imageShow, videoShow } from "../../utils/mediaShow";
 import { imageUpload } from "../../utils//imageUpload";
 import {
   loadMoreMessages,
+  deleteConversation,
   addMessage,
   getMessages,
 } from "../../redux/actions/messageAction";
@@ -19,6 +20,7 @@ const RightSide = () => {
   const { auth, message, theme, socket } = useSelector((state) => state);
   const dispatch = useDispatch();
   const { id } = useParams();
+  const navigate = useNavigate();
   const refDisplay = useRef();
   const pageEnd = useRef();
   const [user, setUser] = useState([]);
@@ -78,6 +80,12 @@ const RightSide = () => {
   };
   const handleEmojiSelect = (emoji) => {
     setText(text + emoji.native);
+  };
+  const handleDeleteConversation = (user) => () => {
+    if (!window.confirm(`Bạn có muốn xóa cuộc trò chuyện với ${user.fullname}`))
+      return;
+   dispatch(deleteConversation({auth, id}))
+    return navigate('/message')
   };
   // Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
   useEffect(() => {
@@ -149,7 +157,7 @@ const RightSide = () => {
         <div className="conversation-message_header-icon">
           <i class="fa-solid fa-phone"></i>
           <i class="fa-solid fa-video"></i>
-          <i class="fa-solid fa-trash"></i>
+          <i class="fa-solid fa-trash" onClick={handleDeleteConversation(user)}></i>
         </div>
       </div>
       <div className="conversation-message_chat-container">
