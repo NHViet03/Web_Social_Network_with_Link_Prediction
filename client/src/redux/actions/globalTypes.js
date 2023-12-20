@@ -9,6 +9,7 @@ export const GLOBAL_TYPES = {
     MODAL: 'MODAL',
     ONLINE: 'ONLINE',
     OFFLINE: 'OFFLINE',
+    CALL: 'CALL',
 }
 
 export const EditData = (data,id, post)=> {

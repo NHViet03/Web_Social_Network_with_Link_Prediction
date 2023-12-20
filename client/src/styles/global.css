@@ -180,3 +180,5 @@ a:hover {
 @import url("./icons.css");
 /*---------------SETTING---------------------*/
 @import url("./changePassword.css");
+/*---------------CALL MODAL---------------------*/
+@import url("./call_modal.css");

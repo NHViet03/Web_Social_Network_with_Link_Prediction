@@ -15,9 +15,10 @@ import {
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import loadIcon from "../../images/loading.gif";
+import CallModal from "./CallModal";
 
 const RightSide = () => {
-  const { auth, message, theme, socket } = useSelector((state) => state);
+  const { auth, message, theme, socket, call} = useSelector((state) => state);
   const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -150,17 +151,36 @@ const RightSide = () => {
       refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
     }
   }, [text])
+
+  // Call
+  const caller = ({video}) =>{
+    const {_id, avatar, fullname} = user
+    const msg = {
+      sender: auth.user._id,
+      recipient: _id,
+      avatar, fullname, video
+    }
+    dispatch({type: GLOBAL_TYPES.CALL, payload: msg})
+  }
+  const handleAudioCall = () => {
+    caller({video: false})
+  };
+  const handleVideoCall = () => {
+    caller({video: true})
+  };
+
   return (
     <div className="conversation-message">
       <div className="conversation-message_header">
         <UserCard user={user} headerMessage />
         <div className="conversation-message_header-icon">
-          <i class="fa-solid fa-phone"></i>
-          <i class="fa-solid fa-video"></i>
+          <i class="fa-solid fa-phone" onClick={handleAudioCall}></i>
+          <i class="fa-solid fa-video" onClick={handleVideoCall}></i>
           <i class="fa-solid fa-trash" onClick={handleDeleteConversation(user)}></i>
         </div>
       </div>
       <div className="conversation-message_chat-container">
+      {call && <CallModal />}
         <div className="conversation-message_chat-display" ref={refDisplay}>
           <button
             type="button"
