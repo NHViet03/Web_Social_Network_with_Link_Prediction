@@ -6,6 +6,10 @@ const SocketServer = (socket) => {
     users.push({ id, socketId: socket.id });
   });
 
+  socket.on("disconnect", () => {
+    users = users.filter((user) => user.socketId !== socket.id);
+  });
+
   // Notify
   socket.on("createNotify", (notify) => {
     const userArr = users.filter((user) => notify.recipients.includes(user.id));

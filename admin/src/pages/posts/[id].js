@@ -145,7 +145,12 @@ function PostDetail() {
                       <td>{moment(comment.createdAt).format("l")}</td>
                       <td>{comment.user.username}</td>
                       <td>
-                        <button className="btn btn_table btn_delete">
+                        <button
+                          className="btn btn_table btn_delete"
+                          style={{
+                            minWidth: "40px",
+                          }}
+                        >
                           <i className="fa-solid fa-trash me-0 " />
                         </button>
                       </td>

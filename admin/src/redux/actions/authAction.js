@@ -30,6 +30,7 @@ export const login = (data) => async (dispatch) => {
         title: err.response.data.msg,
       },
     });
+    dispatch({ type: GLOBAL_TYPES.LOADING, payload: false });
   }
 };
 export const logout = async (dispatch) => {
@@ -79,6 +80,7 @@ export const refreshToken = () => async (dispatch) => {
           title: err.response.data.msg,
         },
       });
+      dispatch({ type: GLOBAL_TYPES.LOADING, payload: false });
     }
   }
 };
