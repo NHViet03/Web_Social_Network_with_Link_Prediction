@@ -21,6 +21,8 @@ import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
 import CallModal from "./components/message/CallModal";
 import { io } from "socket.io-client";
 import SocketClient from "./SocketClient";
+import Peer from 'peerjs'
+
 
 // Config moment
 moment.updateLocale("vi", {
@@ -83,6 +85,8 @@ function App() {
       dispatch(getNotifies(auth.token));
     }
   }, [auth, dispatch]);
+
+  
  
   return (
     <BrowserRouter>

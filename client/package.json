@@ -13,6 +13,7 @@
     "emoji-picker-react": "^4.5.16",
     "http-proxy-middleware": "^2.0.6",
     "moment": "^2.29.4",
+    "peerjs": "^1.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-multi-carousel": "^2.8.4",
