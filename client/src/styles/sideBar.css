@@ -60,6 +60,7 @@
 .side-bar .dropdown-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .side-bar .dropdown-menu {
@@ -71,18 +72,22 @@
   border-radius: 8px;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
   display: block;
+  cursor: pointer;
 }
 
 .side-bar .dropdown-title {
   font-size: 16px;
   line-height: 100%;
+  cursor: pointer;
 }
 
 .side-bar .dropdown-title .material-icons {
   font-size: 30px;
+  cursor: pointer;
 }
 
 .side-bar .dropdown-item {
+  cursor: pointer;
 }
 
 /* Responsive */

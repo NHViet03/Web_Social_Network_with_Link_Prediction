@@ -77,7 +77,7 @@ const Login = () => {
             <i className="fa-brands fa-facebook me-1 login_facebook-img" />
             <div className="login_facebook-text">Đăng nhập với Facebook</div>
           </a>
-          <a className="login_forgot">Quên mật khẩu</a>
+          <a className="login_forgot">{/*Quên mật khẩu*/}</a>
         </form>
         <div className="auth_footer">
           Bạn chưa có tài khoản{" "}

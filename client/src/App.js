@@ -18,9 +18,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from "./redux/actions/postAction";
 import { getNotifies } from "./redux/actions/notifyAction";
 import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
-
+import CallModal from "./components/message/CallModal";
 import { io } from "socket.io-client";
 import SocketClient from "./SocketClient";
+import Peer from 'peerjs'
+
 
 // Config moment
 moment.updateLocale("vi", {
@@ -45,7 +47,7 @@ moment.updateLocale("vi", {
 });
 
 function App() {
-  const { postDetail, sharePost, addPostModal, auth, modal } = useSelector(
+  const { postDetail, sharePost, addPostModal, auth, modal, call } = useSelector(
     (state) => ({
       postDetail: state.postDetail,
       sharePost: state.sharePost,
@@ -84,6 +86,8 @@ function App() {
     }
   }, [auth, dispatch]);
 
+  
+ 
   return (
     <BrowserRouter>
       <input type="checkbox" id="theme" />
@@ -95,6 +99,8 @@ function App() {
           {sharePost && <SharePostModal />}
           {addPostModal && <AddPostModal />}
           {auth.token && <SocketClient />}
+          {call !== null && <CallModal />}
+
           <div className="main_container">
             <Routes>
               <Route path="/" element={auth.token ? <Home /> : <Login />} />

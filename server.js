@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const { createServer } = require("node:http");
 const SocketServer = require("./socketServer");
-
+const {Peer, PeerServer} = require('peer');
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -25,6 +25,9 @@ io.on("connection", (socket) => {
   SocketServer(socket);
 });
 
+// Create peer server
+PeerServer({ port: 3001, path: "/" });
+
 //Routes
 app.use("/api", require("./routes/authRouter"));
 app.use("/api", require("./routes/postRouter"));
@@ -32,6 +35,7 @@ app.use("/api", require("./routes/commentRouter"));
 app.use("/api", require("./routes/userRouter"));
 app.use("/api", require("./routes/notifyRouter"));
 app.use("/api", require("./routes/adminRouter"));
+app.use("/api", require("./routes/messageRouter"));
 
 //Connect MongoDB
 
@@ -57,3 +61,5 @@ const port = process.env.PORT || 5000;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+

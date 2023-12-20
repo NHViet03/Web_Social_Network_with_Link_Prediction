@@ -1,5 +1,5 @@
 import { GLOBAL_TYPES } from "./globalTypes";
-import { postDataAPI } from "../../utils/fetchData";
+import { patchDataAPI, postDataAPI } from "../../utils/fetchData";
 import valid from "../../utils/valid";
 
 export const login = (data) => async (dispatch) => {
@@ -109,4 +109,42 @@ export const register = (data) => async (dispatch) => {
       },
     });
   }
+};
+export const changePassword = ({data, auth}) => async (dispatch) => {
+  const {  confirmPassword } = data;
+ 
+    if ( confirmPassword.length < 6)
+    return dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        error: "Mật khẩu mới phải nhiều hơn 6 kí tự",
+      },
+    });
+
+  try {
+    const res = await patchDataAPI("changepassword",
+    {
+      password: data.password,
+      newPassword: data.newPassword,
+      confirmPassword: data.confirmPassword,
+      user: auth.user
+    }
+    , auth.token);
+    
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        success: res.data.msg,
+      },
+    });
+    console.log(res)
+  } catch (err) {
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        error: err.response.data.msg,
+      },
+    });
+  }
+  
 };

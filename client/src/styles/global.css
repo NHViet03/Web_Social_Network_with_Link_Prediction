@@ -192,4 +192,9 @@ a:hover {
 
 /*---------------POST_THUMB---------------------*/
 @import url("./post_thumb.css");
-
+/*---------------ICONS---------------------*/
+@import url("./icons.css");
+/*---------------SETTING---------------------*/
+@import url("./changePassword.css");
+/*---------------CALL MODAL---------------------*/
+@import url("./call_modal.css");

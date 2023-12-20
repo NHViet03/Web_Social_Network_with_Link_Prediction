@@ -20,6 +20,7 @@ router.get("/user_posts/:id", auth, postCtrl.getUserPosts);
 
 router.patch("/save_post/:id", auth, postCtrl.savePost);
 router.patch("/unsave_post/:id", auth, postCtrl.unSavePost);
+router.get("/getSavePost", auth, postCtrl.getSavePosts);
 
 router.post("/report_post", auth, postCtrl.reportPost);
 
