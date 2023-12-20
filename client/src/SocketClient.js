@@ -8,6 +8,8 @@ const SocketClient = () => {
   const auth = useSelector((state) => state.auth);
   const socket = useSelector((state) => state.socket);
   const online = useSelector((state) => state.online);
+  const call = useSelector((state) => state.call);
+
 
   const dispatch = useDispatch();
 
@@ -84,6 +86,22 @@ const SocketClient = () => {
  
     return () => socket.off("CheckUserOffline");
   }, [dispatch, socket]);
+
+
+  // Call User
+   useEffect(() => {
+    socket.on("callUserToClient", data => {
+      dispatch({type: GLOBAL_TYPES.CALL, payload: data})
+    });
+    return () => socket.off("callUserToClient");
+  }, [dispatch, socket]);
+
+  useEffect(() => {
+    socket.on("userBusy", data => {
+      dispatch({type: GLOBAL_TYPES.ALERT, payload: {error: `${call.username} đang bận`}})    });
+    return () => socket.off("userBusy");
+  }, [dispatch, socket, call]);
+
   return <></>;
 };
 

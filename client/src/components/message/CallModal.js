@@ -5,7 +5,7 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import Avatar from "../Avatar";
 
 const CallModal = () => {
-  const { call } = useSelector((state) => state);
+  const { call, auth, socket } = useSelector((state) => state);
   const [mins, setMins] = useState(0)
   const [second, setSecond] = useState(0)
   const [total, setTotal] = useState(0)
@@ -39,13 +39,23 @@ const CallModal = () => {
    }
   }, [answer, dispatch])
 
-
-  const handeEndCall = () => {
-    dispatch({ type: GLOBAL_TYPES.CALL , payload: null});
-  }
   const handleAnswer = () => {
     setAnswer(true)
   }
+    // End Call
+    const handeEndCall = () => {
+      dispatch({ type: GLOBAL_TYPES.CALL , payload: null});
+      socket.emit('endCall', call)
+    }
+    useEffect(() => {
+      if (socket && typeof socket.on === 'function') {
+        socket.on('endCallToClient', data => {
+          dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
+        });
+        return () => socket.off('endCallToClient');
+      }
+    }, [socket, dispatch]);
+    
   return (
     <>
       {call === null ? (
@@ -57,14 +67,23 @@ const CallModal = () => {
               <Avatar src={call?.avatar} size="avatar-lg" />
               <h4 className="mt-4">{call?.username}</h4>
               <h6>{call?.fullname}</h6>
-  
-              <div>
-                {call?.video ? (
-                  <span>Đâng gọi video...</span>
-                ) : (
-                  <span>Đang gọi điện thoại</span>
-                )}
+                {
+                  answer 
+                  ? 
+                  <div>
+                      <small>{mins.toString().length < 2 ? '0' +mins : mins}</small>
+                      <small>:</small>
+                      <small>{second.toString().length < 2 ? '0' +second : second}</small>
+                  </div>
+                  : <div>
+                      {call?.video ? (
+                        <span>Đâng gọi video...</span>
+                      ) : (
+                        <span>Đang gọi điện thoại</span>
+                      )}
               </div>
+                }
+             
            </div>
 
             <div className="timer">
@@ -74,7 +93,9 @@ const CallModal = () => {
           </div>
           <div className="call_menu">
                 <span className="material-icons text-danger" onClick={handeEndCall}>call_end</span>
-                <>
+                {
+                  (call.recipient === auth.user._id && !answer) &&
+                  <>
                   {
                     call.video ?
                     <span className="material-icons text-success" onClick={handleAnswer}>
@@ -86,6 +107,8 @@ const CallModal = () => {
                     </span>
                   }
                 </>
+                }
+               
           </div>
           </div>
           

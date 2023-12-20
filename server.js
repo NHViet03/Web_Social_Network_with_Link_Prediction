@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
 });
 
 // Create peer server
-PeerServer({ port: 3001, path: "/" });
+PeerServer({ port: 3001, path: "/" });  
 
 //Routes
 app.use("/api", require("./routes/authRouter"));

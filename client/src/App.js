@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PageRender from "./customRouter/PageRender";
-import PrivateRouter from "./customRouter/PrivateRouter";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Home from "./pages/home";
@@ -86,7 +85,12 @@ function App() {
     }
   }, [auth, dispatch]);
 
-  
+  useEffect(() => {
+    const newPeer = new Peer(undefined, {
+      host: '/', port: 3001,
+    })
+   dispatch({type: GLOBAL_TYPES.PEER, payload: newPeer})
+  },[])
  
   return (
     <BrowserRouter>

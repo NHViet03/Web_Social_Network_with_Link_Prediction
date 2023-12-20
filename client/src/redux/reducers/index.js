@@ -15,6 +15,7 @@ import modal from "./modalReducer";
 import message from "./messageReducer";
 import online from "./onlineReducer";
 import call from "./callReducer";
+import peer from "./peerReducer";
 export default combineReducers({
   auth,
   alert,
@@ -32,4 +33,5 @@ export default combineReducers({
   message,
   online,
   call,
+  peer
 });
