@@ -1,0 +1,17 @@
+.header{
+    background-color: #fff;
+    border-radius: 12px;
+    padding:8px 12px;
+    margin-bottom: 32px;
+}
+
+.header_config{
+    display: flex;
+    align-items: center;
+    gap:24px;
+    cursor: pointer;
+}
+
+.header_config i{
+    font-size: 20px;
+}

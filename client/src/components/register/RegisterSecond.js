@@ -1,13 +1,15 @@
-import Reac, { useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import cake from "../../images/cake.png";
 import { renderOptionSelect } from "../../utils/renderDate";
-
+import { register } from "../../redux/actions/authAction";
+import { useDispatch } from "react-redux";
 const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
+  const dispatch = useDispatch();
   const initialState = {
     month: 1,
     day: 1,
-    year: 2023,
+    year: 1970,
   };
   const [date, setDate] = useState(initialState);
   const { month, day, year } = date;
@@ -17,9 +19,15 @@ const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const birthday=moment(new Date(year,month-1,day)).format('L'); 
-    setUserData({...userData,birthday})
-    setRegisterStep(preStep=>preStep+1);
+    const { month, day, year } = date;
+    const birthday = new Date(year, month - 1, day).toISOString();
+    const newUser = {
+      ...userData,
+      birthday: birthday,
+    };
+    setUserData(newUser);
+    dispatch(register(newUser));
+    setRegisterStep((preStep) => preStep + 1);
   };
 
   return (
@@ -33,14 +41,14 @@ const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
         Thông tin này sẽ không hiển thị trên trang cá nhân công khai của bạn.
       </p>
       <div className="mb-3 d-flex justify-content-around align-content-center gap-3 text-center">
-        <select class="form-select" name="month" onChange={handleChangeInput} >
+        <select class="form-select" name="month" onChange={handleChangeInput}>
           {renderOptionSelect("month")}
         </select>
         <select class="form-select" name="day" onChange={handleChangeInput}>
-          {renderOptionSelect("day", year,month)}
+          {renderOptionSelect("day", year, month)}
         </select>
-        <select class="form-select"  name="year" onChange={handleChangeInput}>
-        {renderOptionSelect("year", year)}
+        <select class="form-select" name="year" onChange={handleChangeInput}>
+          {renderOptionSelect("year", year)}
         </select>
       </div>
 

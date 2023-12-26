@@ -1,20 +1,21 @@
-:root{
-  --primary-color:#C43302;
-  --border-color:#d9d9d9;
-  --text-color:#737373;
+:root {
+  --primary-color: #c43302;
+  --border-color: #d9d9d9;
+  --text-color: #737373;
 }
-*{
-  padding:0;
+
+* {
+  padding: 0;
   box-sizing: border-box;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-input{
+input {
   outline: none;
 }
 
@@ -25,37 +26,175 @@ input{
   box-shadow: unset;
 }
 
-a{
+a {
   text-decoration: none;
+  color: unset;
+}
+a:hover {
+  color: unset;
+}
+#theme {
+  display: none;
+}
+#theme:checked ~ * {
+  filter: invert(1);
 }
 
-.App{
+.App {
   width: 100%;
   min-height: 100vh;
-  background: white;
+  background: #fff;
 }
-.main{
+.main {
   width: 100%;
   min-height: 100vh;
   margin: auto;
 }
+.main_container {
+  margin-left: 250px;
+}
 
-.text_primary{
+.text_primary {
   color: var(--primary-color);
 }
-.btn_primary{
+.btn_normal {
+  padding: 8px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: #fff;
+  font-weight: 500;
+}
+.btn_normal.btn_accept {
   background-color: var(--primary-color);
-  color:#fff;
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+.btn_primary {
+  background-color: var(--primary-color);
+  color: #fff;
   border-radius: 8px;
   opacity: 0.9;
-  &:hover{
-    color:#fff;
+  &:hover {
+    background-color: var(--primary-color);
+    color: #fff;
     opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  color: #fff;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+/* Custom EMOJI */
+.form-emoji {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-emoji i {
+  position: relative;
+  font-size: 24px;
+  cursor: pointer;
+}
+.form-emoji i:active {
+  transform: scale(1.1);
+  transition: scale 0.3s ease-in-out;
+}
+
+.form-emoji .form-emoji-picker {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 4px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+    rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.form-emoji .form-emoji-picker em-emoji-picker {
+  max-height: 300px;
+}
+
+@media (max-width: 1024px) {
+  .main_container {
+    margin-left: 80px;
   }
 }
 
 /*---------------AUTH---------------------*/
 @import url("./auth.css");
-
+/*---------------LOADING---------------------*/
+@import url("./loading.css");
 /*---------------SIDEBAR---------------------*/
 @import url("./sideBar.css");
+
+/*---------------AVATAR---------------------*/
+@import url("./avatar.css");
+
+/*---------------HOME---------------------*/
+@import url("./home.css");
+
+/*---------------USER CARD---------------------*/
+@import url("./userCard.css");
+
+/*---------------POST CARD---------------------*/
+@import url("./postCard.css");
+
+/*---------------POST DETAIL MODAL---------------------*/
+@import url("./post_detail_modal.css");
+
+/*---------------SHARE POST MODAL---------------------*/
+@import url("./share_post_modal.css");
+
+/*---------------EXPLORE---------------------*/
+@import url("./explore.css");
+
+/*---------------SEARCH MODAL---------------------*/
+@import url("./search_modal.css");
+
+/*---------------NOTIFY MODAL---------------------*/
+@import url("./notify_modal.css");
+
+/*---------------FOLLOW BUTTON---------------------*/
+@import url("./follow_btn.css");
+
+/*---------------STORY MODAL ---------------------*/
+@import url("./story_modal.css");
+
+/*---------------ADD POST MODAL ---------------------*/
+@import url("./add_post_modal.css");
+
+/*---------------DELETE POST MODAL ---------------------*/
+@import url("./delete_post_modal.css");
+
+/*---------------REPORT POST MODAL ---------------------*/
+@import url("./report_post_modal.css");
+
+/*---------------MESSAGE---------------------*/
+@import url("./message.css");
+
+
+/*---------------LOADING---------------------*/
+@import url("./loading_v2.css");
+/*---------------MESSAGE---------------------*/
+@import url("./profile.css");
+
+/*---------------POST_THUMB---------------------*/
+@import url("./post_thumb.css");
+/*---------------ICONS---------------------*/
+@import url("./icons.css");
+/*---------------SETTING---------------------*/
+@import url("./changePassword.css");
+/*---------------CALL MODAL---------------------*/
+@import url("./call_modal.css");

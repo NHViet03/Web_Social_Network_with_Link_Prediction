@@ -1,19 +1,41 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Avatar from "../Avatar";
 
 const MenuItem = ({ link, active }) => {
+  const theme = useSelector((state) => state.theme);
+
   return (
-    <li className="nav-item my-2 px-2">
+    <li className={`nav-item mb-3 px-2  ${
+      active ? "active" : ""
+    }`}>
       <Link
-        className={`nav-link ${
-          active ? "active" : ""
-        }  d-flex align-items-center`}
+        className={`nav-link d-flex align-items-center`}
         to={link.path}
+        style={{ filter: active && theme ? "invert(1)" : "invert(0)" }}
       >
-        <span className="material-icons nav-icon">{link.icon}</span>
+        {link.avatar ? (
+          <Avatar
+            src={link.avatar}
+            size="avatar-xs"
+            primary={active ? true : false}
+          />
+        ) : (
+          <span
+            className="material-icons nav-icon"
+            style={{
+              rotate: link.path === "/message" ? "-30deg" : "",
+              transform: link.path === "/message" ? "translate(3px,-2px)" : "",
+            }}
+          >
+            {active ? (link.active ? link.active : link.icon) : link.icon}
+          </span>
+        )}
         <span
           className="nav-text ms-3"
-          style={{ fontWeight: active ? "500" : "" }}
+          style={{ fontWeight: active ? "500" : "", marginTop:link.path === "/message" ? "6px" : "",}}
+          
         >
           {link.label}
         </span>

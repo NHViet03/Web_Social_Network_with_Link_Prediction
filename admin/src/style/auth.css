@@ -1,0 +1,64 @@
+.auth_page {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  margin-left: -250px;
+  background-color: #fff;
+  margin: -24px;
+}
+.auth_logo {
+  object-fit: cover;
+  width: 250px;
+  display: block;
+  margin: 0 auto 16px;
+}
+.auth_frames {
+  width: 450px;
+  height: 500px;
+  margin-right: 50px;
+  object-fit: contain;
+}
+
+.auth_form {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  padding: 48px;
+  height: fit-content;
+}
+.auth_form .form_input {
+  position: relative;
+}
+.auth_form .form_input .show-hide {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--primary-color);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.auth_input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+/* ----------------- Login Page ------------- */
+
+.login_from-register {
+}
+.auth_form .btn-login {
+  padding: 10px 0;
+  font-size: 15px;
+  color: #fff;
+  border-radius: 8px;
+  background-color: var(--primary-color);
+  width: 100%;
+}

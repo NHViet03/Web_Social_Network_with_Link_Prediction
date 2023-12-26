@@ -1,0 +1,16 @@
+.userCard{
+ 
+}
+
+.userCard-content{
+    margin-left:12px;
+}
+.userCard-username{
+    margin:0;
+}
+.userCard-fullname{
+    display: block;
+    color: var(--text-color);
+    font-size: 14px;
+    margin-top: -1px;
+}

@@ -1,0 +1,110 @@
+.sharePost_modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  padding-top: 1px;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.sharePost_modal-content {
+  background-color: #fff;
+  width: 100%;
+  max-width: 550px;
+  height: 550px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.sharePost_modal-title {
+  text-align: center;
+  font-weight: 700;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.sharePost_modal-search {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 4px 16px;
+}
+
+.sharePost_modal-username {
+  background-color: rgba(196, 51, 2, 0.2);
+  padding: 2px 6px;
+  margin: 2px 4px;
+  border-radius: 12px;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+}
+
+.sharePost_modal-search input {
+  border: none;
+  margin-left: 8px;
+}
+
+.sharePost_modal-search input:focus {
+  border: none;
+}
+
+.sharePost_modal-result {
+  flex: 1;
+  overflow-y: auto;
+}
+.sharePost_modal-result::-webkit-scrollbar {
+  display: none;
+}
+.sharePost_modal-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+
+.sharePost_modal-user:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.sharePost_modal-user .form-check-input {
+  border: 1px solid var(--border-color);
+  width: 24px;
+  height: 24px;
+  outline: none;
+  border-radius: 50%;
+}
+
+.sharePost_modal-user .form-check-input:checked {
+  background-color: var(--primary-color);
+  border: none;
+  box-shadow: none;
+}
+
+.sharePost_modal-button {
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sharePost-close {
+  top: 8px !important;
+  color: #000 !important;
+}
+
+@media (max-width: 768px) {
+  .sharePost_modal-content {
+    max-width: 450px;
+    height: 450px;
+  }
+}

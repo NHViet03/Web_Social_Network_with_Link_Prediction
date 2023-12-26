@@ -1,0 +1,46 @@
+.user_detail {
+}
+
+.user_detail header {
+  padding: 12px 16px;
+  border-radius: 4px;
+}
+
+.user_cards {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 24px;
+  gap:24px;
+}
+
+.user_cards > div {
+  flex: 1;
+  border-right: 1px solid var(--border-color);
+}
+
+.user_cards > div:last-child {
+  border-right: unset;
+}
+
+.user_side{
+    gap:24px;
+}
+
+.user_side_left{
+    flex-basis:33%;
+}
+
+.user_side_left >div{
+    border:1px solid var(--border-color);
+    border-radius: 4px;
+    padding:12px;
+}
+
+.user_side_right{
+    flex:1;
+}
+
+.user_posts{
+    border:1px solid var(--border-color);
+    border-radius: 4px;
+    padding:12px;
+}

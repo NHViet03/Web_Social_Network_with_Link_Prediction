@@ -1,0 +1,92 @@
+.post_detail {
+}
+
+.post_detail header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.post_detail header span {
+  font-size: 20px;
+  font-weight: 500;
+}
+.post_detail header button {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.post_detail_comments {
+  flex: 1 1 60%;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 24px;
+}
+
+/* Post Images */
+.post_detail_comments img {
+  height:450px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: unset;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.carousel-btn {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50%;
+}
+
+.post_detail_user-info {
+  flex-basis: 40%;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 24px 0;
+}
+
+.post_detail_user-info > div {
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post_detail_user-info > div:last-child {
+  border-bottom: none;
+}
+
+/* Modal Delete Post */
+.post_detail_modal_card{
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding:12px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+}
+
+.post_detail_modal_card:last-child{
+  border-bottom: none;
+}
+
+.post_detail_modal_card.active{
+  background-color: #c433024d;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.post_detail_modal_card i{
+  font-size: 22px;
+  color:rgba(0, 0, 0, 0.5);
+}

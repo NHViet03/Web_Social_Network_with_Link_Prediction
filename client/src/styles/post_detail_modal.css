@@ -1,0 +1,74 @@
+.postDetail_modal{
+    position: fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height: 100vh;
+    padding-top: 1px;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.postDetail{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.postDetail_modal-content{
+    background-color: #fff;
+    width:100%;
+    max-width: 1100px;
+    height: 650px;
+    border-radius: 4px;
+}
+
+.postDetail .postDetail_modal-content{
+    height: 600px;
+    max-width: 1000px;
+    border: 1px solid var(--border-color);
+}
+
+.postDetail_modal .card_body,
+.postDetail .card_body{
+    margin-top: unset!important;
+}
+.postDetail_modal .card_body img,
+.postDetail .card_body img{
+    height: 650px;
+    border-radius: unset;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+.postDetail .card_body img{
+    height: 600px;
+}
+
+/* Card Footer */
+
+.postDetail_modal .card_footer,
+.postDetail .card_footer{
+    border-top: 1px solid var(--border-color);
+    padding:0;
+}
+
+.postDetail_modal .card_footer .card_comment,
+.postDetail .card_footer .card_comment{
+    padding:0 16px;
+}
+
+
+@media (max-width: 768px) {
+    .postDetail_modal-content{
+        max-width: 550px;
+        height: 400px;
+    }
+    .postDetail_modal .card_body img{
+        height: 400px;
+    }
+}

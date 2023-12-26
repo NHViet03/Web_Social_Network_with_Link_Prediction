@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { logout } from "../../redux/actions/authAction";
+
 const MenuItemDropdown = () => {
   const [show, setShow] = useState(false);
+  const theme = useSelector((state) => state.theme);
+  const dispatch = useDispatch();
 
   return (
     <div className="dropdown w-100 px-1 py-2">
@@ -9,37 +15,45 @@ const MenuItemDropdown = () => {
         className="text-center d-flex align-items-center mb-0 dropdown-title"
         onClick={() => setShow(!show)}
       >
-        <span class="material-icons me-2">menu</span>
-        Xem thêm
+        <span className="material-icons me-2">menu</span>
+        <span className="dropdown-text">Xem thêm</span>
       </p>
       {show && (
         <ul className="dropdown-menu mb-1 p-2">
           <li>
             <Link
               className="dropdown-item px-2 py-3 d-flex align-items-center"
-              to={"/"}
+              to={"/setting"}
             >
               <span className="material-icons">settings</span>
-              <span className="nav-text ms-3">Cài đặt</span>
+              <span className="nav-text ms-3">Đổi mật khẩu</span>
             </Link>
           </li>
           <li>
-            <Link
+            {/* <Link
               className="dropdown-item px-2 py-3 d-flex align-items-center"
               to={"/"}
             >
               <span className="material-icons">show_chart</span>
               <span className="nav-text ms-3">Hoạt động của bạn</span>
-            </Link>
+            </Link> */}
           </li>
           <li>
-            <Link
+            <label
               className="dropdown-item px-2 py-3 d-flex align-items-center"
-              to={"/"}
+              htmlFor="theme"
+              onClick={() =>
+                dispatch({ type: GLOBAL_TYPES.THEME, payload: !theme })
+              }
             >
-              <span className="material-icons">light_mode</span>
-              <span className="nav-text ms-3">Chế độ sáng</span>
-            </Link>
+              <span className="material-icons">
+                {theme ? "light_mode" : "dark_mode"}
+              </span>
+              <span className="nav-text ms-3">
+                Chế độ {theme ? "sáng" : "tối"}
+              </span>
+            
+            </label>
           </li>
           <li>
             <Link
@@ -54,7 +68,7 @@ const MenuItemDropdown = () => {
             <hr className="dropdown-divider" />
           </li>
           <li>
-            <Link className="dropdown-item px-2 py-3" to={"/"}>
+            <Link className="dropdown-item px-2 py-3 " to={"/"} onClick={() => dispatch(logout)}>
               Đăng xuất
             </Link>
           </li>

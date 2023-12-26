@@ -1,0 +1,30 @@
+import { EXPLORE_TYPES } from "../actions/exploreAction";
+
+const initialState = {
+  posts: [],
+  result: 0,
+  firstLoad: false,
+};
+
+const exploreReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case EXPLORE_TYPES.GET_POSTS:
+      return {
+        ...state,
+        posts: action.payload.posts,
+        result: action.payload.result,
+        firstLoad: true,
+      };
+    case EXPLORE_TYPES.UPDATE_POST:
+      return {
+        ...state,
+        posts: state.posts.map((post) =>
+          post._id === action.payload._id ? action.payload : post
+        ),
+      };
+    default:
+      return state;
+  }
+};
+
+export default exploreReducer;
