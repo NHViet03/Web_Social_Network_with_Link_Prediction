@@ -11,4 +11,14 @@ module.exports = function(app) {
       }
     })
   );
+  app.use(
+    '/',
+    createProxyMiddleware({
+      target: 'http://localhost:8000',
+      changeOrigin: true,
+      headers: {
+        'Connection': 'keep-alive'
+      }
+    })
+  );
 };

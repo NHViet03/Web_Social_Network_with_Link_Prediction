@@ -7,6 +7,7 @@ import { logout } from "../../redux/actions/authAction";
 const MenuItemDropdown = () => {
   const [show, setShow] = useState(false);
   const theme = useSelector((state) => state.theme);
+  const developer = useSelector((state) => state.developer);
   const dispatch = useDispatch();
 
   return (
@@ -50,7 +51,24 @@ const MenuItemDropdown = () => {
                 {theme ? "light_mode" : "dark_mode"}
               </span>
               <span className="nav-text ms-3">
-                Chế độ {theme ? "sáng" : "tối"}
+                Giao diện {theme ? "sáng" : "tối"}
+              </span>
+            
+            </label>
+          </li>
+          <li>
+            <label
+              className="dropdown-item px-2 py-3 d-flex align-items-center"
+              htmlFor="developer"
+              onClick={() =>
+                dispatch({ type: GLOBAL_TYPES.DEVELOPER, payload: !developer })
+              }
+            >
+              <span className="material-icons">
+                {!developer ? "code" : "person"}
+              </span>
+              <span className="nav-text ms-3">
+                Chế độ {!developer ? "lập trình viên" : "người dùng"}
               </span>
             
             </label>

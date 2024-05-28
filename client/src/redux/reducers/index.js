@@ -3,6 +3,7 @@ import auth from "./authReducer";
 import postDetail from "./postDetailReducer";
 import sharePost from "./sharePostReducer";
 import theme from "./themeReducer";
+import developer from "./developerReducer";
 import homePosts from "./postReducer";
 import notify from "./notifyReducer";
 import addPostModal from "./addPostModalReducer";
@@ -22,6 +23,7 @@ export default combineReducers({
   postDetail,
   sharePost,
   theme,
+  developer,
   homePosts,
   notify,
   addPostModal,

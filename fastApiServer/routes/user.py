@@ -4,6 +4,8 @@ from models.user import User
 from config.db import userCollection
 from schemas.user import userEntity, usersEntity
 import networkx as nx
+import numpy as np
+
 
 user = APIRouter()
 
@@ -120,6 +122,7 @@ def top_jaccard_non_neighbours(graph, node):
     top_5_common_non_neighbours = [non_neighbor for non_neighbor, count in sorted_common_neighbours[:5]]
     
     return top_5_common_non_neighbours
+
 # Gới ý user bằng JC
 @user.get('/SuggestionUserByJC{user_id}')
 def getSuggestionUserByJC( user_id: str):
@@ -135,3 +138,108 @@ def getSuggestionUserByJC( user_id: str):
         "status": "ok",
         "data": user_Entity
     }
+    
+
+# Hàm Adamic-Adar
+def adamic_adar_index(G, u, v):
+    # Tìm cách hàng xóm chung của node u và v
+    neighbors_u = set(G.neighbors(u))
+    neighbors_v = set(G.neighbors(v))
+    common_neighbors = neighbors_u.intersection(neighbors_v)
+    
+    # Tính điểm Adamic-Adar
+    aa_index = sum(1 / np.log10(G.degree(w)) for w in common_neighbors)
+    
+    return aa_index
+
+
+def getTop5UserByAdamicAdar(predict_node: str):
+    #Tạo Graph user
+    G_users = initGraph()
+    
+    all_nodes = set(G_users.nodes())     # Lấy tất cả node trong đồ thị
+    neighbor_nodes = set(G_users.neighbors(predict_node)) # Các node hàng xóm của node dự đoán
+    unconnected_nodes = all_nodes - neighbor_nodes - {predict_node} # Các node chưa có liên kết với node dự đoán
+    
+    adamic_adar_scores = []
+
+    for v in unconnected_nodes:
+        score = adamic_adar_index(G_users, predict_node, v)
+        adamic_adar_scores.append([predict_node, v, score])
+        
+    sorted_adamic_adar_scores = sorted(adamic_adar_scores, key=lambda x: x[2], reverse=True)
+    top5_adamic_adar = np.array(sorted_adamic_adar_scores[:5])[:, 1]
+        
+    return top5_adamic_adar
+    
+
+# Dự đoán liên kết Adamic-Adar
+@user.get('/SuggestionUserByAA{user_id}')
+def getSuggestionUserByAA( user_id: str):
+    
+    userSuggestions = getTop5UserByAdamicAdar(user_id)
+    
+    query = {"_id": {"$in": [ObjectId(user) for user in userSuggestions]}}
+    top5_predict_users = userCollection.find(query)
+    
+    top5_predict_users = usersEntity(top5_predict_users)
+    
+    return {
+        "status": "ok",
+        "data": top5_predict_users
+    }
+    
+    
+# Hàm Katz Index
+def katz_index_from_node(G, beta=0.1, target_node=None):
+    # Tạo ma trận kề từ đồ thị
+    A = nx.to_numpy_array(G)
+    
+    n = A.shape[0]
+    I = np.eye(n)
+    S = np.linalg.inv(I - beta * A) - I
+    
+
+    nodes = list(G.nodes())
+    node_index = {node: idx for idx, node in enumerate(nodes)}
+    target_index = node_index[target_node]
+    katz_scores = S[target_index, :]
+    neighbor_nodes = set(G.neighbors(target_node))
+    
+    # Loại các node đã có liên kết và chính node target
+    results = []
+    for i in range(n):
+        if nodes[i] not in neighbor_nodes and nodes[i] != target_node:
+            results.append((target_node, nodes[i], katz_scores[i]))
+    
+    return results
+
+
+def getTop5UserByKatzIndex(predict_node: str):
+    #Tạo Graph user
+    G_users = initGraph()
+    beta = 0.1
+    katz_scores = katz_index_from_node(G_users, beta=beta, target_node=predict_node)
+    
+    sorted_katz_scores = sorted(katz_scores, key=lambda x: x[2], reverse=True)
+    top5_katz_scores = np.array(sorted_katz_scores[:5])[:, 1]
+    
+    return top5_katz_scores
+
+
+# Dự đoán liên kết Katz Index
+@user.get('/SuggestionUserByKatz{user_id}')
+def getSuggestionUserByKatz( user_id: str):
+    
+    userSuggestions = getTop5UserByKatzIndex(user_id)
+    
+    query = {"_id": {"$in": [ObjectId(user) for user in userSuggestions]}}
+    top5_predict_users = userCollection.find(query)
+    
+    top5_predict_users = usersEntity(top5_predict_users)
+    
+    return {
+        "status": "ok",
+        "data": top5_predict_users
+    }
+    

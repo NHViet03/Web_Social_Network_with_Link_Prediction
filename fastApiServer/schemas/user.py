@@ -1,6 +1,6 @@
 def userEntity(item) -> dict:
     return {
-        "id": str(item["_id"]),
+        "_id": str(item["_id"]),
         "fullname": item.get("fullname"),
         "username": item.get("username"),
         "email": item.get("email"),
