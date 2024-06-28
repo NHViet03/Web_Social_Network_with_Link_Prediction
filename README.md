@@ -101,10 +101,65 @@ We developed a social network website inspired by Instagram. The project include
 
 ### Prerequisites
 - Node.js
-- npm 
+- npm or yarn
 - Python 3.x (for FastAPI and NetworkX)
+- MongoDB (local or cloud instance)
 
-### Installation Steps
+### Frontend Setup
+1. **Clone the repository and navigate to the client directory:**
+   ```bash
+   git clone https://github.com/NHViet03/Web_Social_Network_with_Link_Prediction
+   cd /Web_Social_Network_with_Link_Prediction/client
+   
+2. **Install dependencies:**
+   ```bash
+   npm install
+
+3. **Start the client frontend server:**
+   ```bash
+   npm start
+   
+4. **Navigate to the admin directory and install dependencies:**
+   ```bash
+   cd /Web_Social_Network_with_Link_Prediction/admin
+   npm install
+   
+5. **Start the admin frontend server:**
+   ```bash
+   npm start
+   
+### Backend Setup
+1. **Navigate to the backend directory and Install dependencies:**
+   ```bash
+   cd /Web_Social_Network_with_Link_Prediction
+   npm install
+
+2. **Set up environment variables, create a .env file with:**
+   ```bash
+   MONGODB_URL=your_mongodb_connection_string
+   ACCESS_TOKEN_SECRET=your_access_key
+   REFRESH_TOKEN_SECRET=your_refresh_key
+
+3. **Start the backend server:**
+   ```bash
+   npm start
+   
+### FastAPI Setup (for follower suggestion)
+1. **Install FastAPI, NetworkX and required libraries:**
+   ```bash
+   pip install fastapi uvicorn networkx
+   npm install
+   
+2. **Navigate to the FastAPI directory:**
+   ```bash
+   cd /Web_Social_Network_with_Link_Prediction/fastAPIServer
+
+3. **Start the FastAPI server::**
+   ```bash
+   python -m uvicorn index:app --reload
+  
+## Related Project
+- [Mobile-App_Social_Network](https://github.com/NHViet03/Mobile-App_Social_Network)
 
 ## References
 
