@@ -4,7 +4,7 @@
 
 ## Project Introduction
 We developed a social network website inspired by Instagram. The project includes a website for users and another for administrators using a NoSQL database. The user site provides all the basic features of a social network such as posting, liking, commenting on posts, as well as following, messaging, etc. between users. The admin site allows for statistical analysis and management of content such as posts, users, user reports, and more. In addition, using graph theory and link prediction algorithms, we employ four link prediction algorithms based on node similarity: Common Neighbor, Jaccard, Adamic-Adar, and Katz Index.
-* This project is used to serve as a final term project for two courses in the Information Systems department at UIT: Web Application Development - IS207 (9.5/10) and Social Network - IS353 (9/10)
+* This project is used to serve as a final term project for two courses in the Information Systems department at UIT: Web Application Development - IS207 (9.5/10) and Social Network - IS353.O21 (9/10)
 
 ## Team Members
 
