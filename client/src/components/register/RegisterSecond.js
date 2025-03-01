@@ -26,8 +26,8 @@ const RegisterSecond = ({ userData, setUserData, setRegisterStep }) => {
       birthday: birthday,
     };
     setUserData(newUser);
-    dispatch(register(newUser));
-    setRegisterStep((preStep) => preStep + 1);
+    dispatch(register(newUser,setRegisterStep));
+    
   };
 
   return (

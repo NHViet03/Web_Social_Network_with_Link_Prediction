@@ -1,6 +1,7 @@
 const Users = require("../models/userModel");
 const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 const authCtrl = {
   register: async (req, res) => {
@@ -25,32 +26,64 @@ const authCtrl = {
 
       const passwordHash = await bycrypt.hash(password, 12);
 
+      // Create OTP for email verification 5 numbers
+      const emailOtp = Math.floor(100000 + Math.random() * 900000);
+
       const newUser = new Users({
         fullname,
         username: newUserName,
         email,
         password: passwordHash,
         birthday,
-      });
-
-      const access_token = createAccessToken({ id: newUser._id });
-      const refresh_token = createRefreshToken({ id: newUser._id });
-
-      res.cookie("refreshtoken", refresh_token, {
-        httpOnly: true,
-        path: "/api/refresh_token",
-        maxAge: 30 * 7 * 24 * 60 * 60 * 1000, // 30days
+        otpcode: emailOtp,
       });
 
       await newUser.save();
 
-      res.json({
-        msg: "Register Success",
-        access_token,
-        user: {
-          ...newUser._doc,
-          password: "",
+      // Send email to user for verification
+      const html = `
+            <h2>Xác thực tài khoản Dreamers</h2>
+            <h3>Chào mừng bạn đến với Dreamers. Hãy xác thực tài khoản với username: ${newUserName}</h3>
+            <h3>Mã OTP của bạn là: ${emailOtp}</h3>
+            <p>Đây là email xác thực tài khoản Dreamers của bạn. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+            `;
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "dreamerssocialuit@gmail.com",
+          pass: "pwxdinwdinhfjwvf",
         },
+      });
+
+      const mailOptions = {
+        from: "dreamerssocialuit@gmail.com",
+        to: email,
+        subject: "Xác thực tài khoản Dreamers",
+        html: html,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      // const access_token = createAccessToken({ id: newUser._id });
+      // const refresh_token = createRefreshToken({ id: newUser._id });
+
+      // res.cookie("refreshtoken", refresh_token, {
+      //   httpOnly: true,
+      //   path: "/api/refresh_token",
+      //   maxAge: 30 * 7 * 24 * 60 * 60 * 1000, // 30days
+      // });
+
+      // res.json({
+      //   msg: "Register Success",
+      //   access_token,
+      //   user: {
+      //     ...newUser._doc,
+      //     password: "",
+      //   },
+      // });
+      res.json({
+        msg: "Đăng ký thành công. Vui lòng kiểm tra email của bạn.",
+        userID: newUser._id,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -60,14 +93,17 @@ const authCtrl = {
     try {
       const { email, password } = req.body;
       const user = await Users.findOne({ email: email })
-        .populate("followers following", "avatar username fullname followers following")
+        .populate(
+          "followers following",
+          "avatar username fullname followers following"
+        )
         .populate("saved", "images likes comments");
 
-      if (!user) return res.status(400).json({ msg: "Tài khoản không tồn tại" });
+      if (!user)
+        return res.status(400).json({ msg: "Tài khoản không tồn tại" });
 
       const isMatch = await bycrypt.compare(password, user.password);
-      if (!isMatch)
-        return res.status(400).json({ msg: "Mật khẩu không đúng" });
+      if (!isMatch) return res.status(400).json({ msg: "Mật khẩu không đúng" });
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
@@ -109,7 +145,7 @@ const authCtrl = {
         async (err, result) => {
           if (err) return res.status(400).json({ msg: "Please login now." });
 
-          const user = await Users.findOne({ _id: result.id})
+          const user = await Users.findOne({ _id: result.id })
             .select("-password")
             .populate(
               "followers following",
@@ -165,7 +201,5 @@ const createRefreshToken = (payload) => {
     expiresIn: "30d",
   });
 };
-
-
 
 module.exports = authCtrl;

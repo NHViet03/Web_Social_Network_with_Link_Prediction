@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import logo from "../../images/auth/logo-2.png";
-import { validData } from "../../redux/actions/authAction";
+import { registerFirst, validData } from "../../redux/actions/authAction";
 import { useDispatch, useSelector } from "react-redux";
 
 const RegisterFirst = ({ userData, setUserData, setRegisterStep }) => {
@@ -15,15 +15,12 @@ const RegisterFirst = ({ userData, setUserData, setRegisterStep }) => {
     dispatch({ type: "ALERT", payload: {} });
   };
 
-  const handleSubmit =async (e) => {
-    e.preventDefault(); 
-     dispatch(validData(userData)).then(res=>{
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(validData(userData)).then((res) => {
       if (res) return;
       else setRegisterStep((preStep) => preStep + 1);
-     });
-    
-
-    
+    });
   };
 
   return (
