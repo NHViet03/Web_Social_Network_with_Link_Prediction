@@ -1,6 +1,7 @@
 import { GLOBAL_TYPES } from "./globalTypes";
 import { patchDataAPI, postDataAPI } from "../../utils/fetchData";
 import valid from "../../utils/valid";
+import { useNavigate } from "react-router-dom";
 
 export const login = (data) => async (dispatch) => {
   try {
@@ -28,6 +29,10 @@ export const login = (data) => async (dispatch) => {
         error: err.response.data.msg,
       },
     });
+    if (err.response.status == 403) {
+      localStorage.setItem("userID", err.response.data.userID);
+      window.location.href = "/verifyOTP";
+    }
   }
 };
 export const logout = async (dispatch) => {
@@ -86,31 +91,132 @@ export const validData = (data) => async (dispatch) => {
   return check.errLength > 0;
 };
 
-export const verifyOTP = (userID) => async (dispatch) => {
+export const verifyOTP = (userID, otpcode) => async (dispatch) => {
   try {
-    console.log(userID);
-    // dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
-    // const res = await postDataAPI("register", data);
-    // dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+    const data = { userID, otpcode };
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
+    const res = await postDataAPI("verifyOTP", data);
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
 
     localStorage.setItem("firstLogin", true);
-    // setRegisterStep((preStep) => preStep + 1);
-    // dispatch({
-    //   type: GLOBAL_TYPES.ALERT,
-    //   payload: {
-    //     success: res.data.msg,
-    //   },
-    // });
+    localStorage.removeItem("userID");
+    window.location.href = "/";
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        success: res.data.msg,
+      },
+    });
   } catch (err) {
     dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
     dispatch({
       type: GLOBAL_TYPES.ALERT,
       payload: {
-        error: err.response.data.message,
+        error: err.response.data.msg,
       },
     });
   }
 };
+
+export const forgotPasswordVerifyOTP =
+  (userID, otpcode) => async (dispatch) => {
+    try {
+      const data = { userID, otpcode };
+      dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
+      const res = await postDataAPI("forgotpasswordverifyotp", data);
+      dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+      window.location.href = "/forgotpassword/changepassword";
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          success: res.data.msg,
+        },
+      });
+    } catch (err) {
+      dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: err.response.data.msg,
+        },
+      });
+    }
+  };
+
+export const forgotPasswordChangePassword =
+  (userID, newPassword) => async (dispatch) => {
+    const data = { userID, newPassword };
+    try {
+      dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
+      const res = await patchDataAPI("forgotpasswordchangepassword", data);
+      dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          success: res.data.msg,
+        },
+      });
+      localStorage.removeItem("userID");
+      window.location.href = "/";
+    } catch (err) {
+      dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: err.response.data.msg,
+        },
+      });
+    }
+  };
+
+export const resendOTP = (userID) => async (dispatch) => {
+  try {
+    const data = { userID };
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
+    const res = await postDataAPI("resendOTP", data);
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        success: res.data.msg,
+      },
+    });
+  } catch (err) {
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        error: err.response.data.msg,
+      },
+    });
+  }
+};
+export const forgotPassword = (email) => async (dispatch) => {
+  try {
+    const data = { email };
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
+    const res = await postDataAPI("forgotpassword", data);
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        success: res.data.msg,
+      },
+    });
+    localStorage.setItem("userID", res.data.userID);
+    window.location.href = "/forgotpassword/verifyotp";
+  } catch (err) {
+    dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: false } });
+    dispatch({
+      type: GLOBAL_TYPES.ALERT,
+      payload: {
+        error: err.response.data.msg,
+      },
+    });
+  }
+};
+
 export const register = (data, setRegisterStep) => async (dispatch) => {
   try {
     dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });

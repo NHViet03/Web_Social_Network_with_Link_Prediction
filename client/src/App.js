@@ -20,8 +20,11 @@ import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
 import CallModal from "./components/message/CallModal";
 import { io } from "socket.io-client";
 import SocketClient from "./SocketClient";
-import Peer from 'peerjs'
-
+import Peer from "peerjs";
+import VerifyOTP from "./pages/verifyOTP.js";
+import ForgotPassword from "./pages/forgotpassword.js";
+import ForgotPasswordVerifyOTP from "./pages/forgotpasswordverifyotp.js";
+import ForgotPasswordChangePassword from "./pages/forgotpasswordchangepassword.js";
 
 // Config moment
 moment.updateLocale("vi", {
@@ -46,15 +49,14 @@ moment.updateLocale("vi", {
 });
 
 function App() {
-  const { postDetail, sharePost, addPostModal, auth, modal, call } = useSelector(
-    (state) => ({
+  const { postDetail, sharePost, addPostModal, auth, modal, call } =
+    useSelector((state) => ({
       postDetail: state.postDetail,
       sharePost: state.sharePost,
       addPostModal: state.addPostModal,
       auth: state.auth,
       modal: state.modal,
-    })
-  );
+    }));
 
   const dispatch = useDispatch();
 
@@ -80,18 +82,19 @@ function App() {
 
   useEffect(() => {
     if (auth.token) {
-      dispatch(getPosts({auth}));
+      dispatch(getPosts({ auth }));
       dispatch(getNotifies(auth.token));
     }
   }, [auth, dispatch]);
 
   useEffect(() => {
     const newPeer = new Peer(undefined, {
-      host: '/', port: 3001,
-    })
-   dispatch({type: GLOBAL_TYPES.PEER, payload: newPeer})
-  },[])
- 
+      host: "/",
+      port: 3001,
+    });
+    dispatch({ type: GLOBAL_TYPES.PEER, payload: newPeer });
+  }, []);
+
   return (
     <BrowserRouter>
       <input type="checkbox" id="theme" />
@@ -108,7 +111,15 @@ function App() {
           <div className="main_container">
             <Routes>
               <Route path="/" element={auth.token ? <Home /> : <Login />} />
+              <Route
+                path="/login"
+                element={auth.token ? <Home /> : <Login />}
+              />
               <Route path="/register" element={<Register />} />
+              <Route path="/verifyOTP" element={<VerifyOTP />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
+              <Route path="/forgotpassword/verifyotp" element={<ForgotPasswordVerifyOTP />} />
+              <Route path="/forgotpassword/changepassword" element={<ForgotPasswordChangePassword />} />
               <Route path="/:page" element={<PageRender />} />
               <Route path="/:page/:id" element={<PageRender />} />
             </Routes>

@@ -39,56 +39,213 @@ const authCtrl = {
       });
 
       await newUser.save();
-
-      // Send email to user for verification
-      const html = `
-            <h2>Xác thực tài khoản Dreamers</h2>
-            <h3>Chào mừng bạn đến với Dreamers. Hãy xác thực tài khoản với username: ${newUserName}</h3>
-            <h3>Mã OTP của bạn là: ${emailOtp}</h3>
-            <p>Đây là email xác thực tài khoản Dreamers của bạn. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
-            `;
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: "dreamerssocialuit@gmail.com",
-          pass: "pwxdinwdinhfjwvf",
-        },
-      });
-
-      const mailOptions = {
-        from: "dreamerssocialuit@gmail.com",
-        to: email,
-        subject: "Xác thực tài khoản Dreamers",
-        html: html,
-      };
-
-      await transporter.sendMail(mailOptions);
-
-      // const access_token = createAccessToken({ id: newUser._id });
-      // const refresh_token = createRefreshToken({ id: newUser._id });
-
-      // res.cookie("refreshtoken", refresh_token, {
-      //   httpOnly: true,
-      //   path: "/api/refresh_token",
-      //   maxAge: 30 * 7 * 24 * 60 * 60 * 1000, // 30days
-      // });
-
-      // res.json({
-      //   msg: "Register Success",
-      //   access_token,
-      //   user: {
-      //     ...newUser._doc,
-      //     password: "",
-      //   },
-      // });
       res.json({
         msg: "Đăng ký thành công. Vui lòng kiểm tra email của bạn.",
         userID: newUser._id,
+      });
+
+      // Gửi email trong nền
+      setImmediate(async () => {
+        try {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "dreamerssocialuit@gmail.com",
+              pass: "pwxdinwdinhfjwvf",
+            },
+          });
+
+          const mailOptions = {
+            from: "dreamerssocialuit@gmail.com",
+            to: email,
+            subject: "Xác thực tài khoản Dreamers",
+            html: `
+                    <h2>Xác thực tài khoản Dreamers</h2>
+                    <h3>Chào mừng bạn đến với Dreamers. Hãy xác thực tài khoản với username: ${newUserName}</h3>
+                    <h3>Mã OTP của bạn là: ${emailOtp}</h3>
+                    <p>Đây là email xác thực tài khoản Dreamers của bạn. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+                `,
+          };
+
+          await transporter.sendMail(mailOptions);
+          console.log("Email gửi thành công!");
+        } catch (err) {
+          console.error("Lỗi khi gửi email:", err);
+        }
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
+  verifyOTP: async (req, res) => {
+    try {
+      const { userID, otpcode } = req.body;
+
+      // Get user by ID and OTP code
+      const user = await Users.findOne({ _id: userID, otpcode: otpcode });
+      if (!user) return res.status(400).json({ msg: "Mã OTP không đúng." });
+      user.isVerify = true;
+      await user.save();
+
+      const access_token = createAccessToken({ id: user._id });
+      const refresh_token = createRefreshToken({ id: user._id });
+
+      res.cookie("refreshtoken", refresh_token, {
+        httpOnly: true,
+        path: "/api/refresh_token",
+        maxAge: 30 * 7 * 24 * 60 * 60 * 1000, // 30days
+      });
+
+      res.json({
+        msg: "Đăng ký thành công",
+        access_token,
+        user: {
+          ...user._doc,
+          password: "",
+        },
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  forgotpasswordverifyotp: async (req, res) => {
+    try {
+      const { userID, otpcode } = req.body;
+
+      // Get user by ID and OTP code
+      const user = await Users.findOne({ _id: userID, otpcode: otpcode });
+      if (!user) return res.status(400).json({ msg: "Mã OTP không đúng." });
+
+      res.json({
+        msg: "Xác thực thành công",
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  forgotpasswordchangepassword: async (req, res) => {
+    try {
+      const { userID, newPassword } = req.body;
+
+      if (newPassword.length < 6)
+        return res
+          .status(400)
+          .json({ msg: "Mật khẩu mới phải nhiều hơn 6 kí tự" });
+
+      const newPasswordHash = await bycrypt.hash(newPassword, 12);
+
+      await Users.findOneAndUpdate(
+        { _id: userID },
+        {
+          password: newPasswordHash,
+        }
+      );
+      return res.json({ msg: "Thay đổi mật khẩu thành công." });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  resendOTP: async (req, res) => {
+    try {
+      const { userID } = req.body;
+      // Get user by ID
+      const user = await Users.findOne({ _id: userID });
+
+      if (!user)
+        return res.status(400).json({ msg: "Tài khoản không tồn tại." });
+
+      const emailOtp = Math.floor(100000 + Math.random() * 900000);
+      user.otpcode = emailOtp;
+      await user.save();
+
+      res.json({ msg: "Mã OTP đã được gửi đến email của bạn." });
+
+      // Gửi email trong nền
+      setImmediate(async () => {
+        try {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "dreamerssocialuit@gmail.com",
+              pass: "pwxdinwdinhfjwvf",
+            },
+          });
+
+          const mailOptions = {
+            from: "dreamerssocialuit@gmail.com",
+            to: user.email,
+            subject: "Xác thực tài khoản Dreamers",
+            html: `
+                    <h2>Xác thực tài khoản Dreamers</h2>
+                    <h3>Chào mừng bạn đến với Dreamers. Hãy xác thực tài khoản với username: ${user.username}</h3>
+                    <h3>Mã OTP của bạn là: ${emailOtp}</h3>
+                    <p>Đây là email xác thực tài khoản Dreamers của bạn. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+                `,
+          };
+
+          await transporter.sendMail(mailOptions);
+          console.log("Email gửi thành công!");
+        } catch (err) {
+          console.error("Lỗi khi gửi email:", err);
+        }
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  forgotpassword: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await Users.findOne({
+        email: email,
+      });
+
+      if (!user)
+        return res.status(400).json({ msg: "Tài khoản không tồn tại." });
+
+      // Create OTP for email verification 5 numbers
+      const emailOtp = Math.floor(100000 + Math.random() * 900000);
+      user.otpcode = emailOtp;
+      await user.save();
+      res.json({
+        msg: "Mã OTP đã được gửi đến email của bạn.",
+        userID: user._id,
+      });
+
+      // Gửi email trong nền
+      setImmediate(async () => {
+        try {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "dreamerssocialuit@gmail.com",
+              pass: "pwxdinwdinhfjwvf",
+            },
+          });
+
+          const mailOptions = {
+            from: "dreamerssocialuit@gmail.com",
+            to: user.email,
+            subject: "Xác thực tài khoản Dreamers",
+            html: `
+              <h2>Xác thực quên mật khẩu tài khoản Dreamers</h2>
+              <h3>Chào mừng bạn đến với Dreamers. Hãy xác thực quên mật khẩu tài khoản với username: ${user.username}</h3>
+              <h3>Mã OTP của bạn là: ${emailOtp}</h3>
+              <p>Đây là email xác thực tài khoản Dreamers của bạn. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+          `,
+          };
+
+          await transporter.sendMail(mailOptions);
+          console.log("Email gửi thành công!");
+        } catch (err) {
+          console.error("Lỗi khi gửi email:", err);
+        }
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -104,6 +261,11 @@ const authCtrl = {
 
       const isMatch = await bycrypt.compare(password, user.password);
       if (!isMatch) return res.status(400).json({ msg: "Mật khẩu không đúng" });
+
+      if (!user.isVerify)
+        return res
+          .status(403)
+          .json({ msg: "Vui lòng xác thực email.", userID: user._id });
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });

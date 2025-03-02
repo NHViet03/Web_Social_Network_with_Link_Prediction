@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import gmail from "../../images/gmail.png";
-import { resendOTP, verifyOTP } from "../../redux/actions/authAction";
+import gmail from "../../src/images/gmail.png";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { resendOTP, verifyOTP } from "../redux/actions/authAction";
 
-const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
+const VerifyOTP = () => {
   const dispatch = useDispatch();
   const [otpcode, setOtpcode] = useState("");
   const handleSubmit = (e) => {
@@ -11,12 +12,17 @@ const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
     var userID = localStorage.getItem("userID");
     dispatch(verifyOTP(userID, otpcode));
   };
+
+  useEffect(() => {
+    var userID = localStorage.getItem("userID");
+    dispatch(resendOTP(userID));
+  }, []);
   const handleResendOTP = () => {
     var userID = localStorage.getItem("userID");
     dispatch(resendOTP(userID));
   };
   return (
-    <div>
+    <div className="auth_page">
       <form
         className="d-flex justify-content-center flex-column pt-4 auth_form"
         onSubmit={handleSubmit}
@@ -24,8 +30,12 @@ const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
         <img src={gmail} alt="Logo" className="mb-3 register-thumbnail" />
         <p className="mb-3 auth_intro">Nhập mã xác nhận</p>
         <p className="mb-3 text-center">
-          Nhập mã xác nhận mà chúng tôi đã gửi đến địa chỉ {userData.email}{" "}
-          <span className="text_primary register-third-resend-otp" style={{ cursor: "pointer" }} onClick={handleResendOTP}>
+          Nhập mã xác nhận mà chúng tôi đã gửi đến địa chỉ {"email"}{" "}
+          <span
+            className="text_primary register-third-resend-otp"
+            style={{ cursor: "pointer" }}
+            onClick={handleResendOTP}
+          >
             Gửi lại mã
           </span>
           .
@@ -45,15 +55,12 @@ const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
         <button type="submit" className="btn btn_primary w-100 mb-3">
           Tiếp
         </button>
-        <p
-          className="text_primary text-center step_back"
-          onClick={() => setRegisterStep((preStep) => preStep - 1)}
-        >
+        <Link to="/" className="text_primary text-center step_back">
           Quay lại
-        </p>
+        </Link>
       </form>
     </div>
   );
 };
 
-export default RegisterThird;
+export default VerifyOTP;

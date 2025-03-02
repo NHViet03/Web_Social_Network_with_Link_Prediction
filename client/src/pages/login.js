@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Images from "../images";
 import logo from "../images/auth/logo-2.png";
-import { login } from '../redux/actions/authAction'
-import {useDispatch, useSelector} from 'react-redux'
+import { login } from "../redux/actions/authAction";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const Login = () => {
   const initialState = { email: "", password: "" };
@@ -12,12 +12,11 @@ const Login = () => {
   const firstLogin = localStorage.getItem("firstLogin");
   const dispatch = useDispatch();
 
-  const {auth} = useSelector(state=> state)
-  const navigate=useNavigate();
-   useEffect(() =>{
-    if(auth.token) navigate('/')
-   },[auth.token, navigate])
-
+  const { auth } = useSelector((state) => state);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (auth.token) navigate("/");
+  }, [auth.token, navigate]);
 
   const [typePass, setTypePass] = useState(false);
   const handleChangeInput = (e) => {
@@ -27,15 +26,15 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(login(userData))
-  }
+    dispatch(login(userData));
+  };
 
   return (
     <div className="auth_page">
       <img src={Images.frames} alt="Cover" className="auth_frames" />
       <div className="login_from-register">
-        <form className="auth_form" onSubmit={handleSubmit}>
-            <img src={logo} alt="Logo" className="mb-3 login_logo w-100" />
+        <form className="auth_form " onSubmit={handleSubmit}>
+          <img src={logo} alt="Logo" className="mb-3 login_logo w-100" />
           <div className="mb-3 ">
             <input
               placeholder="Email"
@@ -57,10 +56,8 @@ const Login = () => {
               value={password}
               name="password"
             />
-            {/* <small className="show-hide" onClick={() => setTypePass(!typePass)}>
-              {typePass ? "Ẩn" : "Hiển thị"}
-            </small> */}
           </div>
+
           <button
             type="submit"
             className="btn btn-login"
@@ -68,6 +65,7 @@ const Login = () => {
           >
             Đăng nhập
           </button>
+
           <div className="separate">
             <div className="separate-line"></div>
             <div className="separate-text">HOẶC</div>
@@ -77,13 +75,20 @@ const Login = () => {
             <i className="fa-brands fa-facebook me-1 login_facebook-img" />
             <div className="login_facebook-text">Đăng nhập với Facebook</div>
           </a>
-          <a className="login_forgot">{/*Quên mật khẩu*/}</a>
         </form>
         <div className="auth_footer">
-          Bạn chưa có tài khoản{" "}
-          <Link className="ms-1 auth_footer-link" to="/register">
-            Đăng ký
-          </Link>{" "}
+          <div>
+            Bạn chưa có tài khoản{" "}
+            <Link className="ms-1 auth_footer-link " to="/register">
+              Đăng ký
+            </Link>{" "}
+          </div>
+          <div>
+            <Link className="login_forgot" to="/forgotpassword">
+              Quên mật khẩu?
+            </Link>
+          </div>
+          
         </div>
       </div>
     </div>
