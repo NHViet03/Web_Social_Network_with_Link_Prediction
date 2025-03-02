@@ -25,6 +25,8 @@ import VerifyOTP from "./pages/verifyOTP.js";
 import ForgotPassword from "./pages/forgotpassword.js";
 import ForgotPasswordVerifyOTP from "./pages/forgotpasswordverifyotp.js";
 import ForgotPasswordChangePassword from "./pages/forgotpasswordchangepassword.js";
+import { set } from "mongoose";
+import Loading from "./components/alert/Loading.js";
 
 // Config moment
 moment.updateLocale("vi", {
@@ -57,7 +59,7 @@ function App() {
       auth: state.auth,
       modal: state.modal,
     }));
-
+  const [loading, setLoading] = React.useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -69,7 +71,12 @@ function App() {
   });
 
   useEffect(() => {
-    dispatch(refreshToken());
+    const fetchData = async () => {
+      await dispatch(refreshToken());
+      setLoading(false);
+    };
+
+    fetchData();
 
     const socket = io("ws://localhost:5000");
     dispatch({
@@ -95,6 +102,10 @@ function App() {
     dispatch({ type: GLOBAL_TYPES.PEER, payload: newPeer });
   }, []);
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <BrowserRouter>
       <input type="checkbox" id="theme" />
@@ -118,8 +129,14 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/verifyOTP" element={<VerifyOTP />} />
               <Route path="/forgotpassword" element={<ForgotPassword />} />
-              <Route path="/forgotpassword/verifyotp" element={<ForgotPasswordVerifyOTP />} />
-              <Route path="/forgotpassword/changepassword" element={<ForgotPasswordChangePassword />} />
+              <Route
+                path="/forgotpassword/verifyotp"
+                element={<ForgotPasswordVerifyOTP />}
+              />
+              <Route
+                path="/forgotpassword/changepassword"
+                element={<ForgotPasswordChangePassword />}
+              />
               <Route path="/:page" element={<PageRender />} />
               <Route path="/:page/:id" element={<PageRender />} />
             </Routes>
