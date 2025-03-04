@@ -3,10 +3,13 @@ import { patchDataAPI, postDataAPI } from "../../utils/fetchData";
 import valid from "../../utils/valid";
 import { useNavigate } from "react-router-dom";
 
-export const login = (data) => async (dispatch) => {
+export const login = (data, devideInfo) => async (dispatch) => {
   try {
     dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
-    const res = await postDataAPI("login", data);
+    const res = await postDataAPI("login", {
+      ...data,
+      devideInfo
+    });
     dispatch({
       type: GLOBAL_TYPES.AUTH,
       payload: {

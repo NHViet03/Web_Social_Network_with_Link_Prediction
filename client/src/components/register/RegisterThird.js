@@ -6,11 +6,13 @@ import { useDispatch } from "react-redux";
 const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
   const dispatch = useDispatch();
   const [otpcode, setOtpcode] = useState("");
+
   const handleSubmit = (e) => {
     e.preventDefault();
     var userID = localStorage.getItem("userID");
     dispatch(verifyOTP(userID, otpcode));
   };
+
   const handleResendOTP = () => {
     var userID = localStorage.getItem("userID");
     dispatch(resendOTP(userID));
@@ -25,7 +27,11 @@ const RegisterThird = ({ userData, setUserData, setRegisterStep }) => {
         <p className="mb-3 auth_intro">Nhập mã xác nhận</p>
         <p className="mb-3 text-center">
           Nhập mã xác nhận mà chúng tôi đã gửi đến địa chỉ {userData.email}{" "}
-          <span className="text_primary register-third-resend-otp" style={{ cursor: "pointer" }} onClick={handleResendOTP}>
+          <span
+            className="text_primary register-third-resend-otp"
+            style={{ cursor: "pointer" }}
+            onClick={handleResendOTP}
+          >
             Gửi lại mã
           </span>
           .

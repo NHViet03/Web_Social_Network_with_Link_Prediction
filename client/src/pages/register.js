@@ -19,7 +19,10 @@ const Register = () => {
     username: "",
     password: "",
     birthday: "",
+    avatar:undefined,
+    isFacebook: false
   };
+
   const [userData, setUserData] = useState(initialState);
   const [registerStep, setRegisterStep] = useState(1);
 

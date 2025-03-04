@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import FacebookLogin from "react-facebook-login";
+
 import Images from "../images";
 import logo from "../images/auth/logo-2.png";
 import { login } from "../redux/actions/authAction";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import getClientInfo from "../utils/getClientInfo";
+import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
+
 const Login = () => {
   const initialState = { email: "", password: "" };
   const [userData, setUserData] = useState(initialState);
@@ -24,9 +29,37 @@ const Login = () => {
     setUserData({ ...userData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(login(userData));
+
+    const devideInfo = await getClientInfo();
+
+    dispatch(login(userData, devideInfo));
+  };
+
+  const handleFacebookCallback = async (response) => {
+    if (response?.status === "unknown") {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: "Xin lỗi! Đã xảy ra lỗi khi đăng nhập bằng Facebook.",
+        },
+      });
+      return;
+    }
+
+    const devideInfo = await getClientInfo();
+
+    dispatch(
+      login(
+        {
+          email: response.email,
+          isFacebook: true,
+          accessToken: response.accessToken,
+        },
+        devideInfo
+      )
+    );
   };
 
   return (
@@ -71,10 +104,23 @@ const Login = () => {
             <div className="separate-text">HOẶC</div>
             <div className="separate-line"></div>
           </div>
-          <a href="#" className="login_facebook">
-            <i className="fa-brands fa-facebook me-1 login_facebook-img" />
-            <div className="login_facebook-text">Đăng nhập với Facebook</div>
-          </a>
+          <FacebookLogin
+            buttonStyle={{
+              border: "none",
+              backgroundColor: "transparent",
+              textAlign: "center",
+              fontWeight: "500",
+              fontSize: "16px",
+              width: "100%",
+            }}
+            cssClass="login_facebook"
+            textButton="Đăng nhập với Facebook"
+            icon="fa-brands fa-facebook"
+            appId="1141768957449727"
+            autoLoad={false}
+            fields="name,email,picture"
+            callback={handleFacebookCallback}
+          />
         </form>
         <div className="auth_footer">
           <div>
@@ -88,7 +134,6 @@ const Login = () => {
               Quên mật khẩu?
             </Link>
           </div>
-          
         </div>
       </div>
     </div>

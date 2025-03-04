@@ -1,30 +1,45 @@
 const Users = require("../models/userModel");
 const bycrypt = require("bcrypt");
+const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const ipaddr = require("ipaddr.js");
+
+const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
+const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
 
 const authCtrl = {
   register: async (req, res) => {
     try {
-      const { fullname, username, email, password, birthday } = req.body;
+      const {
+        fullname,
+        username,
+        email,
+        password,
+        birthday,
+        avatar,
+        isFacebook,
+      } = req.body;
       let newUserName = username.toLowerCase().replace(/ /g, "");
 
       const user_name = await Users.findOne({ username: newUserName });
       if (user_name)
-        return res
-          .status(400)
-          .json({ message: "This username already exists." });
+        return res.status(400).json({ message: "Người dùng này đã tồn tại." });
 
       const user_email = await Users.findOne({ email: email });
       if (user_email)
-        return res.status(400).json({ message: "This email already exists." });
+        return res.status(400).json({ message: "Email này đã tồn tại." });
 
-      if (password.length < 6)
+      if (!isFacebook && password.length < 6)
         return res
           .status(400)
-          .json({ message: "Password must be at least 6 characters." });
+          .json({ message: "Mật khẩu phải gồm ít nhất 6 kí tự." });
 
-      const passwordHash = await bycrypt.hash(password, 12);
+      let passwordHash;
+
+      if (!isFacebook) {
+        passwordHash = await bycrypt.hash(password, 12);
+      }
 
       // Create OTP for email verification 5 numbers
       const emailOtp = Math.floor(100000 + Math.random() * 900000);
@@ -36,6 +51,7 @@ const authCtrl = {
         password: passwordHash,
         birthday,
         otpcode: emailOtp,
+        avatar,
       });
 
       await newUser.save();
@@ -248,7 +264,8 @@ const authCtrl = {
 
   login: async (req, res) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, isFacebook, accessToken, devideInfo } = req.body;
+
       const user = await Users.findOne({ email: email })
         .populate(
           "followers following",
@@ -259,8 +276,30 @@ const authCtrl = {
       if (!user)
         return res.status(400).json({ msg: "Tài khoản không tồn tại" });
 
-      const isMatch = await bycrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).json({ msg: "Mật khẩu không đúng" });
+      if (isFacebook) {
+        if (!accessToken)
+          return res.status(400).json({ msg: "Access token không hợp lệ." });
+
+        const response = await axios.get(
+          `https://graph.facebook.com/debug_token`,
+          {
+            params: {
+              input_token: accessToken,
+              access_token: `${FACEBOOK_APP_ID}|${FACEBOOK_APP_SECRET}`,
+            },
+          }
+        );
+
+        const data = response.data;
+
+        if (!data.data.is_valid) {
+          return res.status(401).json({ error: "Access token không hợp lệ." });
+        }
+      } else {
+        const isMatch = await bycrypt.compare(password, user.password);
+        if (!isMatch)
+          return res.status(400).json({ msg: "Mật khẩu không đúng" });
+      }
 
       if (!user.isVerify)
         return res
@@ -275,6 +314,8 @@ const authCtrl = {
         path: "/api/refresh_token",
         maxAge: 30 * 7 * 24 * 60 * 60 * 1000, // 30days
       });
+ 
+      console.log(devideInfo);
 
       res.json({
         msg: "Đăng nhập thành công",
