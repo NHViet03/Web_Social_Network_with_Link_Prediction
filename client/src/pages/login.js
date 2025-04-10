@@ -14,7 +14,6 @@ const Login = () => {
   const initialState = { email: "", password: "" };
   const [userData, setUserData] = useState(initialState);
   const { email, password } = userData;
-  const firstLogin = localStorage.getItem("firstLogin");
   const dispatch = useDispatch();
 
   const { auth } = useSelector((state) => state);
@@ -32,9 +31,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const devideInfo = await getClientInfo();
+    const deviceInfo = await getClientInfo();
 
-    dispatch(login(userData, devideInfo));
+    dispatch(
+      login({
+        ...userData,
+        deviceInfo: deviceInfo,
+      })
+    );
   };
 
   const handleFacebookCallback = async (response) => {
@@ -48,17 +52,15 @@ const Login = () => {
       return;
     }
 
-    const devideInfo = await getClientInfo();
+    const deviceInfo = await getClientInfo();
 
     dispatch(
-      login(
-        {
-          email: response.email,
-          isFacebook: true,
-          accessToken: response.accessToken,
-        },
-        devideInfo
-      )
+      login({
+        email: response.email,
+        isFacebook: true,
+        accessToken: response.accessToken,
+        deviceInfo: deviceInfo,
+      })
     );
   };
 

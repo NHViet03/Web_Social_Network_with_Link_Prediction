@@ -1,15 +1,11 @@
 import { GLOBAL_TYPES } from "./globalTypes";
 import { patchDataAPI, postDataAPI } from "../../utils/fetchData";
 import valid from "../../utils/valid";
-import { useNavigate } from "react-router-dom";
 
-export const login = (data, devideInfo) => async (dispatch) => {
+export const login = (data) => async (dispatch) => {
   try {
     dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
-    const res = await postDataAPI("login", {
-      ...data,
-      devideInfo
-    });
+    const res = await postDataAPI("login", data);
     dispatch({
       type: GLOBAL_TYPES.AUTH,
       payload: {
@@ -26,13 +22,18 @@ export const login = (data, devideInfo) => async (dispatch) => {
       },
     });
   } catch (err) {
+    
     dispatch({
       type: GLOBAL_TYPES.ALERT,
       payload: {
         error: err.response.data.msg,
       },
     });
-    if (err.response.status == 403) {
+
+    if (
+      err.response.status === 403 &&
+      err.response.data.type === "VERIFY_EMAIL"
+    ) {
       localStorage.setItem("userID", err.response.data.userID);
       window.location.href = "/verifyOTP";
     }

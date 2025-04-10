@@ -56,9 +56,8 @@ const Posts = () => {
         </div>
       )}
 
-      {posts &&
-        posts.map((post, index) => (
-          <div className="mb-3 home-post-item" key={index}>
+      {posts?.map((post, index) => (
+          <div className="mb-3 home-post-item" key={post._id}>
             <CardHeader user={post.user} post={post} />
             <CardBody post={post} />
             <CardFooter post={post} />

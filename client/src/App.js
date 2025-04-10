@@ -25,8 +25,9 @@ import VerifyOTP from "./pages/verifyOTP.js";
 import ForgotPassword from "./pages/forgotpassword.js";
 import ForgotPasswordVerifyOTP from "./pages/forgotpasswordverifyotp.js";
 import ForgotPasswordChangePassword from "./pages/forgotpasswordchangepassword.js";
-import { set } from "mongoose";
+import BlockDeviceAccess from "./pages/blockDeviceAccess.js";
 import Loading from "./components/alert/Loading.js";
+import getClientInfo from "./utils/getClientInfo.js";
 
 // Config moment
 moment.updateLocale("vi", {
@@ -102,6 +103,14 @@ function App() {
     dispatch({ type: GLOBAL_TYPES.PEER, payload: newPeer });
   }, []);
 
+  useEffect(() => {
+    const getClientData = async () => {
+      await getClientInfo();
+    };
+
+    getClientData();
+  }, []);
+
   if (loading) {
     return <Loading />;
   }
@@ -137,6 +146,12 @@ function App() {
                 path="/forgotpassword/changepassword"
                 element={<ForgotPasswordChangePassword />}
               />
+
+              <Route
+                path="/blockdevice/:userId/:deviceId"
+                element={<BlockDeviceAccess />}
+              />
+
               <Route path="/:page" element={<PageRender />} />
               <Route path="/:page/:id" element={<PageRender />} />
             </Routes>
