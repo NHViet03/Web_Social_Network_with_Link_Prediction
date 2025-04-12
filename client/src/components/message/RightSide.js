@@ -89,7 +89,7 @@ const RightSide = () => {
       media: newArr,
       CreatedAt: new Date().toISOString(),
     };
-    await dispatch(addMessage({ msg, auth, socket }));
+     dispatch(addMessage({ msg, auth, socket }));
     setLoadMedia(false);
     refDisplay.current &&
       refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
