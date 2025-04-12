@@ -5,7 +5,7 @@ import UserCard from "../UserCard";
 import { useParams, useNavigate } from "react-router-dom";
 import MsgDisplay from "./MsgDisplay";
 import { imageShow, videoShow } from "../../utils/mediaShow";
-import { imageUpload } from "../../utils//imageUpload";
+import { imageUpload, videoUpload } from "../../utils//imageUpload";
 import {
   loadMoreMessages,
   deleteConversation,
@@ -59,13 +59,28 @@ const RightSide = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     if (!text.trim() && media.length === 0) return;
     setText("");
     setMedia([]);
     setLoadMedia(true);
 
+    //if (media.length > 0) newArr = await imageUpload(media);
     let newArr = [];
-    if (media.length > 0) newArr = await imageUpload(media);
+    if (media.length > 0) 
+      {
+        const images = media.filter((item) => item.type.match(/image/i));
+        const videos = media.filter((item) => item.type.match(/video/i));
+
+        if (videos.length > 0) {
+          const video = await videoUpload(videos);
+          newArr.push(...video);
+        }
+        if (images.length > 0) {
+          const img = await imageUpload(images);
+          newArr.push(...img);
+        }
+      }
 
     const msg = {
       sender: auth.user._id,
@@ -74,8 +89,8 @@ const RightSide = () => {
       media: newArr,
       CreatedAt: new Date().toISOString(),
     };
-    setLoadMedia(false);
     await dispatch(addMessage({ msg, auth, socket }));
+    setLoadMedia(false);
     refDisplay.current &&
       refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
   };
@@ -279,7 +294,7 @@ const RightSide = () => {
           </div>
 
           <button className="button_submit_mess" type="Submit">
-            <i class="fa-regular fa-paper-plane"></i>
+            <i className="fa-regular fa-paper-plane"></i>
           </button>
         </div>
       </form>
