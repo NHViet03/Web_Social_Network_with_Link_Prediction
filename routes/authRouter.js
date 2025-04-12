@@ -22,4 +22,12 @@ router.post(
   authCtrl.blockDeviceAccess
 );
 
+router.get("/get_device_access/:userId", auth, authCtrl.getDevicesAccess);
+
+router.post(
+  "/unblock-device-access/:userId/:deviceId",
+  auth,
+  authCtrl.unBlockDeviceAccess
+);
+
 module.exports = router;

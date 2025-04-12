@@ -198,3 +198,6 @@ a:hover {
 @import url("./changePassword.css");
 /*---------------CALL MODAL---------------------*/
 @import url("./call_modal.css");
+
+/*---------------ACTIVITY---------------------*/
+@import url("./activity.css");

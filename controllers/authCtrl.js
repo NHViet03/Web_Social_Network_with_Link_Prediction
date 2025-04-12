@@ -303,11 +303,11 @@ const authCtrl = {
       }
 
       if (!user.isVerify)
-        return res
-          .status(403)
-          .json({ 
-            type:"VERIFY_EMAIL",
-            msg: "Vui lòng xác thực email.", userID: user._id });
+        return res.status(403).json({
+          type: "VERIFY_EMAIL",
+          msg: "Vui lòng xác thực email.",
+          userID: user._id,
+        });
 
       // Check device access
       const device = await Devices.findOne({
@@ -465,6 +465,16 @@ const authCtrl = {
           if (!user)
             return res.status(400).json({ msg: "This does not exist." });
 
+          await Devices.findOneAndUpdate(
+            {
+              userId: result.id,
+              deviceId: req.header("deviceId"),
+            },
+            {
+              accessDate: Date.now(),
+            }
+          );
+
           const access_token = createAccessToken({ id: result.id });
 
           res.json({
@@ -534,6 +544,75 @@ const authCtrl = {
       return res.json({ msg: "Chặn thiết bị đăng nhập thành công." });
     } catch (err) {
       return res.status(500).json({ MIDIMessageEvent: err.message });
+    }
+  },
+  getDevicesAccess: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+
+      const devices = await Devices.find(
+        {
+          userId: userId,
+        },
+        {
+          userId: 0,
+          __v: 0,
+          createdAt: 0,
+          updatedAt: 0,
+        }
+      ).sort({ accessDate: -1 });
+
+      const result = {
+        activeDevices: [],
+        blockedDevices: [],
+      };
+
+      devices.forEach((device) => {
+        if (device.isBlocked) {
+          result.blockedDevices.push(device);
+        } else {
+          if (device.deviceId === req.header("deviceId")) {
+            result.activeDevices.unshift(device);
+          } else {
+            result.activeDevices.push(device);
+          }
+        }
+      });
+
+      return res.json({
+        msg: "Lấy danh sách thiết bị thành công.",
+        data: result,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  unBlockDeviceAccess: async (req, res) => {
+    try {
+      const { userId, deviceId } = req.params;
+
+      const device = await Devices.findOne({
+        userId: userId,
+        deviceId: deviceId,
+      });
+
+      if (!device) {
+        return res.status(400).json({ msg: "Thiết bị không tồn tại." });
+      }
+
+      if (!device.isBlocked) {
+        return res.status(400).json({ msg: "Thiết bị này chưa bị chặn." });
+      }
+
+      device.isBlocked = false;
+
+      await device.save();
+
+      return res.json({
+        msg: "Mở chặn thiết bị thành công.",
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
     }
   },
 };

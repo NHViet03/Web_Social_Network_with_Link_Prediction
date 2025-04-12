@@ -10,19 +10,26 @@ const MenuItemDropdown = () => {
   const developer = useSelector((state) => state.developer);
   const dispatch = useDispatch();
 
+  const handleClickItem = (e) => {
+    setShow(false);
+  };
+
   return (
     <div className="dropdown w-100 px-1 py-2">
-      <p
+      <div
         className="text-center d-flex align-items-center mb-0 dropdown-title"
         onClick={() => setShow(!show)}
+        style={{
+        }}
       >
         <span className="material-icons me-2">menu</span>
         <span className="dropdown-text">Xem thêm</span>
-      </p>
+      </div>
       {show && (
         <ul className="dropdown-menu mb-1 p-2">
           <li>
             <Link
+              onClick={handleClickItem}
               className="dropdown-item px-2 py-3 d-flex align-items-center"
               to={"/setting"}
             >
@@ -31,13 +38,14 @@ const MenuItemDropdown = () => {
             </Link>
           </li>
           <li>
-            {/* <Link
+            <Link
+              onClick={handleClickItem}
               className="dropdown-item px-2 py-3 d-flex align-items-center"
-              to={"/"}
+              to={"/activity"}
             >
-              <span className="material-icons">show_chart</span>
-              <span className="nav-text ms-3">Hoạt động của bạn</span>
-            </Link> */}
+              <span className="material-icons">admin_panel_settings</span>
+              <span className="nav-text ms-3">Hoạt động đăng nhập</span>
+            </Link>
           </li>
           <li>
             <label
@@ -53,7 +61,6 @@ const MenuItemDropdown = () => {
               <span className="nav-text ms-3">
                 Giao diện {theme ? "sáng" : "tối"}
               </span>
-            
             </label>
           </li>
           <li>
@@ -70,11 +77,11 @@ const MenuItemDropdown = () => {
               <span className="nav-text ms-3">
                 Chế độ {!developer ? "lập trình viên" : "người dùng"}
               </span>
-            
             </label>
           </li>
           <li>
             <Link
+              onClick={handleClickItem}
               className="dropdown-item px-2 py-3 d-flex align-items-center"
               to={"/"}
             >
@@ -86,7 +93,11 @@ const MenuItemDropdown = () => {
             <hr className="dropdown-divider" />
           </li>
           <li>
-            <Link className="dropdown-item px-2 py-3 " to={"/"} onClick={() => dispatch(logout)}>
+            <Link
+              className="dropdown-item px-2 py-3 "
+              to={"/"}
+              onClick={() => dispatch(logout)}
+            >
               Đăng xuất
             </Link>
           </li>

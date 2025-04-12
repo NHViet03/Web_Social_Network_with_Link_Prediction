@@ -119,7 +119,7 @@ const Suggestions = () => {
           color: "#c7c7c7",
         }}
       >
-        © 2023 DREAMERS FROM DREAMER TEAM
+        © 2025 DREAMERS FROM DREAMER TEAM
       </small>
     </div>
   );
