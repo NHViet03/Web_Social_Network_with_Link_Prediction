@@ -8,7 +8,6 @@ function SelectImage({ setAddStep, post, setPost }) {
 
   const addImages = (files) => {
     let newImages = [];
-
     if (post.images.length + files.length > 5) {
       return dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -16,17 +15,25 @@ function SelectImage({ setAddStep, post, setPost }) {
       });
     }
 
-    files.forEach((file) => {
+    for (let file of files) {
       if (!file) return;
-      if (file.type !== "image/jpeg" && file.type !== "image/png") return;
+  
+      if (!file.type.match(/image\/(jpeg|jpg|png)/) && !file.type.match(/video\//)) {
+        return dispatch({
+          type: GLOBAL_TYPES.ALERT,
+          payload: { error: "Vui lòng upload file đúng định dạng" },
+        });
+      }
       if (file.size > 1024 * 1024 * 5) {
-        dispatch({
+        return dispatch({
           type: GLOBAL_TYPES.ALERT,
           payload: { error: "Vui lòng upload file có kích thước dưới 5 MB" },
         });
       }
+
+      file.url = URL.createObjectURL(file);
       newImages.push(file);
-    });
+    }
 
     setPost({
       ...post,

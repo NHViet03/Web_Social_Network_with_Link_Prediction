@@ -34,3 +34,21 @@ export const imageUpload = async(images)=>{
     }
     return imgArr;
 }
+
+
+export const convertBase64ToFile = (base64String, fileName) =>{
+    
+        const byteString = atob(base64String.split(",")[1]);
+        const mimeString = base64String
+          .split(",")[0]
+          .split(":")[1]
+          .split(";")[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const file = new File([ab], fileName, { type: mimeString });
+
+        return file;
+}

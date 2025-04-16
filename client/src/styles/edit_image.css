@@ -1,0 +1,114 @@
+.FIE_root {
+  height: 556px !important;
+}
+
+.FIE_root .FIE_topbar {
+  display: none;
+}
+
+.FIE_root .FIE_main-container {
+  flex-direction: row-reverse;
+}
+
+.FIE_root .FIE_main-container .FIE_tabs {
+  box-shadow: unset;
+  gap: 0;
+  border-radius: 0;
+  overflow: hidden;
+}
+.FIE_root .FIE_main-container .FIE_tabs .FIE_tab {
+  flex: 1;
+  box-shadow: unset;
+}
+
+.FIE_root .FIE_main-container .FIE_tabs .FIE_tab:first-child {
+  border-bottom: 1.5px solid var(--primary-color) !important;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.zhMHk[aria-selected="true"] {
+  background-color: rgba(196, 51, 2, 0.1) !important;
+}
+
+.zhMHk:hover {
+  background-color: rgba(196, 51, 2, 0.1) !important;
+}
+
+.zhMHk[aria-selected="true"] * {
+  color: var(--primary-color) !important;
+}
+
+.zhMHk *:hover {
+  color: var(--primary-color) !important;
+}
+
+.rRhAG:hover {
+  background-color: rgba(196, 51, 2, 0.1) !important;
+}
+
+.rRhAG[aria-selected="true"] {
+  background-color: rgba(196, 51, 2, 0.1) !important;
+}
+
+.rRhAG[aria-selected="true"] * {
+  color: var(--primary-color) !important;
+}
+
+.rRhAG *:hover {
+  color: var(--primary-color) !important;
+}
+
+[aria-selected="true"] .fMTlQf {
+  border-color: var(--primary-color) !important;
+}
+
+[aria-selected="true"] .cgHHPC {
+  color: var(--primary-color) !important;
+}
+
+.FIE_brightness-option {
+  color: var(--primary-color) !important;
+}
+
+.eDpPAq .SfxSlider-Track {
+  color: var(--primary-color) !important;
+}
+
+.eDpPAq .SfxSlider-thumb {
+  background-color: var(--primary-color) !important;
+}
+
+.FIE_canvas-node .konvajs-content > canvas:last-child {
+  display: none !important;
+}
+
+.addPost_modal_container .carousel-edit .carousel-inner {
+  width: unset;
+  height: unset;
+}
+
+.carousel-edit .carousel-control-prev {
+  left: 5%;
+  align-items: unset;
+}
+
+.carousel-edit .carousel-control-next {
+  right: 20%;
+  align-items: unset;
+}
+
+.carousel-edit .carousel-control-next,
+.carousel-edit .carousel-control-prev {
+  width: 8%;
+}
+
+.carousel-edit .carousel-control-prev-icon,
+.carousel-edit .carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: calc(50% - 54px);
+}
