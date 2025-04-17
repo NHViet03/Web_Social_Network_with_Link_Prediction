@@ -34,3 +34,44 @@ export const imageUpload = async(images)=>{
     }
     return imgArr;
 }
+
+export const videoUpload = async(videos)=>{
+    let videoArr=[];
+
+    for(const video of videos){
+        const formData=new FormData();
+        formData.append("file",video);
+        formData.append("upload_preset", "irbytja4");
+        formData.append("cloud_name", "dswg5in7u");
+
+        const res=await fetch("https://api.cloudinary.com/v1_1/dswg5in7u/video/upload",{
+            method:"POST",
+            body:formData
+        })
+
+        const data=await res.json();
+        console.log(data);
+        videoArr.push({
+            public_id:data.public_id,
+            url:data.secure_url
+        })
+    }
+    return videoArr;
+}
+
+export const convertBase64ToFile = (base64String, fileName) =>{
+    
+        const byteString = atob(base64String.split(",")[1]);
+        const mimeString = base64String
+          .split(",")[0]
+          .split(":")[1]
+          .split(";")[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const file = new File([ab], fileName, { type: mimeString });
+
+        return file;
+}

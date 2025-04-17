@@ -62,7 +62,7 @@ const SideBar = () => {
   }, [isShowNotify, isShowSearch, pathname]);
 
   if (!auth.token) return null;
-  if (pathname === "/login" || pathname === "/register") return null;
+  if (pathname === "/login" || pathname === "/register" || pathname.includes("/blockdevice")) return null;
 
   return (
     <ModalSideBarContext.Provider

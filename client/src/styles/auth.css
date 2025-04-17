@@ -4,11 +4,11 @@
   min-height: 100vh;
   justify-content: center;
   align-items: center;
-  margin-left:-250px;
+  margin-left: -250px;
 }
 .auth_logo {
   object-fit: cover;
-  width:250px;
+  width: 250px;
   display: block;
   margin: 0 auto 16px;
 }
@@ -20,7 +20,7 @@
 }
 
 .auth_form {
-  width:100%;
+  width: 100%;
   max-width: 400px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
@@ -28,13 +28,13 @@
   color: var(--text-color);
   height: fit-content;
 }
-.auth_form .form_input{ 
+.auth_form .form_input {
   position: relative;
 }
-.auth_form .form_input .show-hide{
+.auth_form .form_input .show-hide {
   position: absolute;
-  top:50%;
-  right:6px;
+  top: 50%;
+  right: 6px;
   transform: translateY(-50%);
   cursor: pointer;
 }
@@ -64,7 +64,7 @@
 
 .auth_page .auth_footer {
   margin-top: 12px;
-  width:100%;
+  width: 100%;
   max-width: 400px;
   padding: 20px 50px;
   border-radius: 4px;
@@ -88,9 +88,10 @@
   padding: 10px 0;
   font-size: 15px;
   color: #fff;
-  border-radius: 300px;
+  border-radius: 8px;
   background-color: var(--primary-color);
   width: 100%;
+  font-weight: 500;
 }
 
 .login_facebook {
@@ -102,11 +103,10 @@
   justify-content: center;
 }
 
-
-.login_facebook{
+.login_facebook {
   color: #3338b6;
 }
-.login_facebook:hover{
+.login_facebook:hover {
   opacity: 0.8;
   color: #3338b6;
 }
@@ -115,59 +115,79 @@
 }
 .login_facebook-text {
   margin-left: 4px;
-  
+
   font-weight: 500;
 }
+
+.login_facebook i {
+  font-size: 24px;
+  margin-right: 6px;
+}
+
 .login_forgot {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--primary-color);
   cursor: pointer;
   &:hover {
     color: var(--primary-color);
     opacity: 0.8;
+    text-decoration: underline;
   }
 }
 
-
 /* ----------------- Register Page ------------- */
-.auth_form .auth_intro{
-  font-size:16px;
+.auth_form .auth_intro {
+  font-size: 16px;
   font-weight: 600;
   text-align: center;
-  color: var(--text-color);
+  color: black;
 }
 
-.auth_sub-intro{
+.register_facebook {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  width: 100%;
+  padding:8px 12px;
+}
+
+.register_facebook i {
+  font-size: 24px;
+  margin-right: 6px;
+}
+
+.auth_sub-intro {
   text-align: center;
   font-size: 13px;
 }
-.auth_sub-intro a{
+.auth_sub-intro a {
   cursor: pointer;
-  &:hover{
+  &:hover {
     color: var(--primary-color);
   }
 }
-.auth_form .register-thumbnail{
-  width:250px;
+.auth_form .register-thumbnail {
+  width: 250px;
   height: 150px;
   object-fit: contain;
   margin: auto;
 }
-.auth_form .step_back{
+.auth_form .step_back {
   cursor: pointer;
   font-weight: 600;
-  &:hover{
+  &:hover {
     opacity: 0.8;
   }
 }
 
-.auth_form .form-select{
-  padding:6px 4px;
-  overflow-y:auto;
+.auth_form .form-select {
+  padding: 6px 4px;
+  overflow-y: auto;
   background-position: right 4px center;
   color: var(--text-color);
   font-size: 14px;
+}
+
+.register-third-resend-otp:hover {
+  text-decoration: underline;
 }

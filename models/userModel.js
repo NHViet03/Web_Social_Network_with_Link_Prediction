@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     birthday: { type: Date, default: "" },
     avatar: {
@@ -42,6 +41,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    otpcode: { type: String, default: "" },
+    isVerify: { type: Boolean, default: false },
     followers: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     following: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     saved: [{ type: mongoose.Types.ObjectId, ref: "post" }],

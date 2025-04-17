@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import RegisterFirst from "../components/register/RegisterFirst";
@@ -7,11 +7,11 @@ import RegisterSecond from "../components/register/RegisterSecond";
 import RegisterThird from "../components/register/RegisterThird";
 
 const Register = () => {
-  const {auth} = useSelector(state=> state)
-  const navigate=useNavigate();
-   useEffect(() =>{
-    if(auth.token) navigate('/')
-   },[auth.token  , navigate])
+  const { auth } = useSelector((state) => state);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (auth.token) navigate("/");
+  }, [auth.token, navigate]);
 
   const initialState = {
     email: "",
@@ -19,10 +19,12 @@ const Register = () => {
     username: "",
     password: "",
     birthday: "",
+    avatar:undefined,
+    isFacebook: false
   };
+
   const [userData, setUserData] = useState(initialState);
   const [registerStep, setRegisterStep] = useState(1);
-
 
   const renderRegisterStep = () => {
     switch (registerStep) {
@@ -43,7 +45,15 @@ const Register = () => {
           />
         );
       case 3:
-          return navigate('/')
+        return (
+          <RegisterThird
+            userData={userData}
+            setUserData={setUserData}
+            setRegisterStep={setRegisterStep}
+          />
+        );
+      case 4:
+        return navigate("/");
       default:
         return <div></div>;
     }
@@ -54,7 +64,7 @@ const Register = () => {
       {renderRegisterStep()}
       <div className="auth_footer">
         Bạn có tài khoản ?{" "}
-        <Link className="ms-1 auth_footer-link" to="/login">
+        <Link className="ms-1 auth_footer-link" to="/">
           Đăng nhâp
         </Link>{" "}
       </div>
