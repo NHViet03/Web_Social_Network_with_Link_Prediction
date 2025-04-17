@@ -22,7 +22,6 @@ export const login = (data) => async (dispatch) => {
       },
     });
   } catch (err) {
-    
     dispatch({
       type: GLOBAL_TYPES.ALERT,
       payload: {
@@ -67,7 +66,7 @@ export const refreshToken = () => async (dispatch) => {
     dispatch({ type: GLOBAL_TYPES.ALERT, payload: { loading: true } });
 
     try {
-      const res = await postDataAPI("refresh_token");
+      const res = await postDataAPI(`refresh_token`);
       dispatch({
         type: GLOBAL_TYPES.AUTH,
         payload: {

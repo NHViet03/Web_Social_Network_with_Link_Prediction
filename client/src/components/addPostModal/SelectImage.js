@@ -1,27 +1,77 @@
 import React from "react";
+import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 
 function SelectImage({ setAddStep, post, setPost }) {
-  const handleChangeImages = (e) => {
-    const files = [...e.target.files];
-    if(files.length===0) return;
-    let newImages = [];
-  
+  const dispatch = useDispatch();
 
-    files.forEach((file) => {
+  const addImages = (files) => {
+    let newImages = [];
+    if (post.images.length + files.length > 5) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng upload tối đa 5 ảnh/video" },
+      });
+    }
+
+    for (let file of files) {
       if (!file) return;
-      if (file.type !== "image/jpeg" && file.type !== "image/png") return;
+  
+      if (!file.type.match(/image\/(jpeg|jpg|png)/) && !file.type.match(/video\//)) {
+        return dispatch({
+          type: GLOBAL_TYPES.ALERT,
+          payload: { error: "Vui lòng upload file đúng định dạng" },
+        });
+      }
+      if (file.size > 1024 * 1024 * 5) {
+        return dispatch({
+          type: GLOBAL_TYPES.ALERT,
+          payload: { error: "Vui lòng upload file có kích thước dưới 5 MB" },
+        });
+      }
+
+      file.url = URL.createObjectURL(file);
       newImages.push(file);
-    });
+    }
+
     setPost({
       ...post,
-      images: newImages,
+      images: [...post.images, ...newImages],
     });
 
     setAddStep((pre) => pre + 1);
   };
 
+  const handleChangeImages = (e) => {
+    const files = [...e.target.files];
+    if (files.length === 0) return;
+
+    addImages(files);
+  };
+
+  const handleDropItems = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer.files.length === 0) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng chọn file" },
+      });
+    }
+
+    const files = [...e.dataTransfer.files];
+
+    addImages(files);
+  };
+
   return (
-    <div className="d-flex flex-column align-items-center justify-content-center h-100 select_image">
+    <div
+      className="d-flex flex-column align-items-center justify-content-center h-100 select_image"
+      onDrop={handleDropItems}
+      onDragOver={(e) => e.preventDefault()}
+    >
       <div>
         <svg
           aria-label="Biểu tượng thể hiện file phương tiện, chẳng hạn như hình ảnh hoặc video"
@@ -50,13 +100,13 @@ function SelectImage({ setAddStep, post, setPost }) {
           ></path>
         </svg>
       </div>
-      <p>Chọn ảnh để đăng</p>
+      <p>Chọn hoặc kéo ảnh và video vào đây</p>
       <input
         type="file"
         name="file"
         id="file"
         multiple={true}
-        accept="image/*"
+        accept="image/*, video/*"
         style={{
           display: "none",
         }}
@@ -68,5 +118,11 @@ function SelectImage({ setAddStep, post, setPost }) {
     </div>
   );
 }
+
+SelectImage.propTypes = {
+  setAddStep: PropTypes.func.isRequired,
+  post: PropTypes.object.isRequired,
+  setPost: PropTypes.func.isRequired,
+};
 
 export default SelectImage;

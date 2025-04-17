@@ -126,6 +126,12 @@ a:hover {
   max-height: 300px;
 }
 
+.carousel-indicators [data-bs-target]{
+  background-color: #fff;
+}
+
+/* Custome Image Editor */
+
 @media (max-width: 1024px) {
   .main_container {
     margin-left: 80px;
@@ -198,3 +204,9 @@ a:hover {
 @import url("./changePassword.css");
 /*---------------CALL MODAL---------------------*/
 @import url("./call_modal.css");
+
+/*---------------ACTIVITY---------------------*/
+@import url("./activity.css");
+
+/*---------------EDIT IMAGE---------------------*/
+@import url("./edit_image.css");

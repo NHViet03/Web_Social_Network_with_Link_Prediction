@@ -1,8 +1,15 @@
-import React, { useState, useMemo, useCallback, useContext } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import MenuItem from "./MenuItem";
 import { ModalSideBarContext } from "./SideBar";
+import { useLocation } from "react-router-dom";
 
 const SideBar = () => {
   const auth = useSelector((state) => state.auth);
@@ -12,6 +19,7 @@ const SideBar = () => {
   const { isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify } =
     useContext(ModalSideBarContext);
   const [active, setActive] = useState(-1);
+  const { pathname } = useLocation();
 
   const handleShowSearch = useCallback(() => {
     setActive(-1);
@@ -31,6 +39,12 @@ const SideBar = () => {
       payload: true,
     });
   }, [dispatch]);
+
+  const handleClickMenuItem = (index) => {
+    setIsShowSearch(false);
+    setIsShowNotify(false);
+    setActive(index);
+  };
 
   const navLinks = useMemo(
     () => [
@@ -84,11 +98,21 @@ const SideBar = () => {
     ]
   );
 
-  const handleClickMenuItem = (index) => {
-    setIsShowSearch(false);
-    setIsShowNotify(false);
-    setActive(index);
-  };
+  useEffect(() => {
+    const copyLinks = [...navLinks];
+
+    const index = copyLinks.reverse().findIndex((link) => {
+      if (link.path) {
+        return pathname.replace("/", "").includes(link.path.replace("/", ""));
+      } else {
+        return false;
+      }
+    });
+
+    if (index !== -1) {
+      setActive(copyLinks.length - 1 - index);
+    }
+  }, []);
 
   return (
     <div className="menu">

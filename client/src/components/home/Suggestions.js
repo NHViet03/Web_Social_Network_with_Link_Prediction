@@ -18,14 +18,14 @@ const Suggestions = () => {
   useEffect(() => {
     const getLinkPredictionUsers = async () => {
       try {
-        setLoading(true);
-        setUsers([]);
-        const res = await axios.get(
-          `http://localhost:8000/SuggestionUserBy${predictionModel}${auth.user._id}`
-        );
+        // setLoading(true);
+        // setUsers([]);
+        // const res = await axios.get(
+        //   `http://localhost:8000/SuggestionUserBy${predictionModel}${auth.user._id}`
+        // );
 
-        setUsers(res.data.data);
-        setLoading(false);
+        // setUsers(res.data.data);
+        // setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -119,7 +119,7 @@ const Suggestions = () => {
           color: "#c7c7c7",
         }}
       >
-        © 2023 DREAMERS FROM DREAMER TEAM
+        © 2025 DREAMERS FROM DREAMER TEAM
       </small>
     </div>
   );

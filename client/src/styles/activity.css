@@ -1,0 +1,106 @@
+.activity_container {
+  max-width: 650px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.activity_header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.activity_header-text {
+  font-size: 16px;
+  color: #000;
+}
+
+.activity_title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.activity_subtitle {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.activity_device-box {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.activity_device-box.block {
+  border-color: var(--primary-color);
+}
+
+.activity_device-box > button {
+  border: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.activity_device-box .collapse {
+  border: none;
+}
+
+.activity_device-box .card .card-body {
+  border: none;
+  padding: 0;
+}
+
+.activity_device-box ul {
+  padding-left: 16px;
+  margin-bottom: 0;
+}
+
+.activity_device-name {
+  font-weight: bold;
+  color: #000;
+}
+
+.activity_device-location {
+  color: #666;
+}
+
+.activity_current-device {
+  color: #147b29;
+  font-weight: bold;
+}
+
+.activity_device-time {
+  color: #666;
+}
+
+.activity_section-title {
+  font-weight: bold;
+  color: #000;
+  margin: 24px 0 12px;
+}
+
+.activity_logout-button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+
+  margin-top: 12px;
+}
