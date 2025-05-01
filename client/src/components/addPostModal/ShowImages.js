@@ -1,5 +1,6 @@
 import React from "react";
 
+
 function SelectImage({ post }) {
   const { images } = post;
   const isActive = (index) => {
