@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import MsgDisplay from "./MsgDisplay";
 import { imageShow, videoShow } from "../../utils/mediaShow";
 import { imageUpload, videoUpload } from "../../utils//imageUpload";
+import Swal from "sweetalert2";
 import {
   loadMoreMessages,
   deleteConversation,
@@ -98,10 +99,31 @@ const RightSide = () => {
     setText(text + emoji.native);
   };
   const handleDeleteConversation = (user) => () => {
-    if (!window.confirm(`Bạn có muốn xóa cuộc trò chuyện với ${user.fullname}`))
-      return;
-   dispatch(deleteConversation({auth, id}))
-    return navigate('/message')
+    Swal.fire({
+      title: "Xóa cuộc trò chuyện?",
+      text: `Bạn có muốn xóa cuộc trò chuyện với ${user.fullname}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#D97B5C",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Chắc chắn!",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Gọi API hoặc logic xóa ở đây
+        Swal.fire({
+          title: "Thành công!",
+          text: "Cuộc trò chuyện đã được xóa",
+          icon: "success"
+        });
+        dispatch(deleteConversation({auth, id}))
+        return navigate('/message')
+      }
+    });
+  //   if (!window.confirm(`Bạn có muốn xóa cuộc trò chuyện với ${user.fullname}`))
+  //     return;
+  //  dispatch(deleteConversation({auth, id}))
+  //   return navigate('/message')
   };
   // Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
   useEffect(() => {
@@ -128,8 +150,14 @@ const RightSide = () => {
     const getMessagesData = async () => {
       if (message.data.every((item) => item._id !== id)) {
         await dispatch(getMessages({ auth, id }));
-        setTimeout(() => { refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end",});
-        }, 50)
+        setTimeout(() => {
+          if (refDisplay.current) {
+            refDisplay.current.scrollIntoView({
+              behavior: "smooth",
+              block: "end",
+            });
+          }
+        }, 50);
       }
     };
     getMessagesData();

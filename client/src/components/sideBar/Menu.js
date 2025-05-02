@@ -118,7 +118,7 @@ const SideBar = () => {
     <div className="menu">
       <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-column">
         {navLinks.map((link, index) => (
-          <>
+           <React.Fragment key={index}>
             {link.path ? (
               <div onClick={() => handleClickMenuItem(index)}>
                 <MenuItem
@@ -165,7 +165,7 @@ const SideBar = () => {
                 </div>
               </li>
             )}
-          </>
+          </React.Fragment>
         ))}
       </ul>
     </div>

@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 const MsgDisplay = ({ user, msg, theme }) => {
   useEffect(() => {
     if (msg) {
-      console.log(msg);
     }
   }, [msg]);
   return (
@@ -20,9 +19,9 @@ const MsgDisplay = ({ user, msg, theme }) => {
          {msg.text && ( <div className="chat_text">{msg.text}</div>)}
           {msg.media.map((item, index) => (
             <div key={index} className="display_img_video_chat">
-              {item.url.match(/video/i)
+            {item.url && item.url.match(/video/i)
                 ? videoShow(item.url, theme)
-                : imageShow(item.url, theme)}
+                : imageShow(item.url || "", theme)}
             </div>
           ))}
           <div className="chat_time">

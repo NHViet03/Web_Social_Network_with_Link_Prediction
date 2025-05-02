@@ -45,6 +45,10 @@
 /* Posts */
 .home-posts {
   margin: 32px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .home-post-item {
   width: 550px;

@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import UserCard from "../UserCard"
 import { useParams, useNavigate } from "react-router-dom";
 import { MESS_TYPES, getConversations } from "../../redux/actions/messageAction";
-
+import loading from "../../images/loading.gif"
 
 
 export const LeftSide = ({setOpenModal}) => {
   const {auth, message, online} = useSelector(state => state)
   const {id} = useParams();
   const pageEnd = useRef();
+  const firstRun = useRef(true)
   const [page, setPage] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -17,10 +18,22 @@ export const LeftSide = ({setOpenModal}) => {
     if(id === user._id) return "active"
     return ''
   }
+  const [mainBoxMessage, setMainBoxMessage] = useState(true)
+
   useEffect(() => {
     if(message.firstLoad) return;
-    dispatch(getConversations({auth}));
-  },[dispatch, message.firstLoad, auth])
+    dispatch(getConversations({auth, mainBoxMessage: mainBoxMessage}));
+  },[dispatch, message.firstLoad, mainBoxMessage, auth])
+
+  // useEffect for change mainBoxMessage
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return; 
+    }
+    console.log("mainBoxMessage changed:", mainBoxMessage);
+    dispatch(getConversations({auth, mainBoxMessage: mainBoxMessage}));
+  },[mainBoxMessage])
   
   // Load More
   useEffect(() => {
@@ -41,9 +54,9 @@ export const LeftSide = ({setOpenModal}) => {
   },[online, message.firstLoad, dispatch])
   useEffect(() => {
     if(message.resultUsers >= (page - 1) * 9 && page > 1){
-      dispatch(getConversations({auth, page}));
+      dispatch(getConversations({auth, page, mainBoxMessage}));
     }
-  },[message.resultUsers, page, auth, dispatch])
+  },[message.resultUsers, page, mainBoxMessage, auth, dispatch])
   return (
     <>
       <div className="message_header">
@@ -57,8 +70,12 @@ export const LeftSide = ({setOpenModal}) => {
           </div>
         </div>
         <div className="message_header-request">
-            <h3>Tin nhắn</h3>
-            <h4></h4>
+          {/* if mainBoxMessage == true => h3 has class message_header-request-active */}
+            <h3 className={mainBoxMessage ? "message_header-request-active" : ""} onClick={() => setMainBoxMessage(true)}
+            >Tin nhắn</h3>
+              {/* if mainBoxMessage == false => h4 has class message_header-request-active */}
+            <h4  className={!mainBoxMessage ? "message_header-request-active" : ""} onClick={() => setMainBoxMessage(false)}
+            >Tin nhắn chờ</h4>
         </div>
       </div>
       <div className="message_chat_list">
@@ -82,7 +99,6 @@ export const LeftSide = ({setOpenModal}) => {
         </div>
        }
       </div>
-
     </>
   );
 };

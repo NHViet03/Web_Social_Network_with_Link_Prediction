@@ -38,19 +38,32 @@
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    margin: 20px 7px 0px 7px;
+    padding: 20px 10px 0px 10px;
+}
+.message_header-request-active{
+    background-color: #db4e20;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: #fff !important;
+    font-size: 15px;
+    font-weight: 700;
 }
 .message_header-request >h3{
     font-size: 15px;
     font-weight: 700;
     color: #db4e20;
-    cursor: text;
+    cursor: pointer;
+}
+.message_header-request >h3:hover{
+    text-decoration: underline;
 }
 .message_header-request >h4{
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 700;
     color: #db4e20;
-    opacity: 0.8;
+}
+.message_header-request >h4:hover{
+    text-decoration: underline;
 }
 .message_header-newchat{
     margin-right: 10px;
@@ -98,12 +111,20 @@
     display: flex;
 }
 .message_chat_card .message_user:hover{
-    background-color: #e79174 ;
-    border-radius: 12px;
+    background-color: #f3dad1 ;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
 }
 .message_chat_card .message_user.active {
-    background-color: #e79174 ;
-    border-radius: 12px;
+    background-color: #db4e20 ;
+    border-top-left-radius: 100px;
+    border-bottom-left-radius: 100px;
+    color: #fff;
+    font-weight: 500;
+    border-right: none;
+    small {
+        color: #fff;
+    }
 }
 
 .message_chat_list .message_chat_card .fa-circle{
@@ -225,7 +246,7 @@
 }
 .conversation-message_header{
     display: flex;
-    padding: 15px 0px;
+    padding: 15px 10px;
     border-bottom: 1px solid #ddd;
     
 }
@@ -404,6 +425,6 @@
 
 /* Modal Add Message */
 .display_img_video_chat{
-    /* max-width: 200px;
-    max-height: 200px; */
+    max-width: 200px;
+    max-height: 200px;
 }
