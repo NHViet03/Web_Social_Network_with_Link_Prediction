@@ -18,14 +18,14 @@ const Suggestions = () => {
   useEffect(() => {
     const getLinkPredictionUsers = async () => {
       try {
-        // setLoading(true);
-        // setUsers([]);
-        // const res = await axios.get(
-        //   `http://localhost:8000/SuggestionUserBy${predictionModel}${auth.user._id}`
-        // );
+        setLoading(true);
+        setUsers([]);
+        const res = await axios.get(
+          `http://localhost:8000/SuggestionUserBy${predictionModel}${auth.user._id}`
+        );
 
-        // setUsers(res.data.data);
-        // setLoading(false);
+        setUsers(res.data.data);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }

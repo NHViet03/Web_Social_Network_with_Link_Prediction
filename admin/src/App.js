@@ -37,7 +37,7 @@ function App() {
         <div
           className="main_container"
           style={{
-            marginLeft: showSideBar && auth.token ? "250px" : "0",
+            marginLeft: showSideBar && auth.token ? "280px" : "0",
           }}
         >
           <Header setShowSideBar={setShowSideBar} />

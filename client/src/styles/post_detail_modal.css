@@ -38,8 +38,15 @@
 .postDetail .card_body{
     margin-top: unset!important;
 }
+
+.postDetail_modal-content .card_body .carousel-inner {
+    height: 650px;
+  }
+
+
 .postDetail_modal .card_body img,
-.postDetail .card_body img{
+.postDetail .card_body img,
+.postDetail_modal .card_body video{
     height: 650px;
     border-radius: unset;
     border-top-left-radius: 4px;

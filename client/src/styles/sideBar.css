@@ -1,6 +1,6 @@
 .side-bar {
   padding: 25px 15px;
-  width: 250px;
+  width: 280px;
   z-index: 2;
   border-right: 1px solid var(--border-color);
   position: fixed;
@@ -31,6 +31,11 @@
   z-index: 3;
 }
 
+.side-bar .menu .nav-item {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .side-bar .menu .nav-item:hover {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -40,6 +45,8 @@
 }
 .side-bar .menu .nav-item a {
   color: #000;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .side-bar .menu .nav-item.active > * {
@@ -50,9 +57,9 @@
   font-size: 30px;
 }
 .side-bar .menu .nav-text {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 100%;
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 /* Menu Item Dropdown */
@@ -116,7 +123,7 @@
   left: calc(100% + 10px);
   top: -20px;
   bottom: -20px;
-  width:400px;
+  width: 400px;
   background-color: #fff;
   z-index: 4;
   box-shadow: rgba(0, 0, 0, 0.2) 3px 3px 4px;
@@ -125,11 +132,11 @@
   border-left: 1px solid var(--border-color);
   transform: translateX(-400px);
   transition: transform 0.3s ease-in-out;
-  visibility:hidden;
+  visibility: hidden;
   z-index: -9999;
 }
 
-.sideBar_modal.show{
+.sideBar_modal.show {
   transform: none;
   z-index: 1;
   visibility: visible;

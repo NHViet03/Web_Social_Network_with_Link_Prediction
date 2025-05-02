@@ -17,10 +17,13 @@ const GalleryPost = ({ posts }) => {
   }, [posts]);
 
   const handleShowPost = (post) => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: {
-      postId:post._id,
-      explore:true
-    } });
+    dispatch({
+      type: GLOBAL_TYPES.POST_DETAIL,
+      payload: {
+        postId: post._id,
+        explore: true,
+      },
+    });
   };
 
   return (
@@ -34,7 +37,12 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img src={cluster[4].images[0].url} alt="Post" />
+                  <img
+                    src={
+                      cluster[4].images.find((img) => img.type !== "video")?.url
+                    }
+                    alt="Post"
+                  />
                   {cluster[4].images.length > 1 && (
                     <i className="fa-solid fa-images" />
                   )}
@@ -56,7 +64,10 @@ const GalleryPost = ({ posts }) => {
                     className="gallery_item"
                     onClick={() => handleShowPost(post)}
                   >
-                    <img src={post.images[0].url} alt="Post" />
+                    <img
+                      src={post.images.find((img) => img.type !== "video")?.url}
+                      alt="Post"
+                    />
                     {post.images.length > 1 && (
                       <i className="fa-solid fa-images" />
                     )}
@@ -76,7 +87,12 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img src={cluster[4].images[0].url} alt="Post" />
+                  <img
+                    src={
+                      cluster[4].images.find((img) => img.type !== "video")?.url
+                    }
+                    alt="Post"
+                  />
                   {cluster[4].images.length > 1 && (
                     <i className="fa-solid fa-images" />
                   )}

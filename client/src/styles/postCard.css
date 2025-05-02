@@ -46,11 +46,17 @@
 /* Card Body */
 .card_body {
 }
-.card_body img {
-  height: 550px;
+.card_body img,
+.card_body video {
+  height: 600px;
   object-fit: cover;
   border-radius: 4px;
 }
+
+.card_body .carousel-inner {
+  height: 600px;
+}
+
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   width: 28px;
@@ -65,8 +71,8 @@
 }
 
 .carousel-btn {
-  width: 8px!important;
-  height: 8px!important;
+  width: 8px !important;
+  height: 8px !important;
   border-radius: 50%;
 }
 
@@ -123,7 +129,6 @@
   border: none;
   cursor: pointer;
 }
-
 
 /* Card Comment */
 .card_comment {
