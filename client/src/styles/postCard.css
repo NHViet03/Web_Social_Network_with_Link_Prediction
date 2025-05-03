@@ -4,10 +4,21 @@
 }
 
 .card_header-content h6 {
-  margin-left: 12px;
+  margin-bottom: 0;
 }
 
-.card_header-content span {
+.card_header-content-location{
+  font-size: 13px;
+  line-height: 14px;
+  display: block;
+}
+
+.card_header-content-username{
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.card_header-content .material-icons {
   margin: 0 6px;
   font-size: 6px;
   color: var(--text-color);
@@ -48,13 +59,13 @@
 }
 .card_body img,
 .card_body video {
-  height: 600px;
+  height: 550px;
   object-fit: cover;
   border-radius: 4px;
 }
 
 .card_body .carousel-inner {
-  height: 600px;
+  height: 550px;
 }
 
 .carousel-control-prev-icon,

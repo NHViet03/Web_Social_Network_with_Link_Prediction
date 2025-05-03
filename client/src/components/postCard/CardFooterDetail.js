@@ -126,6 +126,17 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     commentRef.current.focus();
   };
 
+  const generateHashtags = () => {
+    const hashtags = post.hashtags.map((hashtag, index) => {
+      return (
+        <Link key={index} className="hashtag" to={`/hashtag/${hashtag}`}>
+          #{hashtag}
+        </Link>
+      );
+    });
+    return hashtags;
+  };
+
   return (
     <div className="mt-3 pt-3 pb-1 flex-fill d-flex flex-column card_footer">
       {post && (
@@ -149,11 +160,17 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
                     {post.content}
                   </span>
                 </div>
-                <div className="d-flex">
-                  <span className="card_comment-menu-text">
-                    {moment(post.createdAt).fromNow()}
-                  </span>
-                </div>
+                {post.hashtags?.length > 0 && (
+                  <div
+                    style={{
+                      color: "rgb(65, 80, 247)",
+                      display: "flex",
+                      gap: "6px",
+                    }}
+                  >
+                    {generateHashtags()}
+                  </div>
+                )}
               </div>
             </div>
 

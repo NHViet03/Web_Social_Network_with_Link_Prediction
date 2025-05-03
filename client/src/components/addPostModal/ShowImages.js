@@ -22,18 +22,7 @@ function SelectImage({ post }) {
 
     videos.forEach((video) => {
       video.pause();
-      video.muted = true;
-      video.currentTime = 0;
     });
-
-    setImages((prev) =>
-      prev.map((img, index) => {
-        if (img.type.includes("video")) {
-          img.muted = true;
-        }
-        return img;
-      })
-    );
   };
 
   const handleMutedVideo = (videoId) => {
@@ -83,6 +72,7 @@ function SelectImage({ post }) {
                   onClick={handleClickVideo}
                   loop
                   muted
+
                 >
                   <source src={img.url} type="video/mp4" />
                   Xin lỗi, trình duyệt của bạn không hỗ trợ video này.

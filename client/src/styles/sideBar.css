@@ -57,9 +57,9 @@
   font-size: 30px;
 }
 .side-bar .menu .nav-text {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 100%;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 /* Menu Item Dropdown */

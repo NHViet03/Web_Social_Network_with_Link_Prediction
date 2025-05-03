@@ -1,13 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const Carousel = ({ images, id }) => {
   const [imgs, setImgs] = useState(images || []);
   const theme = useSelector((state) => state.theme);
 
+  const videoRefs = useRef([]);
+
   const isActive = (index) => {
     return index === 0 ? "active" : "";
   };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (!entry.isIntersecting) {
+            video.pause();
+          } 
+        });
+      },
+      {
+        threshold: 0.4,
+      }
+    );
+
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        observer.observe(video);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [imgs]);
 
   const handleClickVideo = (e) => {
     e.preventDefault();
@@ -25,18 +53,7 @@ const Carousel = ({ images, id }) => {
 
     videos.forEach((video) => {
       video.pause();
-      video.muted = true;
-      video.currentTime = 0;
     });
-
-    setImgs((prev) =>
-      prev.map((img, index) => {
-        if (img.type === "video") {
-          img.muted = true;
-        }
-        return img;
-      })
-    );
   };
 
   const handleMutedVideo = (videoId) => {
@@ -84,6 +101,7 @@ const Carousel = ({ images, id }) => {
                   onClick={handleClickVideo}
                   loop
                   muted
+                  ref={(el) => (videoRefs.current[index] = el)}
                 >
                   <source src={img.url} type="video/mp4" />
                   Xin lỗi, trình duyệt của bạn không hỗ trợ video này.

@@ -24,6 +24,13 @@ function AddPostModal() {
       : {
           content: "",
           images: [],
+          hashtags:[],
+          tags:[],
+          location:{
+            name: "",
+            lat: 0,
+            lng: 0,
+          }
         }
   );
   const [loading, setLoading] = useState(false);
@@ -43,7 +50,6 @@ function AddPostModal() {
   };
 
   const handleUpdatePost = () => {
-    if (post.content === addPostModal.post.content) return handleClose();
     dispatch(updatePost({ post, auth }));
     handleClose();
   };

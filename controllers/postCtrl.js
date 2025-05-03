@@ -18,7 +18,7 @@ class APIfeatures {
 const postCtrl = {
   createPost: async (req, res) => {
     try {
-      const { content, images } = req.body;
+      const { content, images, hashtags, tags, location } = req.body;
       if (images.length === 0) {
         return res
           .status(400)
@@ -29,12 +29,21 @@ const postCtrl = {
         content,
         images,
         user: req.user._id,
+        hashtags,
+        tags,
+        location,
       });
 
       await newPost.save();
+
+      const resonsePost = await Posts.findById(newPost._id).populate(
+        "tags",
+        "username"
+      );
+
       return res.json({
         msg: "Đã tạo bài viết thành công",
-        post: newPost._doc,
+        post: resonsePost,
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -58,7 +67,8 @@ const postCtrl = {
             path: "user",
             select: "avatar username fullname",
           },
-        });
+        })
+        .populate("tags", "avatar username");
 
       return res.json({
         posts,
@@ -78,7 +88,8 @@ const postCtrl = {
             path: "user",
             select: "avatar username fullname",
           },
-        });
+        })
+        .populate("tags", "avatar username");
 
       return res.json({
         post,
@@ -89,11 +100,15 @@ const postCtrl = {
   },
   updatePost: async (req, res) => {
     try {
-      const { content } = req.body;
-      const post = await Posts.findOneAndUpdate(
+      const { content, hashtags, tags, location } = req.body;
+      
+      await Posts.findOneAndUpdate(
         { _id: req.params.id },
         {
           content,
+          hashtags,
+          tags,
+          location,
         }
       );
 
@@ -294,21 +309,23 @@ const postCtrl = {
   },
   getSavePosts: async (req, res) => {
     try {
-      const features = new APIfeatures(Posts.find({
-        _id: {$in : req.user.saved}
-      }), req.query).paginating()
+      const features = new APIfeatures(
+        Posts.find({
+          _id: { $in: req.user.saved },
+        }),
+        req.query
+      ).paginating();
 
-      const savePosts = await features.query.sort("-createdAt")
+      const savePosts = await features.query.sort("-createdAt");
 
       res.json({
         savePosts,
-        result: savePosts.length
-      })
-
+        result: savePosts.length,
+      });
     } catch (err) {
-      return res.status(500).json({msg: err.message})
+      return res.status(500).json({ msg: err.message });
     }
-  }
+  },
 };
 
 module.exports = postCtrl;

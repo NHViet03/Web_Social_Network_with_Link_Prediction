@@ -54,6 +54,7 @@ const SharePostModal = ({ post }) => {
       setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
     }
   };
+  
   const handleRemoveUser = (user) => {
     setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
   };

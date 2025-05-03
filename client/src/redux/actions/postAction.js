@@ -28,6 +28,9 @@ export const createPost =
         {
           content: post.content,
           images: media,
+          hashtags: post.hashtags || [],
+          tags: post.tags.map((tag) => tag._id) || [],
+          location: post.location || {},
         },
         auth.token
       );
@@ -96,6 +99,9 @@ export const updatePost =
         `post/${post._id}`,
         {
           content: post.content,
+          hashtags: post.hashtags || [],
+          tags: post.tags.map((tag) => tag._id) || [],
+          location: post.location || {},
         },
         auth.token
       );
