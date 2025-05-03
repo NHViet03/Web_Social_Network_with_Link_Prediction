@@ -82,19 +82,33 @@ const messageCtrl = {
 
       await newMessage.save();
 
-      res.json({ msg: "Create Success!" });
+      res.json({ 
+        msg: "Create Success!",
+        conversation: newConversation
+      });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   getConversations: async (req, res) => {
     try {
-      const features = new APIfeatures(
-        Conversations.find({
-          recipients: req.user._id,
-        }),
-        req.query
-      ).paginating();
+      // Tạo bộ lọc ban đầu: user phải là một recipient
+    const filter = {
+      recipients: req.user._id,
+    };
+
+    // Nếu có truyền mainBoxMessage (dưới dạng chuỗi "true"/"false"), lọc thêm theo recipientAccept
+    if (req.query.mainBoxMessage !== undefined) {
+      const mainBoxMessage = req.query.mainBoxMessage === 'true';
+      filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
+    }
+
+    // Áp dụng phân trang (chỉ có limit theo class bạn cung cấp)
+    const features = new APIfeatures(
+      Conversations.find(filter),
+      req.query
+    ).paginating();
+     
 
       const conversations = await features.query
         .sort("-updatedAt")

@@ -55,6 +55,8 @@ socket.on('disconnect', () => {
   // Message
   socket.on("addMessage", msg =>{
     const user = users.find(user => user.id === msg.recipient)
+
+    //find User from msg.recipient
     user && socket.to(`${user.socketId}`).emit("addMessageToClient", msg)
   })
  

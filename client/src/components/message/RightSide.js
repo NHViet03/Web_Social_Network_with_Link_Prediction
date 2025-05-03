@@ -19,7 +19,9 @@ import loadIcon from "../../images/loading.gif";
 import CallModal from "./CallModal";
 
 const RightSide = () => {
-  const { auth, message, theme, socket, call, peer} = useSelector((state) => state);
+  const { auth, message, theme, socket, call, peer } = useSelector(
+    (state) => state
+  );
   const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -34,6 +36,8 @@ const RightSide = () => {
   const [isLoadMore, setIsLoadMore] = useState(0);
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
+  const [strangerModal, setStrangerModal] = useState(true);
+  const [conversationId, setConversationId] = useState("");
 
   const handleChangeMedia = (e) => {
     const files = [...e.target.files];
@@ -60,7 +64,7 @@ const RightSide = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!text.trim() && media.length === 0) return;
     setText("");
     setMedia([]);
@@ -68,20 +72,19 @@ const RightSide = () => {
 
     //if (media.length > 0) newArr = await imageUpload(media);
     let newArr = [];
-    if (media.length > 0) 
-      {
-        const images = media.filter((item) => item.type.match(/image/i));
-        const videos = media.filter((item) => item.type.match(/video/i));
+    if (media.length > 0) {
+      const images = media.filter((item) => item.type.match(/image/i));
+      const videos = media.filter((item) => item.type.match(/video/i));
 
-        if (videos.length > 0) {
-          const video = await videoUpload(videos);
-          newArr.push(...video);
-        }
-        if (images.length > 0) {
-          const img = await imageUpload(images);
-          newArr.push(...img);
-        }
+      if (videos.length > 0) {
+        const video = await videoUpload(videos);
+        newArr.push(...video);
       }
+      if (images.length > 0) {
+        const img = await imageUpload(images);
+        newArr.push(...img);
+      }
+    }
 
     const msg = {
       sender: auth.user._id,
@@ -90,7 +93,7 @@ const RightSide = () => {
       media: newArr,
       CreatedAt: new Date().toISOString(),
     };
-     dispatch(addMessage({ msg, auth, socket }));
+    dispatch(addMessage({ msg, auth, socket }));
     setLoadMedia(false);
     refDisplay.current &&
       refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -114,30 +117,33 @@ const RightSide = () => {
         Swal.fire({
           title: "Thành công!",
           text: "Cuộc trò chuyện đã được xóa",
-          icon: "success"
+          icon: "success",
         });
-        dispatch(deleteConversation({auth, id}))
-        return navigate('/message')
+        dispatch(deleteConversation({ auth, id }));
+        return navigate("/message");
       }
     });
-  //   if (!window.confirm(`Bạn có muốn xóa cuộc trò chuyện với ${user.fullname}`))
-  //     return;
-  //  dispatch(deleteConversation({auth, id}))
-  //   return navigate('/message')
+   
   };
   // Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
   useEffect(() => {
-    const newData = message.data.find((item) => item._id === id);
+    const newData = message?.data?.find((item) => item._id === id);
+
     if (newData) {
       setData(newData.messages);
       setResult(newData.result);
       setPage(newData.page);
+
+      const currentChat = message.users.find(
+        (user) => user._id === newData._id
+      );
+      setStrangerModal(currentChat?.recipientAccept);
     }
   }, [message.data, id]);
 
   // Trả về user mà mình nhắn tin
   useEffect(() => {
-    if (id && message.users.length > 0){
+    if (id && message.users.length > 0) {
       setTimeout(() => {
         refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
       }, 50);
@@ -164,81 +170,115 @@ const RightSide = () => {
   }, [dispatch, auth, id, message.data]);
 
   // Load more
-  // Cấu hình load more (Có sửa)
-  useEffect(() =>
-  {
-    const observer = new IntersectionObserver(entries => {
-      if(entries[0].isIntersecting){
-        setIsLoadMore(p => p + 1)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsLoadMore((p) => p + 1);
+        }
+      },
+      {
+        threshold: 0.1,
       }
-    }, {
-      threshold: 0.1
-    })
-    observer.observe(pageEnd.current)
-  }, [setIsLoadMore])
+    );
+    observer.observe(pageEnd.current);
+  }, [setIsLoadMore]);
 
   // Lướt lên thì trả về thêm message(Có sửa)
   useEffect(() => {
-    if(isLoadMore > 1){
-      if(result >= page* 9){
-        dispatch(loadMoreMessages({auth,id ,page: page +1}))
-        setIsLoadMore(1)
+    if (isLoadMore > 1) {
+      if (result >= page * 9) {
+        dispatch(loadMoreMessages({ auth, id, page: page + 1 }));
+        setIsLoadMore(1);
       }
     }
-    
-  }, [isLoadMore])
+  }, [isLoadMore]);
+  const handleAcceptWaitingBox = () => {
+    const id = auth.user._id;
+    // console.log(conversation);
+  }
 
   // Khi gõ thì cuộn lại trang xuống (Có sửa)
   useEffect(() => {
-    if(refDisplay.current){
-      refDisplay.current.scrollIntoView({behavior: "smooth", block: "end"})
+    if (refDisplay.current) {
+      refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-  }, [text])
+  }, [text]);
 
   // Call
-  const caller = ({video}) =>{
-    const {_id, avatar, fullname} = user
+  const caller = ({ video }) => {
+    const { _id, avatar, fullname } = user;
     const msg = {
       sender: auth.user._id,
       recipient: _id,
-      avatar, fullname, video
-    }
-    dispatch({type: GLOBAL_TYPES.CALL, payload: msg})
-  }
-  const callUser = ({video}) =>{
-    const {_id, avatar, username, fullname} = auth.user
+      avatar,
+      fullname,
+      video,
+    };
+    dispatch({ type: GLOBAL_TYPES.CALL, payload: msg });
+  };
+  const callUser = ({ video }) => {
+    const { _id, avatar, username, fullname } = auth.user;
 
-    const msg ={
+    const msg = {
       sender: _id,
       recipient: user._id,
-      avatar, username, fullname, video
-    }
-    if(peer.open) msg.peerId = peer._id
+      avatar,
+      username,
+      fullname,
+      video,
+    };
+    if (peer.open) msg.peerId = peer._id;
 
-    socket.emit('callUser', msg)
-
-  }
+    socket.emit("callUser", msg);
+  };
   const handleAudioCall = () => {
-    caller({video: false})
-    callUser({video: true})
+    caller({ video: false });
+    callUser({ video: true });
   };
   const handleVideoCall = () => {
-    caller({video: true})
-    callUser({video: true})
+    caller({ video: true });
+    callUser({ video: true });
   };
 
   return (
     <div className="conversation-message">
-      <div className="conversation-message_header">
+      <div
+        className="conversation-message_header"
+        style={{ position: "relative" }}
+      >
         <UserCard user={user} headerMessage />
         <div className="conversation-message_header-icon">
           <i class="fa-solid fa-phone" onClick={handleAudioCall}></i>
           <i class="fa-solid fa-video" onClick={handleVideoCall}></i>
-          <i class="fa-solid fa-trash" onClick={handleDeleteConversation(user)}></i>
+          <i
+            class="fa-solid fa-trash"
+            onClick={handleDeleteConversation(user)}
+          ></i>
         </div>
+        {strangerModal !== undefined && strangerModal === false && (
+          <div
+            className="d-flex flex-direction-row justify-content-between align-items-center p-3"
+            style={{
+              border: "1px solid #ffdfd5",
+              borderRadius: "15px",
+              backgroundColor: "#ffdfd5",
+              position: "absolute",
+              top: "100%",
+              left: "0",
+              right: "0",
+              zIndex: "10",
+            }}
+          >
+            <div className="btn btn-success" onClick={handleAcceptWaitingBox}>Chấp nhận</div>
+            <div className="btn btn-warning">Xóa tin nhắn</div>
+            <div className="btn btn-danger">Chặn</div>
+          </div>
+        )}
       </div>
+
       <div className="conversation-message_chat-container">
-      {call && <CallModal />}
+        {call && <CallModal />}
         <div className="conversation-message_chat-display" ref={refDisplay}>
           <button
             type="button"

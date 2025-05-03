@@ -9,6 +9,7 @@ const SocketClient = () => {
   const socket = useSelector((state) => state.socket);
   const online = useSelector((state) => state.online);
   const call = useSelector((state) => state.call);
+  const message = useSelector((state) => state.message);
 
 
   const dispatch = useDispatch();

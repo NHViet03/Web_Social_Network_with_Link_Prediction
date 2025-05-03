@@ -7,7 +7,9 @@ export const MESS_TYPES ={
     GET_MESSAGES: 'GET_MESSAGES',
     UPDATE_MESSAGES: 'UPDATE_MESSAGES',
     DELETE_CONVERSATION: 'DELETE_CONVERSATION',
-    CHECK_ONLINE_OFFLINE: 'CHECK_ONLINE_OFFLINE'
+    CHECK_ONLINE_OFFLINE: 'CHECK_ONLINE_OFFLINE',
+    LOADINGCONVERSATIONS: 'LOADING_CONVERSATIONS',
+    MAINBOXMESSAGE : 'MAINBOXMESSAGE',
 }
 
 // export const addUser = ({user, message}) => (dispatch) => {
@@ -25,9 +27,13 @@ export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
        payload: msg
    })
    const { _id, avatar, fullname, username } = auth.user
-   socket.emit('addMessage', {...msg, user: {_id, avatar, fullname, username}})
+   
    try {
-    await postDataAPI('message', msg, auth.token);
+    const res = await postDataAPI('message', msg, auth.token);
+    const isMainboxUserRecipient = res.data.conversation.recipientAccept[msg.recipient]
+    if(isMainboxUserRecipient){
+        socket.emit('addMessage', {...msg, user: {_id, avatar, fullname, username}})
+    }
    } catch (err) {
      dispatch({
          type: GLOBAL_TYPES.ALERT,
@@ -38,7 +44,12 @@ export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
 
 export const getConversations = ({auth, page = 1,mainBoxMessage}) => async (dispatch) => {
     try {
-        const res = await getDataAPI(`conversations?limit=${page * 9}`, auth.token);
+        dispatch({
+            type: MESS_TYPES.LOADINGCONVERSATIONS,
+            payload: true
+        })
+ 
+        const res = await getDataAPI(`conversations?limit=${page * 12}&mainBoxMessage=${mainBoxMessage}`, auth.token);
         let newArr = [];
         res.data.conversations.forEach(item => {
            // item.recipientAccept is a key value object, get the value of the key that is equal to the auth.user._id
@@ -49,11 +60,14 @@ export const getConversations = ({auth, page = 1,mainBoxMessage}) => async (disp
                 }
             })
         })
-        newArr = newArr.filter(item => item.recipientAccept === mainBoxMessage)
         dispatch({
                 type: MESS_TYPES.GET_CONVERSATIONS,
                 payload: {newArr, result: res.data.result}
             })
+        dispatch({
+            type: MESS_TYPES.LOADINGCONVERSATIONS,
+            payload: false
+        })
     } catch (err) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,

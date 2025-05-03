@@ -104,6 +104,13 @@
 .message_chat_list .message_chat_card{
     cursor: pointer;
 }
+.loading-conversation{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
 .message_chat_card .message_user{
     align-items: center;
     padding: 10px 5px;
@@ -112,15 +119,11 @@
 }
 .message_chat_card .message_user:hover{
     background-color: #f3dad1 ;
-    border-top-left-radius: 100px;
-    border-bottom-left-radius: 100px;
+
 }
 .message_chat_card .message_user.active {
-    background-color: #db4e20 ;
-    border-top-left-radius: 100px;
-    border-bottom-left-radius: 100px;
+    background-color: #D97B5C ;
     color: #fff;
-    font-weight: 500;
     border-right: none;
     small {
         color: #fff;
@@ -263,7 +266,7 @@
 }
 .conversation-message_chat-container{
    height: calc(100vh - 150px);
-    overflow-y: auto;
+   overflow-y: auto;
    padding: 0 10px;
 }
 .conversation-message_chat-display{

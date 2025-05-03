@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import UserCard from "../UserCard"
 import { useParams, useNavigate } from "react-router-dom";
 import { MESS_TYPES, getConversations } from "../../redux/actions/messageAction";
-import loading from "../../images/loading.gif"
+import Loading from "../Loading";
 
 
 export const LeftSide = ({setOpenModal}) => {
@@ -18,12 +18,11 @@ export const LeftSide = ({setOpenModal}) => {
     if(id === user._id) return "active"
     return ''
   }
-  const [mainBoxMessage, setMainBoxMessage] = useState(true)
 
   useEffect(() => {
     if(message.firstLoad) return;
-    dispatch(getConversations({auth, mainBoxMessage: mainBoxMessage}));
-  },[dispatch, message.firstLoad, mainBoxMessage, auth])
+    dispatch(getConversations({auth, mainBoxMessage: message.mainBoxMessage}));
+  },[dispatch, message.firstLoad, message.mainBoxMessage, auth])
 
   // useEffect for change mainBoxMessage
   useEffect(() => {
@@ -31,10 +30,15 @@ export const LeftSide = ({setOpenModal}) => {
       firstRun.current = false;
       return; 
     }
-    console.log("mainBoxMessage changed:", mainBoxMessage);
-    dispatch(getConversations({auth, mainBoxMessage: mainBoxMessage}));
-  },[mainBoxMessage])
+    dispatch(getConversations({auth, mainBoxMessage: message.mainBoxMessage}));
+  },[message.mainBoxMessage])
   
+  const handleChangeMainBoxMessage = (mainBoxMessage) => {
+    dispatch({
+      type: MESS_TYPES.MAINBOXMESSAGE,
+      payload: mainBoxMessage
+    })
+  }
   // Load More
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
@@ -54,9 +58,9 @@ export const LeftSide = ({setOpenModal}) => {
   },[online, message.firstLoad, dispatch])
   useEffect(() => {
     if(message.resultUsers >= (page - 1) * 9 && page > 1){
-      dispatch(getConversations({auth, page, mainBoxMessage}));
+      dispatch(getConversations({auth, page, mainBoxMessage: message.mainBoxMessage}))
     }
-  },[message.resultUsers, page, mainBoxMessage, auth, dispatch])
+  },[message.resultUsers, page, message.mainBoxMessage, auth, dispatch])
   return (
     <>
       <div className="message_header">
@@ -71,17 +75,21 @@ export const LeftSide = ({setOpenModal}) => {
         </div>
         <div className="message_header-request">
           {/* if mainBoxMessage == true => h3 has class message_header-request-active */}
-            <h3 className={mainBoxMessage ? "message_header-request-active" : ""} onClick={() => setMainBoxMessage(true)}
+            <h3 className={message.mainBoxMessage ? "message_header-request-active" : ""} onClick={() => handleChangeMainBoxMessage(true)}
             >Tin nhắn</h3>
               {/* if mainBoxMessage == false => h4 has class message_header-request-active */}
-            <h4  className={!mainBoxMessage ? "message_header-request-active" : ""} onClick={() => setMainBoxMessage(false)}
+            <h4  className={!message.mainBoxMessage ? "message_header-request-active" : ""} onClick={() => handleChangeMainBoxMessage(false)}
             >Tin nhắn chờ</h4>
         </div>
       </div>
       <div className="message_chat_list">
        {
        <div className="message_chat_card"> 
-          {message.users.map((user) => 
+          { message.loadingConversation ?
+          <div className="loading-conversation mb-[10px]" >
+            <Loading />
+          </div>
+          : message.users.map((user) => 
           (
             <div className={`message_user  ${isActive(user)}`} key={user._id} onClick={() => navigate(`/message/${user._id}`)}>
                 <UserCard user={user} size ="avatar-middle">

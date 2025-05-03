@@ -5,7 +5,9 @@ const initialState = {
     users: [],
     resultUsers: 0,
     data: [],
-    firstLoad: false
+    firstLoad: false,
+    loadingConversation: false,
+    mainBoxMessage: true,
 }
 
 const messageReducer = (state = initialState, action) =>{
@@ -60,6 +62,16 @@ const messageReducer = (state = initialState, action) =>{
                     data: DeleteData(state.data, action.payload)
 
                     }
+            case MESS_TYPES.LOADINGCONVERSATIONS:
+                return{
+                    ...state,
+                    loadingConversation: action.payload
+                }
+            case MESS_TYPES.MAINBOXMESSAGE:
+                return{
+                    ...state,
+                    mainBoxMessage: action.payload
+                }
             case MESS_TYPES.CHECK_ONLINE_OFFLINE:
                 return{
                     ...state,
