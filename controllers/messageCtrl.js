@@ -122,6 +122,28 @@ const messageCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  acceptConversation: async (req, res) => {
+    const sender = req.body.auth.user._id;
+    const recipient = req.body.id;
+    try {
+      const conversation = await Conversations.findOne({
+        $or: [
+          { recipients: [sender, recipient] },
+          { recipients: [recipient, sender] },
+        ],
+      });
+      if (!conversation) return res.status(400).json({ msg: "Not found!" });
+
+      // set  key conversation.recipientAccept[sender]  with value true
+      conversation.recipientAccept.set(sender.toString(), true);
+      
+      await conversation.save();
+
+      res.json({ msg: "Accepted Success!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   getMessages: async (req, res) => {
     try {
       const features = new APIfeatures(

@@ -12,11 +12,14 @@ import {
   deleteConversation,
   addMessage,
   getMessages,
+  acceptConversation,
 } from "../../redux/actions/messageAction";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import loadIcon from "../../images/loading.gif";
 import CallModal from "./CallModal";
+import { putDataAPI } from "../../utils/fetchData";
+
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -37,7 +40,6 @@ const RightSide = () => {
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
   const [strangerModal, setStrangerModal] = useState(true);
-  const [conversationId, setConversationId] = useState("");
 
   const handleChangeMedia = (e) => {
     const files = [...e.target.files];
@@ -193,9 +195,10 @@ const RightSide = () => {
       }
     }
   }, [isLoadMore]);
-  const handleAcceptWaitingBox = () => {
-    const id = auth.user._id;
-    // console.log(conversation);
+  const handleAcceptWaitingBox = async () => {
+    const recipientID = id;
+    await dispatch(acceptConversation({ auth, id: recipientID }));
+    setStrangerModal(true);
   }
 
   // Khi gõ thì cuộn lại trang xuống (Có sửa)
@@ -258,20 +261,22 @@ const RightSide = () => {
         </div>
         {strangerModal !== undefined && strangerModal === false && (
           <div
-            className="d-flex flex-direction-row justify-content-between align-items-center p-3"
+            className="d-flex flex-direction-row justify-content-between align-items-center"
             style={{
               border: "1px solid #ffdfd5",
               borderRadius: "15px",
               backgroundColor: "#ffdfd5",
               position: "absolute",
-              top: "100%",
+              top: "105%",
               left: "0",
               right: "0",
               zIndex: "10",
+              padding: "10px",
+              margin: "0 50px",
             }}
           >
             <div className="btn btn-success" onClick={handleAcceptWaitingBox}>Chấp nhận</div>
-            <div className="btn btn-warning">Xóa tin nhắn</div>
+            <div className="btn btn-warning" onClick={handleDeleteConversation(user)}>Xóa tin nhắn</div>
             <div className="btn btn-danger">Chặn</div>
           </div>
         )}

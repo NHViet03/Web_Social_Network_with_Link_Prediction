@@ -1,5 +1,5 @@
 import {GLOBAL_TYPES} from '../actions/globalTypes'
-import {deleteDataAPI, getDataAPI, postDataAPI} from '../../utils/fetchData'
+import {deleteDataAPI, getDataAPI, postDataAPI, putDataAPI} from '../../utils/fetchData'
 export const MESS_TYPES ={
     ADD_USER: 'ADD_USER',
     ADD_MESSAGE: 'ADD_MESSAGE',
@@ -68,6 +68,19 @@ export const getConversations = ({auth, page = 1,mainBoxMessage}) => async (disp
             type: MESS_TYPES.LOADINGCONVERSATIONS,
             payload: false
         })
+    } catch (err) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {error: err.response.data.msg}
+        })
+    }
+}
+
+
+export const acceptConversation = ({auth, id}) => async (dispatch) => {
+    try {
+     await putDataAPI('accept-conversation', {auth,id}, auth.token);
+
     } catch (err) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
