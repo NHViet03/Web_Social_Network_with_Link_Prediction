@@ -17,6 +17,8 @@ import message from "./messageReducer";
 import online from "./onlineReducer";
 import call from "./callReducer";
 import peer from "./peerReducer";
+import searchHistory from "./searchHistoryReducer";
+
 export default combineReducers({
   auth,
   alert,
@@ -35,5 +37,6 @@ export default combineReducers({
   message,
   online,
   call,
-  peer
+  peer,
+  searchHistory,
 });

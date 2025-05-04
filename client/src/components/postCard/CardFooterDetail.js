@@ -127,7 +127,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
   const generateHashtags = () => {
     const hashtags = post.hashtags.map((hashtag, index) => {
       return (
-        <Link key={index} className="hashtag" to={`/hashtag/${hashtag}`}>
+        <Link key={index} className="hashtag" to={`/explore/hashtags/${hashtag}`}>
           #{hashtag}
         </Link>
       );

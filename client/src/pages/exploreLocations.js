@@ -69,7 +69,7 @@ const ExploreLocations = () => {
       try {
         setLoading(true);
         const res = await getDataAPI(
-          `explore_posts/${id}?limit=${page * 10}`,
+          `explore_posts/location/${id}?limit=${page * 10}`,
           auth?.token
         );
 

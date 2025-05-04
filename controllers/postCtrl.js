@@ -2,6 +2,7 @@ const Posts = require("../models/postModel");
 const Comments = require("../models/commentModel");
 const Users = require("../models/userModel");
 const Reports = require("../models/reportModel");
+const Hashtags = require("../models/hashtagsModel");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -40,6 +41,21 @@ const postCtrl = {
         "tags",
         "username"
       );
+
+      // Insert hashtags into Hashtags collection if not exists
+      for (let hashtag of hashtags) {
+        const checkExists = await Hashtags.exists({
+          name: hashtag,
+        });
+
+        if (!checkExists) {
+          const newHashtag = new Hashtags({
+            name: hashtag,
+          });
+
+          newHashtag.save();
+        }
+      }
 
       return res.json({
         msg: "Đã tạo bài viết thành công",
@@ -111,6 +127,20 @@ const postCtrl = {
           location,
         }
       );
+
+      for (let hashtag of hashtags) {
+        const checkExists = await Hashtags.exists({
+          name: hashtag,
+        });
+
+        if (!checkExists) {
+          const newHashtag = new Hashtags({
+            name: hashtag,
+          });
+
+          newHashtag.save();
+        }
+      }
 
       return res.json({
         msg: "Cập nhật thành công",
@@ -229,8 +259,28 @@ const postCtrl = {
         req.query
       ).paginating();
 
-      const posts = await features.query
-        .sort("-createdAt")
+      const posts = await features.query.sort("-createdAt");
+
+      return res.json({
+        posts,
+        result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  getExplorePostsByHashtag: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const features = new APIfeatures(
+        Posts.find({
+          hashtags: id,
+        }),
+        req.query
+      ).paginating();
+
+      const posts = await features.query.sort("-createdAt");
 
       return res.json({
         posts,
