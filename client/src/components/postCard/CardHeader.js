@@ -105,7 +105,7 @@ const CardHeader = ({ user, post, follow }) => {
           {post.location?.name && (
             <Link
               className="card_header-content-location"
-              to={`/location/${post.location.name}`}
+              to={`/explore/locations/${post.location.id}/${post.location.name}`}
             >
               {post.location.name}
             </Link>

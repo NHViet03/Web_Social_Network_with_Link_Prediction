@@ -22,33 +22,36 @@ const PostDetailModal = () => {
   useEffect(() => {
     if (postDetail) {
       let findPost = {};
-      if (postDetail.explore) {
-        findPost = explore.posts.find((item) => item._id === postDetail.postId);
-      } else {
-        findPost = homePosts.posts.find((item) => item._id === postDetail);
+
+      findPost = explore.posts.find(
+        (item) => item._id === (postDetail.postId || postDetail)
+      );
+
+      if (!findPost) {
+        findPost = homePosts.posts.find(
+          (item) => item._id === (postDetail.postId || postDetail)
+        );
+      }
+
+      // If the post is not fount in homePost or Explore Post, find it in database
+      if (!findPost) {
+        setLoading(true);
+        getDataAPI(`post/${postDetail.postId || postDetail}`, auth.token)
+          .then((res) => {
+            setPost(res.data.post);
+            setLoading(false);
+          })
+          .catch((err) => {
+            dispatch({
+              type: GLOBAL_TYPES.ALERT,
+              payload: { error: err.response.data.msg },
+            });
+          });
       }
 
       setPost(findPost || {});
     }
   }, [explore.posts, homePosts.posts, postDetail]);
-
-  useEffect(() => {
-    // If the post is not fount in homePost or Explore Post, find it in database
-    if (Object.keys(post).length === 0 && !postDetail.postId) {
-      setLoading(true);
-      getDataAPI(`post/${postDetail}`, auth.token)
-        .then((res) => {
-          setPost(res.data.post);
-          setLoading(false);
-        })
-        .catch((err) => {
-          dispatch({
-            type: GLOBAL_TYPES.ALERT,
-            payload: { error: err.response.data.msg },
-          });
-        });
-    }
-  }, [auth.token, dispatch, post, postDetail]);
 
   const handleClose = () => {
     dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false });

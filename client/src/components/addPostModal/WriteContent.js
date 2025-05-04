@@ -212,52 +212,25 @@ function WriteContent({ post, setPost }) {
     debounceHandleSearchLocations(value);
   };
 
-  const handleChooseLocation = async (name, id) => {
+  const handleChooseLocation = async (location) => {
     setShowLocations(false);
 
-    if (post.location?.name === name) {
+    if (post.location?.name === location.name) {
       setPost({
         ...post,
         location: {
-          name: "",
-          lat: 0,
-          lng: 0,
+          id:"",
+          name: ""
         },
       });
 
       return;
     }
-
-    try {
-      const data = await fetch(
-        `https://google-map-places.p.rapidapi.com/maps/api/place/details/json?place_id=${id}&fields=geometry&language=vi`,
-        {
-          method: "GET",
-          headers: {
-            "X-RapidAPI-Key":
-              "214ae9b6a7mshe2d8b5b63eacda2p179e07jsn24f1f6de4c18",
-            "X-RapidAPI-Host": "google-map-places.p.rapidapi.com",
-          },
-        }
-      );
-
-      const result = await data.json();
-
-      if (!result.result) return;
-
-      const loc = result.result.geometry?.location;
-
-      setPost((prev) => ({
-        ...prev,
-        location: {
-          name: name,
-          lat: loc.lat,
-          lng: loc.lng,
-        },
-      }));
-    } catch (error) {
-      console.error("Error fetching location details:", error);
-    }
+    
+    setPost({
+      ...post,
+      location
+    })
   };
 
   useEffect(() => {
@@ -467,7 +440,7 @@ function WriteContent({ post, setPost }) {
                     key={location.id}
                     className="list-group-item"
                     onClick={() =>
-                      handleChooseLocation(location.name, location.id)
+                      handleChooseLocation(location)
                     }
                   >
                     {location.name}

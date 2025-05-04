@@ -26,9 +26,9 @@ import ForgotPassword from "./pages/forgotpassword.js";
 import ForgotPasswordVerifyOTP from "./pages/forgotpasswordverifyotp.js";
 import ForgotPasswordChangePassword from "./pages/forgotpasswordchangepassword.js";
 import BlockDeviceAccess from "./pages/blockDeviceAccess.js";
+import ExploreLocations from "./pages/exploreLocations.js";
 import Loading from "./components/alert/Loading.js";
 import getClientInfo from "./utils/getClientInfo.js";
-
 
 // Config moment
 moment.updateLocale("vi", {
@@ -151,6 +151,11 @@ function App() {
               <Route
                 path="/blockdevice/:userId/:deviceId"
                 element={<BlockDeviceAccess />}
+              />
+
+              <Route
+                path="/explore/locations/:id/:name"
+                element={<ExploreLocations />}
               />
 
               <Route path="/:page" element={<PageRender />} />

@@ -5,18 +5,17 @@ const postSchema = new mongoose.Schema(
     content: String,
     images: {
       type: Array,
-      required: true
+      required: true,
     },
-    user: { type: mongoose.Types.ObjectId, ref: 'user' },
-    likes: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
-    comments: [{ type: mongoose.Types.ObjectId, ref: 'comment' }],
+    user: { type: mongoose.Types.ObjectId, ref: "user" },
+    likes: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    comments: [{ type: mongoose.Types.ObjectId, ref: "comment" }],
     hashtags: [{ type: String }],
-    tags: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
+    tags: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     location: {
-      name: { type: String, index: true },
-      lat: Number,
-      lng: Number
-    }
+      id: { type: String, index: true },
+      name: String,
+    },
   },
   {
     timestamps: true,

@@ -27,9 +27,8 @@ function AddPostModal() {
           hashtags:[],
           tags:[],
           location:{
-            name: "",
-            lat: 0,
-            lng: 0,
+            id:"",
+            name: ""
           }
         }
   );
@@ -108,6 +107,15 @@ function AddPostModal() {
   }, [addStep, loading, post]);
 
   const handleNextStep = () => {
+    if (addStep === 1 && post.images.length === 0) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: "Vui lòng chọn ít nhất 1 ảnh/video",
+        },
+      })
+    }
+
     const existImage = post.images.some((img) => img.type.includes("image"));
 
     if (!existImage && addStep === 2) {

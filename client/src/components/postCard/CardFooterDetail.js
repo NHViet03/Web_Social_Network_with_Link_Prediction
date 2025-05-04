@@ -49,9 +49,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     }
   }, [auth.user._id, auth.user.saved, post]);
 
-  const handleShowPostDetail = () => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
-  };
+
   const handleShowSharePost = () => {
     dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
   };
@@ -209,7 +207,6 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
               />
               <span
                 className="fa-regular fa-comment"
-                onClick={handleShowPostDetail}
               />
               <span
                 className="fa-regular fa-paper-plane"

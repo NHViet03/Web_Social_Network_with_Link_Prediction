@@ -101,7 +101,7 @@ const postCtrl = {
   updatePost: async (req, res) => {
     try {
       const { content, hashtags, tags, location } = req.body;
-      
+
       await Posts.findOneAndUpdate(
         { _id: req.params.id },
         {
@@ -207,7 +207,30 @@ const postCtrl = {
             path: "user",
             select: "avatar username fullname",
           },
-        });
+        })
+        .populate("tags", "avatar username");
+
+      return res.json({
+        posts,
+        result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  getExplorePostsByLocation: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const features = new APIfeatures(
+        Posts.find({
+          "location.id": id,
+        }),
+        req.query
+      ).paginating();
+
+      const posts = await features.query
+        .sort("-createdAt")
 
       return res.json({
         posts,
@@ -279,7 +302,9 @@ const postCtrl = {
         }),
         req.query
       ).paginating();
-      const posts = await features.query.sort("-createdAt");
+      const posts = await features.query
+        .sort("-createdAt")
+        .populate("tags", "avatar username");
       res.json({
         posts,
         result: posts.length,
@@ -316,7 +341,9 @@ const postCtrl = {
         req.query
       ).paginating();
 
-      const savePosts = await features.query.sort("-createdAt");
+      const savePosts = await features.query
+        .sort("-createdAt")
+        .populate("tags", "avatar username");
 
       res.json({
         savePosts,

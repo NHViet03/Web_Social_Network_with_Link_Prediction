@@ -16,32 +16,28 @@ export const createComment =
       comments: [...post.comments, newComment],
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     try {
       const res = await postDataAPI("create_comment", newComment, auth.token);
 
-      if (explore) {
-        dispatch({
-          type: EXPLORE_TYPES.UPDATE_POST,
-          payload: res.data.newPost,
-        });
-      } else {
-        dispatch({
-          type: POST_TYPES.UPDATE_POST,
-          payload: res.data.newPost,
-        });
-      }
+      dispatch({
+        type: EXPLORE_TYPES.UPDATE_POST,
+        payload: res.data.newPost,
+      });
+
+      dispatch({
+        type: POST_TYPES.UPDATE_POST,
+        payload: res.data.newPost,
+      });
 
       // Notify
       const msg = {
@@ -59,7 +55,6 @@ export const createComment =
 
       dispatch(createNotify({ msg, auth, socket }));
       return res.data.newPost;
-
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -71,7 +66,7 @@ export const createComment =
   };
 
 export const likeComment =
-  ({ post, comment, auth, explore,socket }) =>
+  ({ post, comment, auth, explore, socket }) =>
   async (dispatch) => {
     const newComment = {
       ...comment,
@@ -85,17 +80,15 @@ export const likeComment =
       ),
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     // Notify
     const msg = {
@@ -126,7 +119,7 @@ export const likeComment =
   };
 
 export const unLikeComment =
-  ({ post, comment, auth, explore,socket }) =>
+  ({ post, comment, auth, explore, socket }) =>
   async (dispatch) => {
     const newComment = {
       ...comment,
@@ -140,21 +133,19 @@ export const unLikeComment =
       ),
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     // Notify
     const msg = {
-      id:comment._id,
+      id: comment._id,
       recipients: [comment.user],
       url: `/post/${post._id}`,
       user: auth.user,
@@ -175,28 +166,26 @@ export const unLikeComment =
   };
 
 export const deleteComment =
-  ({ post, comment, auth, explore,socket }) =>
+  ({ post, comment, auth, explore, socket }) =>
   async (dispatch) => {
     const newPost = {
       ...post,
       comments: post.comments.filter((cm) => cm._id !== comment._id),
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
-     // Notify
-     const msg = {
-      id:comment._id,
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    // Notify
+    const msg = {
+      id: comment._id,
       recipients: [post.user],
       url: `/post/${post._id}`,
       user: auth.user,
