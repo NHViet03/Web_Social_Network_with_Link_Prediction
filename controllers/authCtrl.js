@@ -85,7 +85,6 @@ const authCtrl = {
           };
 
           await transporter.sendMail(mailOptions);
-          console.log("Email gửi thành công!");
         } catch (err) {
           console.error("Lỗi khi gửi email:", err);
         }
@@ -201,7 +200,6 @@ const authCtrl = {
           };
 
           await transporter.sendMail(mailOptions);
-          console.log("Email gửi thành công!");
         } catch (err) {
           console.error("Lỗi khi gửi email:", err);
         }
@@ -253,7 +251,6 @@ const authCtrl = {
           };
 
           await transporter.sendMail(mailOptions);
-          console.log("Email gửi thành công!");
         } catch (err) {
           console.error("Lỗi khi gửi email:", err);
         }

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import Info from '../../components/profile/Info'
 import Posts from '../../components/profile/Posts'
 import { useSelector, useDispatch } from 'react-redux'
-import loading from "../../images/loading.gif"
+import Loading from '../../components/Loading'
 import { getProfileUsers } from '../../redux/actions/profileAction'
 import { useParams } from 'react-router-dom'
 import grid from '../../images/grid.png'
@@ -38,7 +38,7 @@ const Profile = () => {
       }
       {
         profile.loading ? 
-        <img src={loading} alt="loading" className="d-block mx-auto my-4" /> 
+        <Loading />
         : <>
         {
           saveTab ? 

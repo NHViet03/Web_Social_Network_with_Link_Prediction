@@ -98,7 +98,7 @@
     border-right: 1px solid #ddd;
 }
 .message_chat_list{
-    max-height: 850px;
+    max-height: calc(100vh - 150px);
     overflow-y: auto;
 }
 .message_chat_list .message_chat_card{
@@ -118,7 +118,7 @@
     display: flex;
 }
 .message_chat_card .message_user:hover{
-    background-color: #f3dad1 ;
+    background-color: rgba(0, 0, 0, 0.1) ;
 
 }
 .message_chat_card .message_user.active {
@@ -316,6 +316,36 @@
     font-size: 15px;
     font-weight: 700;
     margin-bottom: 5px;
+}
+.option_chat{
+    position: absolute;
+    width: 100px;
+    background-color: #D97B5C;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 1;
+    bottom: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-right: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.option_chat >li{
+   list-style: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    color: #fff;
+    /* hover */
+    &:hover{
+        background-color: #fff;
+        color: #D97B5C;
+    }
 }
 .show_media{
     width: 100%;

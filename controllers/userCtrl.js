@@ -3,8 +3,10 @@ const Users = require("../models/userModel");
 const userCtrl = {
   searchUser: async (req, res) => {
     try {
+      const mainUserId = req.query.mesagechatbox
       const users = await Users.find({
-        username: { $regex: req.query.username },
+        username: { $regex: req.query.username, $options: "i" }, 
+        _id: { $ne: mainUserId }, 
       })
         .limit(10)
         .select("fullname username avatar");

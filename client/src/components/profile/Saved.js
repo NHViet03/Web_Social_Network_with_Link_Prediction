@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PostThumb from '../PostThumb';
 import { getDataAPI } from '../../utils/fetchData';
 import { GLOBAL_TYPES } from '../../redux/actions/globalTypes';
-import loading from '../../images/loading.gif';
+import Loading from '../Loading';
 
 const Saved = ({ auth, dispatch }) => {
   const [savePosts, setSavePosts] = useState([]);
@@ -31,7 +31,7 @@ const Saved = ({ auth, dispatch }) => {
 
   return (
     <>
-      {load && <img src={loading} alt="loading" className='mx-auto d-block' />}
+      {load && <Loading />}
       <PostThumb posts={savePosts} result={result} />
     </>
   );

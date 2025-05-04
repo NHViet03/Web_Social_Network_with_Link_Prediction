@@ -16,10 +16,8 @@ import {
 } from "../../redux/actions/messageAction";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import loadIcon from "../../images/loading.gif";
 import CallModal from "./CallModal";
-import { putDataAPI } from "../../utils/fetchData";
-
+import Loading from "../Loading";
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -40,6 +38,87 @@ const RightSide = () => {
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
   const [strangerModal, setStrangerModal] = useState(true);
+
+  // Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
+  useEffect(() => {
+    const newData = message?.data?.find((item) => item._id === id);
+
+    if (newData) {
+      setData(newData.messages);
+      setResult(newData.result);
+      setPage(newData.page);
+
+      const currentChat = message.users.find(
+        (user) => user._id === newData._id
+      );
+      setStrangerModal(currentChat?.recipientAccept);
+    }
+  }, [message.data, id]);
+
+  // Trả về user mà mình nhắn tin
+  useEffect(() => {
+    if (id && message.users.length > 0) {
+      setTimeout(() => {
+        refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 50);
+      const newUser = message.users.find((user) => user._id === id);
+      if (newUser) setUser(newUser);
+    }
+  }, [id, message.users]);
+  // Xác định id + lấy data đoạn hội thoại từ backend đổ vào redux (có sửa)
+  useEffect(() => {
+    const getMessagesData = async () => {
+      if (message.data.every((item) => item._id !== id)) {
+        await dispatch(getMessages({ auth, id }));
+        setTimeout(() => {
+          if (refDisplay.current) {
+            refDisplay.current.scrollIntoView({
+              behavior: "smooth",
+              block: "end",
+            });
+          }
+        }, 50);
+      }
+    };
+    getMessagesData();
+  }, [dispatch, auth, id, message.data]);
+
+  // Load more
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsLoadMore((p) => p + 1);
+        }
+      },
+      {
+        threshold: 0.1,
+      }
+    );
+    observer.observe(pageEnd.current);
+  }, [setIsLoadMore]);
+
+  // Lướt lên thì trả về thêm message(Có sửa)
+  useEffect(() => {
+    if (isLoadMore > 1) {
+      if (result >= page * 9) {
+        dispatch(loadMoreMessages({ auth, id, page: page + 1 }));
+        setIsLoadMore(1);
+      }
+    }
+  }, [isLoadMore]);
+  const handleAcceptWaitingBox = async () => {
+    const recipientID = id;
+    await dispatch(acceptConversation({ auth, id: recipientID }));
+    setStrangerModal(true);
+  };
+
+  // Khi gõ thì cuộn lại trang xuống (Có sửa)
+  useEffect(() => {
+    if (refDisplay.current) {
+      refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [text]);
 
   const handleChangeMedia = (e) => {
     const files = [...e.target.files];
@@ -125,89 +204,7 @@ const RightSide = () => {
         return navigate("/message");
       }
     });
-   
   };
-  // Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
-  useEffect(() => {
-    const newData = message?.data?.find((item) => item._id === id);
-
-    if (newData) {
-      setData(newData.messages);
-      setResult(newData.result);
-      setPage(newData.page);
-
-      const currentChat = message.users.find(
-        (user) => user._id === newData._id
-      );
-      setStrangerModal(currentChat?.recipientAccept);
-    }
-  }, [message.data, id]);
-
-  // Trả về user mà mình nhắn tin
-  useEffect(() => {
-    if (id && message.users.length > 0) {
-      setTimeout(() => {
-        refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
-      }, 50);
-      const newUser = message.users.find((user) => user._id === id);
-      if (newUser) setUser(newUser);
-    }
-  }, [id, message.users]);
-  // Xác định id + lấy data đoạn hội thoại từ backend đổ vào redux (có sửa)
-  useEffect(() => {
-    const getMessagesData = async () => {
-      if (message.data.every((item) => item._id !== id)) {
-        await dispatch(getMessages({ auth, id }));
-        setTimeout(() => {
-          if (refDisplay.current) {
-            refDisplay.current.scrollIntoView({
-              behavior: "smooth",
-              block: "end",
-            });
-          }
-        }, 50);
-      }
-    };
-    getMessagesData();
-  }, [dispatch, auth, id, message.data]);
-
-  // Load more
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsLoadMore((p) => p + 1);
-        }
-      },
-      {
-        threshold: 0.1,
-      }
-    );
-    observer.observe(pageEnd.current);
-  }, [setIsLoadMore]);
-
-  // Lướt lên thì trả về thêm message(Có sửa)
-  useEffect(() => {
-    if (isLoadMore > 1) {
-      if (result >= page * 9) {
-        dispatch(loadMoreMessages({ auth, id, page: page + 1 }));
-        setIsLoadMore(1);
-      }
-    }
-  }, [isLoadMore]);
-  const handleAcceptWaitingBox = async () => {
-    const recipientID = id;
-    await dispatch(acceptConversation({ auth, id: recipientID }));
-    setStrangerModal(true);
-  }
-
-  // Khi gõ thì cuộn lại trang xuống (Có sửa)
-  useEffect(() => {
-    if (refDisplay.current) {
-      refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
-    }
-  }, [text]);
-
   // Call
   const caller = ({ video }) => {
     const { _id, avatar, fullname } = user;
@@ -275,8 +272,15 @@ const RightSide = () => {
               margin: "0 50px",
             }}
           >
-            <div className="btn btn-success" onClick={handleAcceptWaitingBox}>Chấp nhận</div>
-            <div className="btn btn-warning" onClick={handleDeleteConversation(user)}>Xóa tin nhắn</div>
+            <div className="btn btn-success" onClick={handleAcceptWaitingBox}>
+              Chấp nhận
+            </div>
+            <div
+              className="btn btn-warning"
+              onClick={handleDeleteConversation(user)}
+            >
+              Xóa tin nhắn
+            </div>
             <div className="btn btn-danger">Chặn</div>
           </div>
         )}
@@ -297,12 +301,12 @@ const RightSide = () => {
             <div key={index}>
               {msg.sender !== auth.user._id && (
                 <div className="conversation-message_chat_row other_message">
-                  <MsgDisplay user={user} msg={msg} theme={theme} />
+                  <MsgDisplay user={user} msg={msg} theme={theme} yourmessage={false} />
                 </div>
               )}
               {msg.sender === auth.user._id && (
                 <div className="conversation-message_chat_row your-message">
-                  <MsgDisplay user={auth.user} msg={msg} theme={theme} />
+                    <MsgDisplay user={auth.user} msg={msg} theme={theme} yourmessage={true} />
                 </div>
               )}
             </div>
@@ -319,7 +323,7 @@ const RightSide = () => {
           </div>
           {loadMedia && (
             <div className="conversation-message_chat_row your-message">
-              <img src={loadIcon} alt="loading" />
+              <Loading />
             </div>
           )}
         </div>

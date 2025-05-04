@@ -50,7 +50,6 @@ export const videoUpload = async(videos)=>{
         })
 
         const data=await res.json();
-        console.log(data);
         videoArr.push({
             public_id:data.public_id,
             url:data.secure_url

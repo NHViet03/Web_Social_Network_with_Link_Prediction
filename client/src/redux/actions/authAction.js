@@ -278,7 +278,6 @@ export const changePassword =
           success: res.data.msg,
         },
       });
-      console.log(res);
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,

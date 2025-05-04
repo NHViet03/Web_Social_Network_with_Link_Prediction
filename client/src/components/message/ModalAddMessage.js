@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {getDataAPI} from "../../utils/fetchData"
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
-import loading from "../../images/loading.gif"
+import Loading from "../../components/Loading";
 export const ModalAddMessage = ({ setOpenModal }) => {
   const navigate = useNavigate()
   const {auth, message} = useSelector((state) => state);
@@ -18,7 +18,7 @@ export const ModalAddMessage = ({ setOpenModal }) => {
    if (!search) return setSearchUser([]);
    try {
     setLoad(true);
-    const res = await getDataAPI(`search?username=${search}`, auth.token);
+    const res = await getDataAPI(`search?username=${search}&mesagechatbox=${auth.user._id}`, auth.token);
     setSearchUser(res.data.users);
     setLoad(false);
   } catch (err) {
@@ -61,10 +61,8 @@ export const ModalAddMessage = ({ setOpenModal }) => {
         </div>
         <div className="modal-addmess_message_chat_list">
         {
-          load && 
-          <div className=" loading_modalAddMessage">
-            <img className="loading" src={loading} alt="loading" />
-          </div>
+          load &&  <Loading />
+          
         }
         {
           searchUsers.length !== 0 ? <>
@@ -76,7 +74,9 @@ export const ModalAddMessage = ({ setOpenModal }) => {
               ))
             }
           </> : <>
-            <h6 className="my-3 mx-3 flex">Không có người dùng phù hợp</h6>
+            <h6 className="my-3 mx-3 flex"
+             style={{ display: load ? 'none' : 'block' }}
+            >Không có người dùng phù hợp</h6>
           </>
         }
         </div>
