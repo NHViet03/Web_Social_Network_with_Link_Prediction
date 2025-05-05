@@ -122,6 +122,21 @@ const messageCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  getNumberNewMessage: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const key = `isRead.${userId}`;
+  
+      const numberNewMessage = await Conversations.countDocuments({
+        recipients: userId,
+        [key]: false
+      });
+  
+      res.json({ numberNewMessage });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   acceptConversation: async (req, res) => {
     const sender = req.body.auth.user._id;
     const recipient = req.body.id;

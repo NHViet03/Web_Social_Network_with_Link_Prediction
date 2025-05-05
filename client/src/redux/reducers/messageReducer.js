@@ -8,6 +8,7 @@ const initialState = {
     firstLoad: false,
     loadingConversation: false,
     mainBoxMessage: true,
+    numberNewMessage: 0,
 }
 
 const messageReducer = (state = initialState, action) =>{
@@ -71,6 +72,11 @@ const messageReducer = (state = initialState, action) =>{
                 return{
                     ...state,
                     mainBoxMessage: action.payload
+                }
+            case MESS_TYPES.NUMBERNEWMESSAGE:
+                return{
+                    ...state,
+                    numberNewMessage: action.payload
                 }
             case MESS_TYPES.CHECK_ONLINE_OFFLINE:
                 return{

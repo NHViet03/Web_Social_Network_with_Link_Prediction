@@ -9,7 +9,12 @@ const conversationSchema = new mongoose.Schema({
         type: Map,
         of: Boolean,
         default: {}
-      }
+      },
+    isRead: {
+        type: Map,
+        of: Boolean,
+        default: {}
+      }, 
 }, {
     timestamps: true
 })

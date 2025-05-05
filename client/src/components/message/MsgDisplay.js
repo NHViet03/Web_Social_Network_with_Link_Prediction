@@ -1,7 +1,6 @@
 import React from 'react';
 import Avatar from '../Avatar';
 import { imageShow, videoShow } from '../../utils/mediaShow';
-import { use } from 'react';
 import { useEffect, useState } from 'react';
 
 const MsgDisplay = ({ user, msg, theme, yourmessage }) => {

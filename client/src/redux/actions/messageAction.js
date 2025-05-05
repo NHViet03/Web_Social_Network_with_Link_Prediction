@@ -10,16 +10,8 @@ export const MESS_TYPES ={
     CHECK_ONLINE_OFFLINE: 'CHECK_ONLINE_OFFLINE',
     LOADINGCONVERSATIONS: 'LOADING_CONVERSATIONS',
     MAINBOXMESSAGE : 'MAINBOXMESSAGE',
+    NUMBERNEWMESSAGE: 'NUMBERNEWMESSAGE',
 }
-
-// export const addUser = ({user, message}) => (dispatch) => {
-//     if(message.users.every(item=> item._id !==user._id)){
-//         dispatch({
-//             type: MESS_TYPES.ADD_USER,
-//             payload: {...user, text: '', media: []}
-//         })
-//     }
-// }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
    dispatch({
@@ -40,39 +32,49 @@ export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
    }
 }
 
-export const getConversations = ({auth, page = 1,mainBoxMessage}) => async (dispatch) => {
+export const getConversations =
+  ({ auth, page = 1, mainBoxMessage }) =>
+  async (dispatch) => {
     try {
-        dispatch({
-            type: MESS_TYPES.LOADINGCONVERSATIONS,
-            payload: true
-        })
- 
-        const res = await getDataAPI(`conversations?limit=${page * 12}&mainBoxMessage=${mainBoxMessage}`, auth.token);
-        let newArr = [];
-        res.data.conversations.forEach(item => {
-           // item.recipientAccept is a key value object, get the value of the key that is equal to the auth.user._id
-            const recipientAccept = item.recipientAccept[auth.user._id]
-            item.recipients.forEach(cv => {
-                if(cv._id !== auth.user._id){
-                    newArr.push({...cv, text: item.text, media: item.media, recipientAccept: recipientAccept})
-                }
-            })
-        })
-        dispatch({
-                type: MESS_TYPES.GET_CONVERSATIONS,
-                payload: {newArr, result: res.data.result}
-            })
-        dispatch({
-            type: MESS_TYPES.LOADINGCONVERSATIONS,
-            payload: false
-        })
+      dispatch({
+        type: MESS_TYPES.LOADINGCONVERSATIONS,
+        payload: true,
+      });
+      const res = await getDataAPI(
+        `conversations?limit=${page * 50}&mainBoxMessage=${mainBoxMessage}`,
+        auth.token
+      );
+      let newArr = [];
+      res.data.conversations.forEach((item) => {
+        const isRead = item.isRead[auth.user._id];
+        const recipientAccept = item.recipientAccept[auth.user._id];
+        item.recipients.forEach((cv) => {
+          if (cv._id !== auth.user._id) {
+            newArr.push({
+              ...cv,
+              text: item.text,
+              media: item.media,
+              recipientAccept: recipientAccept,
+              isRead: isRead,
+            });
+          }
+        });
+      });
+      dispatch({
+        type: MESS_TYPES.GET_CONVERSATIONS,
+        payload: { newArr, result: res.data.result },
+      });
+      dispatch({
+        type: MESS_TYPES.LOADINGCONVERSATIONS,
+        payload: false,
+      });
     } catch (err) {
-        dispatch({
-            type: GLOBAL_TYPES.ALERT,
-            payload: {error: err.response.data.msg}
-        })
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
     }
-}
+  };
 
 
 export const acceptConversation = ({auth, id}) => async (dispatch) => {

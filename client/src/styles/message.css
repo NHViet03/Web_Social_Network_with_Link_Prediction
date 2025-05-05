@@ -23,6 +23,16 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
+    &:hover{
+        
+        &.message_header-namedropdown >h2{
+            color: #db4e20;
+            text-decoration: underline;
+        }
+        &.message_header-namedropdown >i{
+            color: #db4e20;
+        }
+    }
 }
 .message_header-namedropdown >h2{
     font-size: 20px;

@@ -20,16 +20,18 @@ export const LeftSide = ({setOpenModal}) => {
   }
 
   useEffect(() => {
-    if(message.firstLoad) return;
-    dispatch(getConversations({auth, mainBoxMessage: message.mainBoxMessage}));
-  },[dispatch, message.firstLoad, message.mainBoxMessage, auth])
+    if (message.firstLoad) return;
+    dispatch(
+      getConversations({ auth, mainBoxMessage: message.mainBoxMessage })
+    );
+  }, [dispatch, message.firstLoad, message.mainBoxMessage, auth]);
 
   // useEffect for change mainBoxMessage
   useEffect(() => {
     if (firstRun.current) {
       firstRun.current = false;
       return; 
-    }
+    } 
     dispatch(getConversations({auth, mainBoxMessage: message.mainBoxMessage}));
   },[message.mainBoxMessage])
   
@@ -40,16 +42,18 @@ export const LeftSide = ({setOpenModal}) => {
     })
   }
   // Load More
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      if(entries[0].isIntersecting){
-        setPage(p => p + 1)
-      }
-    }, {
-      threshold: 0.1
-    })
-    observer.observe(pageEnd.current)
-  },[setPage])
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(entries => {
+  //     if(entries[0].isIntersecting){
+  //       setPage(p => p + 1)
+  //     }
+  //   }, {
+  //     threshold: 0.1
+  //   })
+  //   observer.observe(pageEnd.current)
+  // },[setPage])
+
+
   // Check User Online / Offline
   useEffect(() => {
     if(message.firstLoad) {

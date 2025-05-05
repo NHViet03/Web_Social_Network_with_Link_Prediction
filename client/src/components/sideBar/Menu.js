@@ -10,10 +10,13 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import MenuItem from "./MenuItem";
 import { ModalSideBarContext } from "./SideBar";
 import { useLocation } from "react-router-dom";
+import { getDataAPI } from "../../utils/fetchData";
+import { MESS_TYPES } from "../../redux/actions/messageAction";
 
 const SideBar = () => {
   const auth = useSelector((state) => state.auth);
   const notify = useSelector((state) => state.notify);
+  const message = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
   const { isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify } =
@@ -46,6 +49,24 @@ const SideBar = () => {
     setActive(index);
   };
 
+  useEffect(() => {
+    const fetchNumberNewMessage = async () => {
+      try {
+        const res = await getDataAPI('numberNewMessage', auth.token);
+        dispatch({
+          type: MESS_TYPES.NUMBERNEWMESSAGE,
+          payload: res.data.numberNewMessage,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+  
+    if (auth.token) {
+      fetchNumberNewMessage();
+    }
+  }, [message.numberNewMessage, auth.token]);
+
   const navLinks = useMemo(
     () => [
       {
@@ -67,6 +88,7 @@ const SideBar = () => {
         label: "Tin nhắn",
         icon: "send",
         path: "/message",
+        numberNewMessage: message.numberNewMessage,
       },
       {
         label: "Thông báo",
