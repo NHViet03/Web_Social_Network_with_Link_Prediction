@@ -78,6 +78,15 @@ const messageReducer = (state = initialState, action) =>{
                     ...state,
                     numberNewMessage: action.payload
                 }
+            case MESS_TYPES.READMESSAGE:
+                return{
+                    ...state,
+                    users: state.users.map(user => 
+                        user._id === action.payload.id
+                        ? {...user, isRead: action.payload.isRead}
+                        : user
+                    )
+                }
             case MESS_TYPES.CHECK_ONLINE_OFFLINE:
                 return{
                     ...state,

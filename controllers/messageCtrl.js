@@ -159,6 +159,28 @@ const messageCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  readMessage: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const userID = req.user._id;
+
+      const conversation = await Conversations.findOne({
+        $or: [
+          { recipients: [userID, id] },
+          { recipients: [id, userID] },
+        ],
+      });
+
+      if (!conversation) return res.status(400).json({ msg: "Not found!" });
+
+      conversation.isRead.set(userID.toString(), true);
+       await conversation.save();
+
+      res.json({ msg: "Read Success!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   getMessages: async (req, res) => {
     try {
       const features = new APIfeatures(

@@ -140,6 +140,14 @@
     }
 }
 
+.message_chat_card .message_user.unread{
+    background-color: #D97B5C ;
+    color: #fff;
+    small {
+        color: #fff;
+    }
+}
+
 .message_chat_list .message_chat_card .fa-circle{
     margin-right: 5px;
     font-size: 10px;

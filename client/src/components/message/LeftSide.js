@@ -4,6 +4,8 @@ import UserCard from "../UserCard"
 import { useParams, useNavigate } from "react-router-dom";
 import { MESS_TYPES, getConversations } from "../../redux/actions/messageAction";
 import Loading from "../Loading";
+import { postDataAPI } from "../../utils/fetchData";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 
 
 export const LeftSide = ({setOpenModal}) => {
@@ -18,6 +20,30 @@ export const LeftSide = ({setOpenModal}) => {
     if(id === user._id) return "active"
     return ''
   }
+  const isRead = (isRead) => {
+    if (isRead === false) return "unread";
+    return "";
+  };
+  const handleClickMessageUser = (user) => {
+    //Update UI read messageư
+    navigate(`/message/${user._id}`);
+    dispatch({
+      type: MESS_TYPES.READMESSAGE,
+      payload: {
+        id: user._id,
+        isRead: true,
+      },
+    });
+    try {
+      //Save to DB read message = true
+      postDataAPI(`readMessage/${user._id}`, null, auth.token);
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
 
   useEffect(() => {
     if (message.firstLoad) return;
@@ -95,7 +121,8 @@ export const LeftSide = ({setOpenModal}) => {
           </div>
           : message.users.map((user) => 
           (
-            <div className={`message_user  ${isActive(user)}`} key={user._id} onClick={() => navigate(`/message/${user._id}`)}>
+
+            <div className={`message_user ${isRead(user.isRead)}  ${isActive(user)}`} key={user._id} onClick={() => handleClickMessageUser(user)}>
                 <UserCard user={user} size ="avatar-middle">
                   {
                     user.online 

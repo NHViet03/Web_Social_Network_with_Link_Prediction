@@ -11,6 +11,7 @@ export const MESS_TYPES ={
     LOADINGCONVERSATIONS: 'LOADING_CONVERSATIONS',
     MAINBOXMESSAGE : 'MAINBOXMESSAGE',
     NUMBERNEWMESSAGE: 'NUMBERNEWMESSAGE',
+    READMESSAGE: 'READMESSAGE',
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
