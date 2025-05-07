@@ -23,7 +23,6 @@ export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
    
    try {
     const res = await postDataAPI('message', msg, auth.token);
-    const isMainboxUserRecipient = res.data.conversation.recipientAccept[msg.recipient]
     socket.emit('addMessage', {...msg, user: {_id, avatar, fullname, username}})
    } catch (err) {
      dispatch({

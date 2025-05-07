@@ -14,7 +14,11 @@ const conversationSchema = new mongoose.Schema({
         type: Map,
         of: Boolean,
         default: {}
-      }, 
+      },
+    isGroup: {
+        type: Boolean,
+        default: false
+    }, 
 }, {
     timestamps: true
 })

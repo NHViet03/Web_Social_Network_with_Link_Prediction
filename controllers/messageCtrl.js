@@ -33,6 +33,10 @@ const messageCtrl = {
           text,
           media,
           call,
+          isRead: {
+            [sender]: true,
+            [recipient]: false,
+          },
         },
         { new: true, upsert: true }
       );
