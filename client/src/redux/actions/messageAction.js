@@ -12,6 +12,7 @@ export const MESS_TYPES ={
     MAINBOXMESSAGE : 'MAINBOXMESSAGE',
     NUMBERNEWMESSAGE: 'NUMBERNEWMESSAGE',
     READMESSAGE: 'READMESSAGE',
+    SOCKET_ISREADMESSAGE: 'SOCKET_ISREADMESSAGE',
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
@@ -56,6 +57,7 @@ export const getConversations =
               media: item.media,
               recipientAccept: recipientAccept,
               isRead: isRead,
+              isGroup: item.isGroup,
             });
           }
         });
