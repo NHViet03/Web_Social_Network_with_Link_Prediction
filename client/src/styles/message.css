@@ -200,7 +200,7 @@
 .modal-addmess_content{
     display: flex;
     flex-direction: column;
-    height: 700px;
+    min-height: 700px;
     width: 500px;
     background-color: #fff;
     border-radius: 25px;
@@ -212,6 +212,7 @@
     align-items: center;
     padding: 15px 20px 15px 0px;
     border-bottom: 1px solid #ddd;
+    position: relative;
 }
 .modal-addmess_header >i{
     font-size: 20px;
@@ -221,7 +222,9 @@
 .modal-addmess_content-h5{
     font-size: 20px;
     font-weight: 700;
-    margin: 0px 0px 0px 180px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 .modal-addmess_content-search{
     display: flex;
@@ -242,6 +245,7 @@
     min-height: 525px;
     max-height: 525px;
     overflow-y: auto;
+    padding: 0px 20px;
 }
 .modal-addmess_link{
     width: 100%;

@@ -42,8 +42,8 @@ export const ModalAddMessage = ({ setOpenModal }) => {
     <div className="modal-addmess">
       <div className="modal-addmess_content" onClick={handleSearch}>
         <div className="modal-addmess_header">
+          <div></div>
           <h5 className="modal-addmess_content-h5">Tin nhắn mới</h5>
-
           <i
             class="fa fa-times"
             aria-hidden="true"
