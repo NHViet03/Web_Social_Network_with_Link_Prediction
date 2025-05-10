@@ -7,13 +7,13 @@
   margin-bottom: 0;
 }
 
-.card_header-content-location{
+.card_header-content-location {
   font-size: 13px;
   line-height: 14px;
   display: block;
 }
 
-.card_header-content-username{
+.card_header-content-username {
   font-weight: 500;
   font-size: 15px;
 }
@@ -90,7 +90,13 @@
 /* Card Footer */
 .card_footer {
   padding: 0 8px;
+  overflow-y: auto;
 }
+
+.card_footer::-webkit-scrollbar {
+  display: none;
+}
+
 .card_footer-icons {
   display: flex;
   justify-content: space-between;

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import Compressor from "compressorjs";
+
 import CardComment from "./CardComment";
 import LikeButton from "../LikeButton";
 import BookMarkButton from "./BookMarkButton";
@@ -23,6 +25,7 @@ import {
 const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
   const [comment, setComment] = useState("");
   const [reply, setReply] = useState({});
+  const [image, setImage] = useState(null);
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -94,6 +97,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     setLoadComment(true);
     setComment("");
     setReply({});
+    setImage(null);
     setShowEmoji(false);
 
     const trimmedComment = comment.replace(/^@\S+\s*/, "");
@@ -108,6 +112,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
       replyCommentId: reply.commentId,
       replyUser: reply.user,
       replies: [],
+      image: image,
     };
 
     if (setPost) {
@@ -173,7 +178,40 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     }
   };
 
-  console.log("post", post);
+  const handleChangeImages = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng upload file đúng định dạng" },
+      });
+    }
+
+    if (file.size > 1024 * 1024 * 5) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng upload file có kích thước dưới 5 MB" },
+      });
+    }
+
+    new Compressor(file, {
+      quality: 0.8, // Chất lượng từ 0 đến 1 (0.6 = 60% chất lượng)
+      maxWidth: 400, // Chiều rộng tối đa
+      maxHeight: 300, // Chiều cao tối đa
+      mimeType: "image/jpeg", // Định dạng đầu ra
+      success(result) {
+        setImage(result);
+      },
+      error(err) {
+        console.error(err.message);
+        setImage(file);
+      },
+    });
+  };
 
   return (
     <div className="mt-3 pt-3 pb-1 flex-fill d-flex flex-column card_footer">
@@ -264,31 +302,63 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
           >
             {post.likes.length} lượt thích
           </p>
-          <form onSubmit={handleComment} className="px-3 form-comment">
-            <div className="form-emoji">
-              <i
-                className="fa-regular fa-face-grin"
-                onClick={() => setShowEmoji(!showEmoji)}
-              />
 
-              {showEmoji && (
-                <div className="form-emoji-picker">
-                  <Picker
-                    data={data}
-                    previewPosition="none"
-                    searchPosition="none"
-                    theme="light"
-                    set="native"
-                    locale="vi"
-                    perLine="7"
-                    maxFrequentRows={14}
-                    emojiSize={28}
-                    navPosition="bottom"
-                    onEmojiSelect={handleEmojiSelect}
-                  />
-                </div>
-              )}
+          <form onSubmit={handleComment} className="px-3 form-comment">
+            <div
+              className="d-flex align-items-center"
+              style={{
+                gap: "12px",
+              }}
+            >
+              <div className="form-emoji">
+                <i
+                  className="fa-regular fa-face-grin"
+                  onClick={() => setShowEmoji(!showEmoji)}
+                />
+
+                {showEmoji && (
+                  <div className="form-emoji-picker">
+                    <Picker
+                      data={data}
+                      previewPosition="none"
+                      searchPosition="none"
+                      theme="light"
+                      set="native"
+                      locale="vi"
+                      perLine="7"
+                      maxFrequentRows={14}
+                      emojiSize={28}
+                      navPosition="bottom"
+                      onEmojiSelect={handleEmojiSelect}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  name="file"
+                  id="file"
+                  multiple={false}
+                  accept="image/*"
+                  style={{
+                    display: "none",
+                  }}
+                  onChange={handleChangeImages}
+                />
+                <label htmlFor="file" className="select_image_btn">
+                  <i
+                    className="fa-solid fa-camera"
+                    style={{
+                      fontSize: "20px",
+                      cursor: "pointer",
+                    }}
+                  ></i>
+                </label>
+              </div>
             </div>
+
             <input
               ref={commentRef}
               className="form-control"
@@ -305,6 +375,48 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
               Đăng
             </button>
           </form>
+          {image && (
+            <div
+              style={{
+                width: "80px",
+                height: "60px",
+                position: "relative",
+                padding: "2px",
+                backgroundImage:
+                  "linear-gradient(to right bottom, #feda75, #fa7e1e, #d62976, #962fbf)",
+                margin: "0 16px",
+              }}
+            >
+              <img
+                src={URL.createObjectURL(image)}
+                alt="image"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  padding: "1px",
+                  backgroundColor: "#fff",
+                }}
+                alt="comment"
+              />
+              <span
+                className="material-icons"
+                style={{
+                  position: "absolute",
+                  top: "0",
+                  right: "-30px",
+                  color: "#000",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  borderRadius: "50%",
+                  border: "1px solid #000",
+                }}
+                onClick={() => setImage(null)}
+              >
+                close
+              </span>
+            </div>
+          )}
         </>
       )}
     </div>

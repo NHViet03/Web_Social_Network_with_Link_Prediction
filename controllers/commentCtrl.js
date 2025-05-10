@@ -4,7 +4,7 @@ const Comments = require("../models/commentModel");
 const commentCtrl = {
   createComment: async (req, res) => {
     try {
-      const { content, postId, postUserId, replyCommentId, replyUser } =
+      const { content, postId, postUserId, replyCommentId, replyUser, image } =
         req.body;
 
       const newComment = new Comments({
@@ -14,6 +14,7 @@ const commentCtrl = {
         postUserId,
         replyCommentId,
         replyUser: replyUser,
+        image
       });
 
       await newComment.save();

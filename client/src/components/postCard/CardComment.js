@@ -105,6 +105,22 @@ const CardComment = ({
                     {comment.content}
                   </span>
                 </div>
+                {comment.image && (
+                  <div>
+                    <img
+                      src={comment.image}
+                      alt="Comment"
+                      style={{
+                        width: "300px",
+                        maxHeight: "200px",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        margin:"8px 0"
+                      }}
+                    />
+                  </div>
+                )}
+
                 <div className="d-flex card_comment-menu">
                   <span className="card_comment-menu-text">
                     {comment.createdAt

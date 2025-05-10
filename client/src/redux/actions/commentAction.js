@@ -7,6 +7,7 @@ import {
   deleteDataAPI,
 } from "../../utils/fetchData";
 import { createNotify, removeNotify } from "./notifyAction";
+import { imageUpload } from "../../utils/imageUpload";
 
 export const generateNewComments = (post, newComment) => {
   const newComments = post.comments;
@@ -44,6 +45,11 @@ export const generateNewComments = (post, newComment) => {
 export const createComment =
   ({ post, newComment, auth, explore, socket }) =>
   async (dispatch) => {
+    if (newComment.image){
+      const media = await imageUpload([newComment.image]);
+      newComment.image = media[0].url;
+    }
+
     const newComments = generateNewComments(post, newComment);
 
     const newPost = {

@@ -16,6 +16,7 @@ const commentSchema = new mongoose.Schema(
       userId: { type: mongoose.Types.ObjectId, ref: "user" },
       username: String,
     },
+    image:String
   },
   {
     timestamps: true,

@@ -31,10 +31,10 @@ const PostDetail = () => {
       {loading && <Loading />}
       {post && (
         <div className="d-flex postDetail_modal-content">
-          <div className="col-7">
+          <div className="col-6">
             <CardBody post={post} />
           </div>
-          <div className="col-5 mt-2 d-flex flex-column">
+          <div className="col-6 mt-2 d-flex flex-column">
             <div className="px-2">
               <CardHeader user={post.user} post={post} />
             </div>

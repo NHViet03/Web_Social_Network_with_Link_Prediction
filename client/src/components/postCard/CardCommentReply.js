@@ -87,34 +87,51 @@ const CardCommentReply = ({
           }}
         >
           <div>
-            <div className="card_comment-content-user">
-              <Link
-                to={`/profile/${comment.user._id}`}
-                onClick={handleClickUser}
-                style={{
-                  marginRight: "4px",
-                }}
-              >
-                <span className="card_comment-content-user-username">
-                  {comment.user.username}
-                </span>
-              </Link>
+            <div>
+              <div className="card_comment-content-user">
+                <Link
+                  to={`/profile/${comment.user._id}`}
+                  onClick={handleClickUser}
+                  style={{
+                    marginRight: "4px",
+                  }}
+                >
+                  <span className="card_comment-content-user-username">
+                    {comment.user.username}
+                  </span>
+                </Link>
 
-              <span>
-                {comment.replyUser && (
-                  <Link
-                    to={`/profile/${comment.replyUser.userId}`}
+                <span>
+                  {comment.replyUser && (
+                    <Link
+                      to={`/profile/${comment.replyUser.userId}`}
+                      style={{
+                        color: "rgb(65, 80, 247)",
+                      }}
+                    >
+                      {`@${comment.replyUser.username} `}
+                    </Link>
+                  )}
+                </span>
+                <span className="card_comment-content-user-comment">
+                  {comment.content}
+                </span>
+              </div>
+              {comment.image && (
+                <div>
+                  <img
+                    src={comment.image}
+                    alt="Comment"
                     style={{
-                      color: "rgb(65, 80, 247)",
+                      width: "300px",
+                      maxHeight: "200px",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                      margin: "8px 0",
                     }}
-                  >
-                    {`@${comment.replyUser.username} `}
-                  </Link>
-                )}
-              </span>
-              <span className="card_comment-content-user-comment">
-                {comment.content}
-              </span>
+                  />
+                </div>
+              )}
             </div>
             <div className="d-flex card_comment-menu">
               <span className="card_comment-menu-text">
