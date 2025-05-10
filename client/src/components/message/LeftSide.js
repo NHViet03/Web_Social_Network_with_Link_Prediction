@@ -18,6 +18,8 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
   const [page, setPage] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Function
   const isActive = (user) => {
     if (id === user._id) return "active";
     return "";
@@ -54,6 +56,15 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     }
   };
 
+  const handleChangeMainBoxMessage = (mainBoxMessage) => {
+    dispatch({
+      type: MESS_TYPES.MAINBOXMESSAGE,
+      payload: mainBoxMessage,
+    });
+  };
+
+  // UseEffect 
+  
   useEffect(() => {
     if (message.firstLoad) return;
     dispatch(
@@ -72,12 +83,6 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     );
   }, [message.mainBoxMessage]);
 
-  const handleChangeMainBoxMessage = (mainBoxMessage) => {
-    dispatch({
-      type: MESS_TYPES.MAINBOXMESSAGE,
-      payload: mainBoxMessage,
-    });
-  };
   // Load More
   // useEffect(() => {
   //   const observer = new IntersectionObserver(entries => {

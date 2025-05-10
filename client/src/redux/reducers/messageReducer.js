@@ -79,7 +79,6 @@ const messageReducer = (state = initialState, action) =>{
                     numberNewMessage: action.payload
                 }
             case MESS_TYPES.SOCKET_ISREADMESSAGE:
-                console.log(action.payload)
                 return{
                     ...state,
                     users: state.users.map(user => 

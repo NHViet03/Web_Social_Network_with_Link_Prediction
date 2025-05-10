@@ -18,8 +18,12 @@ const messageCtrl = {
   createMessage: async (req, res) => {
     try {
       const { sender, recipient, text, media, call } = req.body;
+      let newText = text;
+      if (text == "" && media.length > 0) {
+        newText = "Đã gửi một phương tiện";
+      }
 
-      if (!recipient || (!text.trim() && media.length === 0 && !call)) return;
+      if (!recipient || (!newText.trim() && media.length === 0 && !call)) return;
 
       const newConversation = await Conversations.findOneAndUpdate(
         {
@@ -30,7 +34,7 @@ const messageCtrl = {
         },
         {
           recipients: [sender, recipient],
-          text,
+          newText,
           media,
           call,
           isRead: {
@@ -80,15 +84,15 @@ const messageCtrl = {
         sender,
         call,
         recipients: [recipient],
-        text,
+        newText,
         media,
       });
 
       await newMessage.save();
 
-      res.json({ 
+      res.json({
         msg: "Create Success!",
-        conversation: newConversation
+        conversation: newConversation,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -97,22 +101,21 @@ const messageCtrl = {
   getConversations: async (req, res) => {
     try {
       // Tạo bộ lọc ban đầu: user phải là một recipient
-    const filter = {
-      recipients: req.user._id,
-    };
+      const filter = {
+        recipients: req.user._id,
+      };
 
-    // Nếu có truyền mainBoxMessage (dưới dạng chuỗi "true"/"false"), lọc thêm theo recipientAccept
-    if (req.query.mainBoxMessage !== undefined) {
-      const mainBoxMessage = req.query.mainBoxMessage === 'true';
-      filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
-    }
+      // Nếu có truyền mainBoxMessage (dưới dạng chuỗi "true"/"false"), lọc thêm theo recipientAccept
+      if (req.query.mainBoxMessage !== undefined) {
+        const mainBoxMessage = req.query.mainBoxMessage === "true";
+        filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
+      }
 
-    // Áp dụng phân trang (chỉ có limit theo class bạn cung cấp)
-    const features = new APIfeatures(
-      Conversations.find(filter),
-      req.query
-    ).paginating();
-     
+      // Áp dụng phân trang (chỉ có limit theo class bạn cung cấp)
+      const features = new APIfeatures(
+        Conversations.find(filter),
+        req.query
+      ).paginating();
 
       const conversations = await features.query
         .sort("-updatedAt")
@@ -130,12 +133,12 @@ const messageCtrl = {
     try {
       const userId = req.user._id;
       const key = `isRead.${userId}`;
-  
+
       const numberNewMessage = await Conversations.countDocuments({
         recipients: userId,
-        [key]: false
+        [key]: false,
       });
-  
+
       res.json({ numberNewMessage });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
@@ -155,7 +158,7 @@ const messageCtrl = {
 
       // set  key conversation.recipientAccept[sender]  with value true
       conversation.recipientAccept.set(sender.toString(), true);
-      
+
       await conversation.save();
 
       res.json({ msg: "Accepted Success!" });
@@ -165,20 +168,18 @@ const messageCtrl = {
   },
   readMessage: async (req, res) => {
     try {
-      const { id } = req.params;
+      const listId = req.params.id.split(".");
       const userID = req.user._id;
+      const recipientList = [...listId, userID.toString()];
 
       const conversation = await Conversations.findOne({
-        $or: [
-          { recipients: [userID, id] },
-          { recipients: [id, userID] },
-        ],
+        recipients: { $all: recipientList, $size: recipientList.length },
       });
 
       if (!conversation) return res.status(400).json({ msg: "Not found!" });
 
       conversation.isRead.set(userID.toString(), true);
-       await conversation.save();
+      await conversation.save();
 
       res.json({ msg: "Read Success!" });
     } catch (err) {
@@ -187,21 +188,35 @@ const messageCtrl = {
   },
   getMessages: async (req, res) => {
     try {
-      const features = new APIfeatures(
-        Messages.find({
-          $or: [
-            {
-              sender: req.user._id,
-              recipients: { $in: [req.params.id] }
-            },
-            {
-              sender: req.params.id,
-              recipients: { $in: [req.user._id] }
-            },
-          ],
-        }),
-        req.query
-      ).paginating();
+      // may be req.params.id like that: 67c3e08776a9ee127c26240e.67c3f264f042c866508255a5.67c3f9b19c797e619cd729e0 => spilt by "."
+      const listId = req.params.id.split(".");
+      let features;
+      if (listId.length > 1) {
+        // find sender = req.user._id, and recipients include all id in listId
+        features = new APIfeatures(
+          Messages.find({
+            sender: req.user._id,
+            recipients: { $all: listId },
+          }),
+          req.query
+        ).paginating();
+      } else if (listId.length === 1) {
+        features = new APIfeatures(
+          Messages.find({
+            $or: [
+              {
+                sender: req.user._id,
+                recipients: [req.params.id],
+              },
+              {
+                sender: req.params.id,
+                recipients: [req.user._id],
+              },
+            ],
+          }),
+          req.query
+        ).paginating();
+      }
 
       const messages = await features.query
         .sort("-createdAt")

@@ -39,7 +39,9 @@ const RightSide = () => {
   const [loadMedia, setLoadMedia] = useState(false);
   const [strangerModal, setStrangerModal] = useState(true);
 
-  // Trả về các đoạn message otther và you (Lấy data từ redux) (có sửa)
+
+   // UseEffect
+  // Lấy tin nhắn của đoạn hội thoại hiện tại từ redux và hiển thị
   useEffect(() => {
     const newData = message?.data?.find((item) => item._id === id);
 
@@ -55,7 +57,7 @@ const RightSide = () => {
     }
   }, [message.data, id]);
 
-  // Trả về user mà mình nhắn tin
+  //  Lấy thông tin user đang nhắn tin + cuộn xuống cuối
   useEffect(() => {
     if (id && message.users.length > 0) {
       setTimeout(() => {
@@ -65,7 +67,8 @@ const RightSide = () => {
       if (newUser) setUser(newUser);
     }
   }, [id, message.users]);
-  // Xác định id + lấy data đoạn hội thoại từ backend đổ vào redux (có sửa)
+
+  // Lấy dữ liệu tin nhắn từ backend nếu chưa có
   useEffect(() => {
     const getMessagesData = async () => {
       if (message.data.every((item) => item._id !== id)) {
@@ -83,7 +86,7 @@ const RightSide = () => {
     getMessagesData();
   }, [dispatch, auth, id, message.data]);
 
-  // Load more
+  // Theo dõi pageEnd để kích hoạt “load more” khi người dùng scroll lên
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -98,7 +101,7 @@ const RightSide = () => {
     observer.observe(pageEnd.current);
   }, [setIsLoadMore]);
 
-  // Lướt lên thì trả về thêm message(Có sửa)
+  // Khi isLoadMore thay đổi, gọi API tải thêm tin nhắn nếu đủ điều kiện
   useEffect(() => {
     if (isLoadMore > 1) {
       if (result >= page * 9) {
@@ -113,12 +116,14 @@ const RightSide = () => {
     setStrangerModal(true);
   };
 
-  // Khi gõ thì cuộn lại trang xuống (Có sửa)
+  // Tự động cuộn xuống khi người dùng gõ chữ
   useEffect(() => {
     if (refDisplay.current) {
       refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [text]);
+
+  // Function
 
   const handleChangeMedia = (e) => {
     const files = [...e.target.files];
@@ -170,7 +175,7 @@ const RightSide = () => {
     const msg = {
       sender: auth.user._id,
       recipient: id,
-      text,
+      text: text,
       media: newArr,
       CreatedAt: new Date().toISOString(),
     };
@@ -249,12 +254,18 @@ const RightSide = () => {
       >
         <UserCard user={user} headerMessage />
         <div className="conversation-message_header-icon">
-          <i class="fa-solid fa-phone" onClick={handleAudioCall}></i>
-          <i class="fa-solid fa-video" onClick={handleVideoCall}></i>
-          <i
-            class="fa-solid fa-trash"
-            onClick={handleDeleteConversation(user)}
-          ></i>
+          {user?.isGroup && user.isGroup == true ? (
+                <i class="fa-solid fa-circle-info"></i>
+          ) : (
+            <>
+              <i class="fa-solid fa-phone" onClick={handleAudioCall}></i>
+              <i class="fa-solid fa-video" onClick={handleVideoCall}></i>
+              <i
+                class="fa-solid fa-trash"
+                onClick={handleDeleteConversation(user)}
+              ></i>
+            </>
+          )}
         </div>
         {strangerModal !== undefined && strangerModal === false && (
           <div
@@ -301,12 +312,22 @@ const RightSide = () => {
             <div key={index}>
               {msg.sender !== auth.user._id && (
                 <div className="conversation-message_chat_row other_message">
-                  <MsgDisplay user={user} msg={msg} theme={theme} yourmessage={false} />
+                  <MsgDisplay
+                    user={user}
+                    msg={msg}
+                    theme={theme}
+                    yourmessage={false}
+                  />
                 </div>
               )}
               {msg.sender === auth.user._id && (
                 <div className="conversation-message_chat_row your-message">
-                    <MsgDisplay user={auth.user} msg={msg} theme={theme} yourmessage={true} />
+                  <MsgDisplay
+                    user={auth.user}
+                    msg={msg}
+                    theme={theme}
+                    yourmessage={true}
+                  />
                 </div>
               )}
             </div>

@@ -33,14 +33,14 @@ export const ModalAddMessage = ({ setOpenModal }) => {
     navigate(`/message/${user._id}`)
     setOpenModal(false)
   }
-  const handleEnter = (e) => {
+  const handleEnter = (e) => {  
     if (e.key === "Enter") {
       handleSearch(e);
     }
   };
   return (
     <div className="modal-addmess">
-      <div className="modal-addmess_content" onClick={handleSearch}>
+      <div className="modal-addmess_content">
         <div className="modal-addmess_header">
           <div></div>
           <h5 className="modal-addmess_content-h5">Tin nhắn mới</h5>

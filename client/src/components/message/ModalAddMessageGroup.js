@@ -1,39 +1,71 @@
-import React, {useState} from "react";
-import  UserCard  from "../UserCard";
-import { useSelector ,useDispatch } from "react-redux";
+import React, { useState } from "react";
+import UserCard from "../UserCard";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {getDataAPI} from "../../utils/fetchData"
+import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
 export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
-  const navigate = useNavigate()
-  const {auth, message} = useSelector((state) => state);
+  const navigate = useNavigate();
+  const { auth, message } = useSelector((state) => state);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
-  const [searchUsers, setSearchUser] = useState([])
-  const [groupUsersChat, setGroupUsersChat] = useState([])
+  const [searchUsers, setSearchUser] = useState([]);
+  const [groupUsersChat, setGroupUsersChat] = useState([]);
   const [load, setLoad] = useState(false);
   const handleSearch = async (e) => {
-   e.preventDefault();
-   if (!search) return setSearchUser([]);
-   try {
-    setLoad(true);
-    const res = await getDataAPI(`search?username=${search}&mesagechatbox=${auth.user._id}`, auth.token);
-    setSearchUser(res.data.users);
-    setLoad(false);
-  } catch (err) {
-    dispatch({
-      type: GLOBAL_TYPES.ALERT,
-      payload: { error: err.response.data.msg },
-    });
-  }
-  }
+    e.preventDefault();
+    if (!search) return setSearchUser([]);
+    try {
+      setLoad(true);
+      const res = await getDataAPI(
+        `search?username=${search}&mesagechatbox=${auth.user._id}`,
+        auth.token
+      );
+      setSearchUser(res.data.users);
+      setLoad(false);
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
   const handleCreateGroupChat = () => {
-    // dispatch({ type: MESS_TYPES.ADD_USER, payload: {...user, text: '', media: []} })
-    // navigate(`/message/${user._id}`)
-    console.log(groupUsersChat)
-  }
+    if (groupUsersChat.length === 0) return;
+    if (groupUsersChat.length === 1) {
+      const user = groupUsersChat[0];
+      dispatch({
+        type: MESS_TYPES.ADD_USER,
+        payload: { ...user, text: "", media: [] },
+      });
+      navigate(`/message/${user._id}`);
+      return;
+    }
+    if (groupUsersChat.length > 1) {
+      const userIds = groupUsersChat.map((user) => user._id).join(".");
+      const nameGroup = groupUsersChat.map((user) => user.fullname).join(", ") +", "+  auth.user.fullname;
+      const avatarGroup = 'https://cdn-icons-png.freepik.com/512/14365/14365803.png';
+      const media = [];
+      const text = "";
+      dispatch({
+        type: MESS_TYPES.ADD_USER,
+        payload: {
+          avatar: avatarGroup,
+          _id: userIds,
+          fullname: nameGroup,
+          username: nameGroup,
+          text,
+          media,
+          isGroup: true,
+        },
+      });
+      setGroupUsersChat([]);
+      setOpenModalGroup(false);
+      navigate(`/message/${userIds}`);
+    }
+  };
   const handleAddUserGroupChat = (user) => {
     const checkUser = groupUsersChat.find((item) => item._id === user._id);
     if (checkUser) {
@@ -66,9 +98,9 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
         </div>
 
         <div
-        style={{
-          marginTop: "10px",
-        } }
+          style={{
+            marginTop: "10px",
+          }}
         >
           <h5
             style={{
@@ -81,19 +113,16 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
             Nhóm của bạn:
           </h5>
           <div
-            style={
-              {
-                display: "flex",
-                alignItems: "center",
-                padding: "5px 10px",
-                gap: "10px",
-                Width: "200px",
-                overflowX: "scroll",
-              }
-            }
-            >
-          {groupUsersChat.map((user) => (
-            
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "5px 10px",
+              gap: "10px",
+              Width: "200px",
+              overflowX: "scroll",
+            }}
+          >
+            {groupUsersChat.map((user) => (
               <div
                 key={user._id}
                 className="message_user mt-2"
@@ -116,16 +145,17 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
                     marginBottom: "0px",
                     marginLeft: "0px",
                   }}
-                >{user.username}</p>
+                >
+                  {user.username}
+                </p>
                 <i
                   className="fa fa-times"
                   aria-hidden="true"
                   onClick={() => handleAddUserGroupChat(user)}
                 ></i>
               </div>
-
-          ))}
-           </div>
+            ))}
+          </div>
         </div>
 
         <div className="modal-addmess_message_chat_list">
@@ -201,6 +231,5 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
     </div>
   );
 };
-
 
 export default ModalAddMessageGroup;
