@@ -80,12 +80,22 @@ const CardFooter = ({ post }) => {
   const generateHashtags = () => {
     const hashtags = post.hashtags.map((hashtag, index) => {
       return (
-        <Link key={index} className="hashtag" to={`/explore/hashtags/${hashtag}`}>
+        <Link
+          key={index}
+          className="hashtag"
+          to={`/explore/hashtags/${hashtag}`}
+        >
           #{hashtag}
         </Link>
       );
     });
     return hashtags;
+  };
+
+  const calculateTotalComments = () => {
+    return post.comments.reduce((acc, comment) => {
+      return 1 + acc + (comment.replies ? comment.replies.length : 0);
+    }, 0);
   };
 
   return (
@@ -160,7 +170,7 @@ const CardFooter = ({ post }) => {
             onClick={handleShowPostDetail}
           >
             {post.comments.length > 0
-              ? `Xem tất cả ${post.comments.length} bình luận`
+              ? `Xem tất cả ${calculateTotalComments()} bình luận`
               : "Thêm bình luận..."}
           </p>
         </>

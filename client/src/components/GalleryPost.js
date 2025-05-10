@@ -26,6 +26,12 @@ const GalleryPost = ({ posts }) => {
     });
   };
 
+  const calculateTotalComments = (post) => {
+    return post.comments.reduce((acc, comment) => {
+      return 1 + acc + (comment.replies ? comment.replies.length : 0);
+    }, 0);
+  };
+
   return (
     <div className="gallery_post">
       {clusterPosts &&
@@ -52,7 +58,7 @@ const GalleryPost = ({ posts }) => {
                     </span>
                     <span>
                       <i className="fas fa-comment" />{" "}
-                      {cluster[4].comments.length}
+                      {calculateTotalComments(cluster[4])}
                     </span>
                   </div>
                 </div>
@@ -76,7 +82,8 @@ const GalleryPost = ({ posts }) => {
                         <i className="fas fa-heart" /> {post.likes.length}
                       </span>
                       <span>
-                        <i className="fas fa-comment" /> {post.comments.length}
+                        <i className="fas fa-comment" />{" "}
+                        {calculateTotalComments(post)}
                       </span>
                     </div>
                   </div>
@@ -102,7 +109,7 @@ const GalleryPost = ({ posts }) => {
                     </span>
                     <span>
                       <i className="fas fa-comment" />{" "}
-                      {cluster[4].comments.length}
+                      {calculateTotalComments(cluster[4])}
                     </span>
                   </div>
                 </div>

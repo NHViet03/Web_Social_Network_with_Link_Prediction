@@ -79,12 +79,35 @@ const postCtrl = {
         .populate("user", "avatar username fullname")
         .populate({
           path: "comments",
-          populate: {
-            path: "user",
-            select: "avatar username fullname",
-          },
+          populate: [
+            {
+              path: "user",
+              select: "avatar username fullname",
+            },
+          ],
         })
-        .populate("tags", "avatar username");
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of posts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
 
       return res.json({
         posts,
@@ -105,7 +128,25 @@ const postCtrl = {
             select: "avatar username fullname",
           },
         })
-        .populate("tags", "avatar username");
+        .populate("tags", "avatar username")
+        .lean();
+
+      const parentComments = post.comments.filter(
+        (comment) =>
+          comment.replyCommentId == null || comment.replyCommentId === undefined
+      );
+
+      for (const comment of parentComments) {
+        const replies = post.comments.filter(
+          (reply) =>
+            reply.replyCommentId &&
+            reply.replyCommentId.toString() === comment._id.toString()
+        );
+
+        comment["replies"] = replies;
+      }
+
+      post.comments = parentComments;
 
       return res.json({
         post,
@@ -238,7 +279,28 @@ const postCtrl = {
             select: "avatar username fullname",
           },
         })
-        .populate("tags", "avatar username");
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of posts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
 
       return res.json({
         posts,
@@ -354,7 +416,29 @@ const postCtrl = {
       ).paginating();
       const posts = await features.query
         .sort("-createdAt")
-        .populate("tags", "avatar username");
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of posts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
+
       res.json({
         posts,
         result: posts.length,
@@ -393,7 +477,28 @@ const postCtrl = {
 
       const savePosts = await features.query
         .sort("-createdAt")
-        .populate("tags", "avatar username");
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of savePosts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
 
       res.json({
         savePosts,

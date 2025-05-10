@@ -65,7 +65,7 @@ const userCtrl = {
           title: hashtag.name,
           subtitle: hashtag.count[0]?.count || 0,
           image:
-            "https://res-console.cloudinary.com/dswg5in7u/media_explorer_thumbnails/59cb32efd1e7bad19345aafd896043c2/detailed",
+            "https://res.cloudinary.com/dswg5in7u/image/upload/v1746380552/DreamerDB/rc1ghwiruwl9crokqgve.png",
           type: "hashtag",
         }));
       }

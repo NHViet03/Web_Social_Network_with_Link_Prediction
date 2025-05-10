@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CardComment from "./CardComment";
@@ -16,10 +15,14 @@ import {
   unSavePost,
   savePost,
 } from "../../redux/actions/postAction";
-import { createComment } from "../../redux/actions/commentAction";
+import {
+  createComment,
+  generateNewComments,
+} from "../../redux/actions/commentAction";
 
 const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
   const [comment, setComment] = useState("");
+  const [reply, setReply] = useState({});
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -48,7 +51,6 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
       setIsBookmark(false);
     }
   }, [auth.user._id, auth.user.saved, post]);
-
 
   const handleShowSharePost = () => {
     dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
@@ -91,21 +93,29 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     if (!comment.trim() || loadComment) return;
     setLoadComment(true);
     setComment("");
+    setReply({});
     setShowEmoji(false);
 
+    const trimmedComment = comment.replace(/^@\S+\s*/, "");
+
     const newComment = {
-      content: comment,
+      content: trimmedComment,
       user: auth.user,
       likes: [],
       postId: post._id,
       postUserId: post.user._id,
       createdAt: new Date().toISOString(),
+      replyCommentId: reply.commentId,
+      replyUser: reply.user,
+      replies: [],
     };
 
     if (setPost) {
+      const newComments = generateNewComments(post, newComment);
+
       setPost({
         ...post,
-        comments: [...post.comments, newComment],
+        comments: [...newComments],
       });
     }
 
@@ -127,13 +137,43 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
   const generateHashtags = () => {
     const hashtags = post.hashtags.map((hashtag, index) => {
       return (
-        <Link key={index} className="hashtag" to={`/explore/hashtags/${hashtag}`}>
+        <Link
+          key={index}
+          className="hashtag"
+          to={`/explore/hashtags/${hashtag}`}
+        >
           #{hashtag}
         </Link>
       );
     });
     return hashtags;
   };
+
+  const handleClickReply = (data) => {
+    if (data.user == null || data.user === undefined) return;
+
+    setReply({
+      commentId: data._id,
+      user: {
+        userId: data.user?._id,
+        username: data.user.username,
+      },
+    });
+
+    setComment(`@${data.user.username} `);
+
+    commentRef.current.focus();
+  };
+
+  const handleOnChangeComment = (e) => {
+    setComment(e.target.value);
+
+    if (e.target.value.trim() === "") {
+      setReply(null);
+    }
+  };
+
+  console.log("post", post);
 
   return (
     <div className="mt-3 pt-3 pb-1 flex-fill d-flex flex-column card_footer">
@@ -195,6 +235,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
                 loadComment={!comment._id ? loadComment : false}
                 explore={explore}
                 handleClose={handleClose}
+                handleClickReply={handleClickReply}
               />
             ))}
           </div>
@@ -205,9 +246,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
                 handleLike={handleLike}
                 handleUnLike={handleUnLike}
               />
-              <span
-                className="fa-regular fa-comment"
-              />
+              <span className="fa-regular fa-comment" />
               <span
                 className="fa-regular fa-paper-plane"
                 onClick={handleShowSharePost}
@@ -254,7 +293,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
               ref={commentRef}
               className="form-control"
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={handleOnChangeComment}
               placeholder="Thêm bình luận..."
             />
             <button
