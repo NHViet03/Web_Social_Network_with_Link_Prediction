@@ -171,10 +171,11 @@ const RightSide = () => {
         newArr.push(...img);
       }
     }
+    const listId = id.split(".");
 
     const msg = {
       sender: auth.user._id,
-      recipient: id,
+      recipient: listId,
       text: text,
       media: newArr,
       CreatedAt: new Date().toISOString(),

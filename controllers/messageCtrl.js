@@ -22,34 +22,43 @@ const messageCtrl = {
       if (text == "" && media.length > 0) {
         newText = "Đã gửi một phương tiện";
       }
+      const recipientList = [...recipient, sender.toString()];
 
       if (!recipient || (!newText.trim() && media.length === 0 && !call)) return;
 
-      const newConversation = await Conversations.findOneAndUpdate(
-        {
-          $or: [
-            { recipients: [sender, recipient] },
-            { recipients: [recipient, sender] },
-          ],
-        },
-        {
-          recipients: [sender, recipient],
+      let conversation = await Conversations.findOne({
+        recipients: { $all: recipientList, $size: recipientList.length },
+      });
+
+      if (!conversation) {
+        conversation = await Conversations.create({
+          recipients: recipientList,
           newText,
           media,
           call,
+          isGroup: recipient.length > 1 ? true : false,
           isRead: {
             [sender]: true,
             [recipient]: false,
           },
-        },
-        { new: true, upsert: true }
-      );
+        });
+      } else {
+        conversation.text = newText;
+        conversation.media = media;
+        conversation.call = call;
+        conversation.isRead = {
+          [sender]: true,
+          [recipient]: false,
+        };
+        await conversation.save();
+      }
+
 
       // kiểm tra rằng newConversation.recipientAccept với các key[sender, recipient] có là true hay không
-      if (newConversation.recipientAccept) {
+      if (conversation.recipientAccept) {
         const allAccepted =
-          newConversation.recipientAccept.get(sender) === true &&
-          newConversation.recipientAccept.get(recipient) === true;
+          conversation.recipientAccept.get(sender) === true &&
+          conversation.recipientAccept.get(recipient) === true;
         if (!allAccepted) {
           //find User recipient
           const recipientUser = await User.findOne({ _id: recipient });
@@ -59,7 +68,7 @@ const messageCtrl = {
           // Cập nhật recipientAccept map
 
           const AcceptedRecepiant =
-            newConversation.recipientAccept.get(recipient) === true;
+            conversation.recipientAccept.get(recipient) === true;
 
           let recipientAcceptMap;
           if (AcceptedRecepiant) {
@@ -74,17 +83,17 @@ const messageCtrl = {
             };
           }
           await Conversations.updateOne(
-            { _id: newConversation._id },
+            { _id: conversation._id },
             { $set: { recipientAccept: recipientAcceptMap } }
           );
         }
       }
       const newMessage = new Messages({
-        conversation: newConversation._id,
+        conversation: conversation._id,
         sender,
         call,
-        recipients: [recipient],
-        newText,
+        recipients: recipient,
+        text: newText,
         media,
       });
 
@@ -92,7 +101,7 @@ const messageCtrl = {
 
       res.json({
         msg: "Create Success!",
-        conversation: newConversation,
+        conversation: conversation,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
