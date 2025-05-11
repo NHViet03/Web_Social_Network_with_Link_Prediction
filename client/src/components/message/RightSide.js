@@ -256,7 +256,13 @@ const RightSide = () => {
         <UserCard user={user} headerMessage />
         <div className="conversation-message_header-icon">
           {user?.isGroup && user.isGroup == true ? (
-                <i class="fa-solid fa-circle-info"></i>
+            <>
+              <i
+                class="fa-solid fa-trash"
+                onClick={handleDeleteConversation(user)}
+              ></i>
+              <i class="fa-solid fa-circle-info"></i>
+            </>
           ) : (
             <>
               <i class="fa-solid fa-phone" onClick={handleAudioCall}></i>
@@ -311,7 +317,7 @@ const RightSide = () => {
           </button>
           {data1.map((msg, index) => (
             <div key={index}>
-              {msg.sender !== auth.user._id && (
+              {msg.sender._id !== auth.user._id && (
                 <div className="conversation-message_chat_row other_message">
                   <MsgDisplay
                     user={user}
@@ -321,7 +327,7 @@ const RightSide = () => {
                   />
                 </div>
               )}
-              {msg.sender === auth.user._id && (
+              {msg.sender._id === auth.user._id && (
                 <div className="conversation-message_chat_row your-message">
                   <MsgDisplay
                     user={auth.user}

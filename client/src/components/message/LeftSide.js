@@ -35,24 +35,25 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     // Check if user from message.users._id
     const checkUser = message.users.find((item) => item._id === user._id);
     if (checkUser.text != "") {
-      dispatch({
-        type: MESS_TYPES.READMESSAGE,
-        payload: {
-          id: user._id,
-          isRead: true,
-        },
-      });
-      try {
-        //Save to DB read message = true
-        postDataAPI(`readMessage/${user._id}`, null, auth.token);
-      } catch (err) {
-        dispatch({
-          type: GLOBAL_TYPES.ALERT,
-          payload: {
-            error: err.response.data.msg,
-          },
-        });
-      }
+      // Read message action
+      // dispatch({
+      //   type: MESS_TYPES.READMESSAGE,
+      //   payload: {
+      //     id: user._id,
+      //     isRead: true,
+      //   },
+      // });
+      // try {
+      //   //Save to DB read message = true
+      //   postDataAPI(`readMessage/${user._id}`, null, auth.token);
+      // } catch (err) {
+      //   dispatch({
+      //     type: GLOBAL_TYPES.ALERT,
+      //     payload: {
+      //       error: err.response.data.msg,
+      //     },
+      //   });
+      // }
     }
   };
 

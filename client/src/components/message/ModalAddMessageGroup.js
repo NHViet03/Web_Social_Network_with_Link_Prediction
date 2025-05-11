@@ -6,6 +6,7 @@ import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
+import {imageGroupDefaultLink} from "../../utils/imageGroupDefaultLink";
 export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
   const navigate = useNavigate();
   const { auth, message } = useSelector((state) => state);
@@ -46,7 +47,7 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
     if (groupUsersChat.length > 1) {
       const userIds = groupUsersChat.map((user) => user._id).join(".");
       const nameGroup = groupUsersChat.map((user) => user.fullname).join(", ") +", "+  auth.user.fullname;
-      const avatarGroup = 'https://cdn-icons-png.freepik.com/512/14365/14365803.png';
+      const avatarGroup = imageGroupDefaultLink;
       const media = [];
       const text = "";
       dispatch({

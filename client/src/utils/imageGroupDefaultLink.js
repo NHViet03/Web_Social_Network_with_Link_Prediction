@@ -1,0 +1,1 @@
+export const imageGroupDefaultLink = "https://cdn-icons-png.freepik.com/512/14365/14365803.png";

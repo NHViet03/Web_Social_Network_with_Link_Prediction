@@ -22,7 +22,13 @@ const messageCtrl = {
       if (text == "" && media.length > 0) {
         newText = "Đã gửi một phương tiện";
       }
-      const recipientList = [...recipient, sender.toString()];
+      // recipientList = recipient
+     let recipientList = [...recipient];
+
+     //if recipient[] has no req.user._id.toString() push(req.user._id.toString())
+      if (!recipientList.includes(req.user._id.toString())) {
+        recipientList.push(req.user._id.toString());
+      } 
 
       if (!recipient || (!newText.trim() && media.length === 0 && !call)) return;
 
@@ -33,7 +39,7 @@ const messageCtrl = {
       if (!conversation) {
         conversation = await Conversations.create({
           recipients: recipientList,
-          newText,
+          text : newText,
           media,
           call,
           isGroup: recipient.length > 1 ? true : false,
@@ -88,11 +94,13 @@ const messageCtrl = {
           );
         }
       }
+
+      const recipients = recipientList.filter((item) => item !== sender);
       const newMessage = new Messages({
         conversation: conversation._id,
         sender,
         call,
-        recipients: recipient,
+        recipients: recipients,
         text: newText,
         media,
       });
@@ -115,10 +123,10 @@ const messageCtrl = {
       };
 
       // Nếu có truyền mainBoxMessage (dưới dạng chuỗi "true"/"false"), lọc thêm theo recipientAccept
-      if (req.query.mainBoxMessage !== undefined) {
-        const mainBoxMessage = req.query.mainBoxMessage === "true";
-        filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
-      }
+      // if (req.query.mainBoxMessage !== undefined) {
+      //   const mainBoxMessage = req.query.mainBoxMessage === "true";
+      //   filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
+      // }
 
       // Áp dụng phân trang (chỉ có limit theo class bạn cung cấp)
       const features = new APIfeatures(
@@ -199,16 +207,21 @@ const messageCtrl = {
     try {
       // may be req.params.id like that: 67c3e08776a9ee127c26240e.67c3f264f042c866508255a5.67c3f9b19c797e619cd729e0 => spilt by "."
       const listId = req.params.id.split(".");
-      let features;
       if (listId.length > 1) {
+          const orConditions = listId.map((senderId) => {
+            const recipientList = listId.filter(id => id !== senderId);
+            return {
+              sender: senderId,
+               recipients: { $all: recipientList, $size: recipientList.length },
+            };
+          });
         // find sender = req.user._id, and recipients include all id in listId
         features = new APIfeatures(
-          Messages.find({
-            sender: req.user._id,
-            recipients: { $all: listId },
-          }),
-          req.query
-        ).paginating();
+            Messages.find({
+              $or: orConditions,
+            }),
+            req.query
+          ).paginating();
       } else if (listId.length === 1) {
         features = new APIfeatures(
           Messages.find({
@@ -227,25 +240,31 @@ const messageCtrl = {
         ).paginating();
       }
 
+
       const messages = await features.query
         .sort("-createdAt")
-        .populate("recipients", "avatar username fullname");
+        .populate("recipients", "avatar username fullname")
+        .populate("sender", "avatar username fullname")
+        .populate("conversation", "isGroup");
 
       res.json({
         messages,
         result: messages.length,
       });
-    } catch (err) {
+    }
+    catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   deleteConversation: async (req, res) => {
+    const listID = req.params.id.split(".")
+    //if listID has no req.user._id.toString() push(req.user._id.toString())
+    if (!listID.includes(req.user._id.toString())) {
+      listID.push(req.user._id.toString());
+    }
     try {
       const newConversation = await Conversations.findOneAndDelete({
-        $or: [
-          { recipients: [req.user._id, req.params.id] },
-          { recipients: [req.params.id, req.user._id] },
-        ],
+        recipients: { $all: listID, $size: listID.length },
       });
 
       await Messages.deleteMany({ conversation: newConversation._id });

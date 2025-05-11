@@ -1,5 +1,6 @@
 import {GLOBAL_TYPES} from '../actions/globalTypes'
 import {deleteDataAPI, getDataAPI, postDataAPI, putDataAPI} from '../../utils/fetchData'
+import {imageGroupDefaultLink} from '../../utils/imageGroupDefaultLink'
 export const MESS_TYPES ={
     ADD_USER: 'ADD_USER',
     ADD_MESSAGE: 'ADD_MESSAGE',
@@ -47,21 +48,41 @@ export const getConversations =
       );
       let newArr = [];
       res.data.conversations.forEach((item) => {
-        const isRead = item.isRead[auth.user._id];
-        const recipientAccept = item.recipientAccept[auth.user._id];
-        item.recipients.forEach((cv) => {
-          if (cv._id !== auth.user._id) {
-            newArr.push({
-              ...cv,
-              text: item.text,
-              media: item.media,
-              recipientAccept: recipientAccept,
-              isRead: isRead,
-              isGroup: item.isGroup,
-            });
-          }
-        });
+        if (item.isGroup) {
+        
+          const id = item.recipients.map((cv) => cv._id).join(".");
+          const nameGroup = item.recipients.map((cv) => cv.username).join(", ")
+          newArr.push({
+            avatar: imageGroupDefaultLink,
+            _id: id,
+            fullname: nameGroup,
+            username: nameGroup,
+            text: item.text,
+            media: item.media,
+
+            // hard code
+            recipientAccept: true,
+            isRead: true,
+            isGroup: item.isGroup,
+          });
+        } else {
+          item.recipients.forEach((cv) => {
+            if (cv._id !== auth.user._id) {
+              newArr.push({
+                ...cv,
+                text: item.text,
+                media: item.media,
+
+                // hard code
+                recipientAccept: true,
+                isRead: true,
+                isGroup: item.isGroup,
+              });
+            }
+          });
+        }
       });
+
       dispatch({
         type: MESS_TYPES.GET_CONVERSATIONS,
         payload: { newArr, result: res.data.result },
@@ -94,6 +115,7 @@ export const acceptConversation = ({auth, id}) => async (dispatch) => {
 export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
     try {
         const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
+        console.log(res.data)
         const newData = {...res.data, messages: res.data.messages.reverse()}
         dispatch({
             type: MESS_TYPES.GET_MESSAGES,
