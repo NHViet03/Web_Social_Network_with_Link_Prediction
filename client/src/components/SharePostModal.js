@@ -23,13 +23,24 @@ const SharePostModal = ({ post }) => {
           newArr.push(user);
         }
       });
+
+      newArr.map((user) => {
+        user.image = user.avatar;
+        user.title = user.username;
+        user.subtitle = user.fullname;
+        return user;
+      });
+
       setUsers(newArr);
     } else {
-      const handleSearch = async () => {  
+      const handleSearch = async () => {
         try {
           setLoading(true);
-          const res = await getDataAPI(`search?username=${search}`, auth.token);
-          setUsers(res.data.users);
+          const res = await getDataAPI(
+            `search?keyword=${search}&type=user`,
+            auth.token
+          );
+          setUsers(res.data.results);
           setLoading(false);
         } catch (err) {
           dispatch({
@@ -54,7 +65,7 @@ const SharePostModal = ({ post }) => {
       setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
     }
   };
-  
+
   const handleRemoveUser = (user) => {
     setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
   };
@@ -68,19 +79,18 @@ const SharePostModal = ({ post }) => {
         <h6 className="sharePost_modal-title">Chia sẻ</h6>
         <div className="sharePost_modal-search">
           <span style={{ fontWeight: "600" }}>Tới: </span>
-          {selectUsers &&
-            selectUsers.map((item, index) => (
-              <span key={index} className="sharePost_modal-username">
-                <span>{item.username}</span>
-                <span
-                  className="material-icons"
-                  style={{ transform: "translateY(1px)", cursor: "pointer" }}
-                  onClick={() => handleRemoveUser(item)}
-                >
-                  close
-                </span>
+          {selectUsers?.map((item, index) => (
+            <span key={item._id} className="sharePost_modal-username">
+              <span>{item.title}</span>
+              <span
+                className="material-icons"
+                style={{ transform: "translateY(1px)", cursor: "pointer" }}
+                onClick={() => handleRemoveUser(item)}
+              >
+                close
               </span>
-            ))}
+            </span>
+          ))}
           <input
             className="form-control"
             type="text"
@@ -94,18 +104,24 @@ const SharePostModal = ({ post }) => {
             Gợi ý
           </h6>
           {loading && <Loading />}
-          {users &&
-            users.map((user, index) => (
-              <div key={index} className="mb-3 sharePost_modal-user">
-                <UserCard user={user} />
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  checked={selectUsers.find((item) => item._id === user._id)}
-                  onChange={(e) => handleSelectUser(e, user)}
-                />
-              </div>
-            ))}
+          {users?.map((user, index) => (
+            <div key={user._id} className="mb-3 sharePost_modal-user">
+              <UserCard
+                user={{
+                  _id: user._id,
+                  username: user.title,
+                  fullname: user.subtitle,
+                  avatar: user.image,
+                }}
+              />
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={selectUsers.find((item) => item._id === user._id)}
+                onChange={(e) => handleSelectUser(e, user)}
+              />
+            </div>
+          ))}
         </div>
         <div className="sharePost_modal-button">
           <button

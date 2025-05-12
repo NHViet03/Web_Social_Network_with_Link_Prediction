@@ -2,6 +2,7 @@ const Users = require("../models/userModel");
 const Hashtags = require("../models/hashtagsModel");
 const SearchHistories = require("../models/searchHistoryModel");
 
+
 const userCtrl = {
   searchUser: async (req, res) => {
     try {

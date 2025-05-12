@@ -10,7 +10,7 @@ const postSchema = new mongoose.Schema(
     user: { type: mongoose.Types.ObjectId, ref: "user" },
     likes: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     comments: [{ type: mongoose.Types.ObjectId, ref: "comment" }],
-    hashtags: [{ type: String, index: true}],
+    hashtags: [{ type: String, index: true }],
     tags: [{ type: mongoose.Types.ObjectId, ref: "user" }],
     location: {
       id: { type: String, index: true },
@@ -21,5 +21,7 @@ const postSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+postSchema.index({ tags: 1 });
 
 module.exports = mongoose.model("post", postSchema);

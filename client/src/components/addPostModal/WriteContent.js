@@ -25,7 +25,7 @@ function WriteContent({ post, setPost }) {
     const newArr = auth.user.followers.filter(
       (user) => !existUserSet.has(user._id)
     );
-    
+
     auth.user.following.forEach((user) => {
       if (
         !newArr.find((item) => item._id === user._id) &&
@@ -33,6 +33,13 @@ function WriteContent({ post, setPost }) {
       ) {
         newArr.push(user);
       }
+    });
+
+    newArr.map((user) => {
+      user.image = user.avatar;
+      user.title = user.username;
+      user.subtitle = user.fullname;
+      return user;
     });
 
     return newArr;
@@ -219,18 +226,18 @@ function WriteContent({ post, setPost }) {
       setPost({
         ...post,
         location: {
-          id:"",
-          name: ""
+          id: "",
+          name: "",
         },
       });
 
       return;
     }
-    
+
     setPost({
       ...post,
-      location
-    })
+      location,
+    });
   };
 
   useEffect(() => {
@@ -245,11 +252,14 @@ function WriteContent({ post, setPost }) {
     }
 
     try {
-      const res = await getDataAPI(`search?username=${keyword}`, auth.token);
+      const res = await getDataAPI(
+        `search?keyword=${keyword}&type=user`,
+        auth.token
+      );
 
       const existUserSet = new Set(post.tags?.map((user) => user._id) || []);
 
-      const filteredUsers = res.data.users.filter(
+      const filteredUsers = res.data.results.filter(
         (user) => !existUserSet.has(user._id) && user._id !== auth.user._id
       );
 
@@ -439,9 +449,7 @@ function WriteContent({ post, setPost }) {
                   <li
                     key={location.id}
                     className="list-group-item"
-                    onClick={() =>
-                      handleChooseLocation(location)
-                    }
+                    onClick={() => handleChooseLocation(location)}
                   >
                     {location.name}
                   </li>
@@ -511,7 +519,15 @@ function WriteContent({ post, setPost }) {
                     key={user._id}
                     className="list-group-item list-group-item-tag"
                   >
-                    <UserCard user={user} size={"avatar-xs"} />
+                    <UserCard
+                      user={{
+                        _id: user._id,
+                        username: user.title,
+                        fullname: user.subtitle,
+                        avatar: user.image,
+                      }}
+                      size={"avatar-xs"}
+                    />
                     <input
                       className="form-check-input"
                       type="checkbox"

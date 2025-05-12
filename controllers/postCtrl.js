@@ -475,34 +475,32 @@ const postCtrl = {
         req.query
       ).paginating();
 
-      const savePosts = await features.query
-        .sort("-createdAt")
-        .populate("tags", "avatar username")
-        .lean();
-
-      for (const post of savePosts) {
-        const parentComments = post.comments.filter(
-          (comment) =>
-            comment.replyCommentId == null ||
-            comment.replyCommentId === undefined
-        );
-
-        for (const comment of parentComments) {
-          const replies = post.comments.filter(
-            (reply) =>
-              reply.replyCommentId &&
-              reply.replyCommentId.toString() === comment._id.toString()
-          );
-
-          comment["replies"] = replies;
-        }
-
-        post.comments = parentComments;
-      }
+      const savePosts = await features.query.sort("-createdAt");
 
       res.json({
         savePosts,
         result: savePosts.length,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  getTaggedPosts: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const features = new APIfeatures(
+        Posts.find({
+          tags: id,
+        }),
+        req.query
+      ).paginating();
+
+      const taggedPosts = await features.query.sort("-createdAt");
+
+      res.json({
+        data: taggedPosts,
+        result: taggedPosts.length,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
