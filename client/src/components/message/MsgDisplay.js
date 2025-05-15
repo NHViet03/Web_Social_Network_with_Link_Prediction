@@ -17,7 +17,14 @@ const MsgDisplay = ({ user, msg, theme, yourmessage }) => {
       {msg && (
         <>
           <div className="chat_title">
-            <Avatar src={user.avatar} size="avatar-sm"></Avatar>
+            {msg.conversation.isGroup ? (
+              <div style={{ display: "flex", gap: "10px", alignItems: "center", cursor: "pointer" }}>
+              <Avatar src={msg.sender.avatar} size="avatar-sm"></Avatar>
+              <p style={{marginBottom: "0px", fontSize: "13px", fontWeight: "500", color: theme.text }}>{msg.sender.username}</p>
+              </div>
+            ) : (
+              <Avatar src={user.avatar} size="avatar-sm"></Avatar>
+            )}
           </div>
           {msg.text && (
             <div
@@ -37,26 +44,23 @@ const MsgDisplay = ({ user, msg, theme, yourmessage }) => {
               >
                 <div onClick={() => setIsOptionChat(!isOptionChat)}>...</div>
                 {isOptionChat && (
-                  <ul  
-                  style={{
-                    ...(yourmessage
-                      ? { right: "0px" }
-                      : { left: "0px" }),
-                  }}
-
-                  onClick={() => {
-                    setIsOptionChat(false);
-                }}
-                  className="option_chat">
-                   
-                    { yourmessage  ? (
+                  <ul
+                    style={{
+                      ...(yourmessage ? { right: "0px" } : { left: "0px" }),
+                    }}
+                    onClick={() => {
+                      setIsOptionChat(false);
+                    }}
+                    className="option_chat"
+                  >
+                    {yourmessage ? (
                       <>
-                      <li>Chỉnh sửa</li>
-                      <li>Thu hồi</li>
+                        <li>Chỉnh sửa</li>
+                        <li>Thu hồi</li>
                       </>
                     ) : (
                       <li>Trả lời</li>
-                    )}            
+                    )}
                   </ul>
                 )}
               </div>
