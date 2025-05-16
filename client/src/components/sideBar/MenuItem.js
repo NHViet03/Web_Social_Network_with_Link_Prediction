@@ -7,7 +7,8 @@ const MenuItem = ({ link, active }) => {
   const theme = useSelector((state) => state.theme);
 
   return (
-    <li className={`nav-item mb-3 px-2  ${active ? "active" : ""}`}>
+    <li className={`nav-item mb-4 px-2  ${active ? "active" : ""}`}>
+
       <Link
         className={`nav-link d-flex align-items-center`}
         to={link.path}

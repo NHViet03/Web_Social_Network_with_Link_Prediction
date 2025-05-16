@@ -16,11 +16,14 @@ router.patch("/like_post/:id", auth, postCtrl.likePost);
 router.patch("/unlike_post/:id", auth, postCtrl.unLikePost);
 
 router.get("/explore_posts", auth, postCtrl.getExplorePosts);
+router.get("/explore_posts/location/:id", auth, postCtrl.getExplorePostsByLocation);
+router.get("/explore_posts/hashtag/:id",auth, postCtrl.getExplorePostsByHashtag);
 router.get("/user_posts/:id", auth, postCtrl.getUserPosts);
 
 router.patch("/save_post/:id", auth, postCtrl.savePost);
 router.patch("/unsave_post/:id", auth, postCtrl.unSavePost);
 router.get("/getSavePost", auth, postCtrl.getSavePosts);
+router.get("/getTaggedPost/:id", auth, postCtrl.getTaggedPosts);
 
 router.post("/report_post", auth, postCtrl.reportPost);
 

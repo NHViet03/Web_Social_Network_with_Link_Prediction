@@ -2,10 +2,10 @@
 
 .post_thumb {
   display: grid;
-  width: 65%;
+  width: 75%;
   margin: 0 auto;
   grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  gap: 10px; /* Adjust the gap between items as needed */
+  gap: 4px; /* Adjust the gap between items as needed */
 }
 
 .post_thumb-display {
@@ -13,6 +13,7 @@
   width: 100%; /* Ensure the width is 100% of the parent container */
   padding-top: 100%; /* Create a square by setting the padding-top equal to width */
   overflow: hidden;
+  border-radius: 2px;
 }
 
 .post_thumb-display img {

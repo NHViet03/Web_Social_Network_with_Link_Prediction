@@ -4,13 +4,17 @@ const Comments = require("../models/commentModel");
 const commentCtrl = {
   createComment: async (req, res) => {
     try {
-      const { content, postId, postUserId } = req.body;
+      const { content, postId, postUserId, replyCommentId, replyUser, image } =
+        req.body;
 
       const newComment = new Comments({
         content,
         user: req.user._id,
         postId,
         postUserId,
+        replyCommentId,
+        replyUser: replyUser,
+        image
       });
 
       await newComment.save();
@@ -31,12 +35,30 @@ const commentCtrl = {
             path: "user",
             select: "avatar username fullname",
           },
-        });
+        })
+        .lean();
+
+      const parentComments = post.comments.filter(
+        (comment) =>
+          comment.replyCommentId == null || comment.replyCommentId === undefined
+      );
+
+      for (const comment of parentComments) {
+        const replies = post.comments.filter(
+          (reply) =>
+            reply.replyCommentId &&
+            reply.replyCommentId.toString() === comment._id.toString()
+        );
+
+        comment["replies"] = replies;
+      }
+
+      post.comments = parentComments;
 
       return res.json({
         msg: "Đã tạo bình luận thành công",
         newPost: post,
-        comment:newComment
+        comment: newComment,
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -98,17 +120,25 @@ const commentCtrl = {
   },
   deleteComment: async (req, res) => {
     try {
-      const { id,postId } = req.params;
+      const { id, postId } = req.params;
 
       await Comments.deleteOne({ _id: id });
+
+      const replies = await Comments.find({ replyCommentId: id }, { _id: 1 });
+
+      if (replies.length > 0) {
+        await Comments.deleteMany({ _id: { $in: replies } });
+      }
+
       await Posts.findOneAndUpdate(
+        { _id: postId },
         {
-          _id: postId,
-        },
-        {
-          $pull: { comments: id },
+          $pull: {
+            comments: { $in: [id, ...replies.map((r) => r._id)] },
+          },
         }
       );
+
       return res.json({
         msg: "Đã xóa thích bình luận",
       });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import LikeButton from "../LikeButton";
 import BookMarkButton from "./BookMarkButton";
 
@@ -19,7 +20,7 @@ const CardFooter = ({ post }) => {
   const [loadSave, setLoadSave] = useState(false);
 
   const auth = useSelector((state) => state.auth);
-  const socket=useSelector(state=>state.socket)
+  const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -42,14 +43,14 @@ const CardFooter = ({ post }) => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(true);
-    await dispatch(likePost({ post, auth,socket }));
+    await dispatch(likePost({ post, auth, socket }));
     setLoadLike(false);
   };
   const handleUnLike = async () => {
     if (loadLike) return;
     setLoadLike(true);
     setIsLike(false);
-    await dispatch(unLikePost({ post, auth,socket }));
+    await dispatch(unLikePost({ post, auth, socket }));
     setLoadLike(false);
   };
 
@@ -70,10 +71,31 @@ const CardFooter = ({ post }) => {
   };
 
   const handleShowPostDetail = () => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post._id }); 
+    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post._id });
   };
   const handleShowSharePost = () => {
     dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
+  };
+
+  const generateHashtags = () => {
+    const hashtags = post.hashtags.map((hashtag, index) => {
+      return (
+        <Link
+          key={index}
+          className="hashtag"
+          to={`/explore/hashtags/${hashtag}`}
+        >
+          #{hashtag}
+        </Link>
+      );
+    });
+    return hashtags;
+  };
+
+  const calculateTotalComments = () => {
+    return post.comments.reduce((acc, comment) => {
+      return 1 + acc + (comment.replies ? comment.replies.length : 0);
+    }, 0);
   };
 
   return (
@@ -106,22 +128,35 @@ const CardFooter = ({ post }) => {
             {post.likes.length} lượt thích
           </p>
           <div className="card_footer-content">
-            <span style={{ fontWeight: "600" }}>{post.user.username} </span>
-            {post.content.length < 80 || readMore
-              ? post.content
-              : post.content.slice(0, 80) + "..."}
+            <div>
+              <span style={{ fontWeight: "600" }}>{post.user.username} </span>
+              {post.content.length < 80 || readMore
+                ? post.content
+                : post.content.slice(0, 80) + "..."}
 
-            {post.content.length > 80 && (
-              <small
-                onClick={() => setReadMore(!readMore)}
+              {post.content.length > 80 && (
+                <small
+                  onClick={() => setReadMore(!readMore)}
+                  style={{
+                    display: "block",
+                    cursor: "pointer",
+                    color: "var(--text-color)",
+                  }}
+                >
+                  {readMore ? " Ẩn bớt " : " Xem thêm "}
+                </small>
+              )}
+            </div>
+            {post.hashtags?.length > 0 && (
+              <div
                 style={{
-                  display: "block",
-                  cursor: "pointer",
-                  color: "var(--text-color)",
+                  color: "rgb(65, 80, 247)",
+                  display: "flex",
+                  gap: "6px",
                 }}
               >
-                {readMore ? " Ẩn bớt " : " Xem thêm "}
-              </small>
+                {generateHashtags()}
+              </div>
             )}
           </div>
 
@@ -135,7 +170,7 @@ const CardFooter = ({ post }) => {
             onClick={handleShowPostDetail}
           >
             {post.comments.length > 0
-              ? `Xem tất cả ${post.comments.length} bình luận`
+              ? `Xem tất cả ${calculateTotalComments()} bình luận`
               : "Thêm bình luận..."}
           </p>
         </>

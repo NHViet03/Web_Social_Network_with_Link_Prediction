@@ -17,10 +17,19 @@ const GalleryPost = ({ posts }) => {
   }, [posts]);
 
   const handleShowPost = (post) => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: {
-      postId:post._id,
-      explore:true
-    } });
+    dispatch({
+      type: GLOBAL_TYPES.POST_DETAIL,
+      payload: {
+        postId: post._id,
+        explore: true,
+      },
+    });
+  };
+
+  const calculateTotalComments = (post) => {
+    return post.comments.reduce((acc, comment) => {
+      return 1 + acc + (comment.replies ? comment.replies.length : 0);
+    }, 0);
   };
 
   return (
@@ -34,7 +43,12 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img src={cluster[4].images[0].url} alt="Post" />
+                  <img
+                    src={
+                      cluster[4].images.find((img) => img.type !== "video")?.url
+                    }
+                    alt="Post"
+                  />
                   {cluster[4].images.length > 1 && (
                     <i className="fa-solid fa-images" />
                   )}
@@ -44,7 +58,7 @@ const GalleryPost = ({ posts }) => {
                     </span>
                     <span>
                       <i className="fas fa-comment" />{" "}
-                      {cluster[4].comments.length}
+                      {calculateTotalComments(cluster[4])}
                     </span>
                   </div>
                 </div>
@@ -56,7 +70,10 @@ const GalleryPost = ({ posts }) => {
                     className="gallery_item"
                     onClick={() => handleShowPost(post)}
                   >
-                    <img src={post.images[0].url} alt="Post" />
+                    <img
+                      src={post.images.find((img) => img.type !== "video")?.url}
+                      alt="Post"
+                    />
                     {post.images.length > 1 && (
                       <i className="fa-solid fa-images" />
                     )}
@@ -65,7 +82,8 @@ const GalleryPost = ({ posts }) => {
                         <i className="fas fa-heart" /> {post.likes.length}
                       </span>
                       <span>
-                        <i className="fas fa-comment" /> {post.comments.length}
+                        <i className="fas fa-comment" />{" "}
+                        {calculateTotalComments(post)}
                       </span>
                     </div>
                   </div>
@@ -76,7 +94,12 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img src={cluster[4].images[0].url} alt="Post" />
+                  <img
+                    src={
+                      cluster[4].images.find((img) => img.type !== "video")?.url
+                    }
+                    alt="Post"
+                  />
                   {cluster[4].images.length > 1 && (
                     <i className="fa-solid fa-images" />
                   )}
@@ -86,7 +109,7 @@ const GalleryPost = ({ posts }) => {
                     </span>
                     <span>
                       <i className="fas fa-comment" />{" "}
-                      {cluster[4].comments.length}
+                      {calculateTotalComments(cluster[4])}
                     </span>
                   </div>
                 </div>

@@ -28,6 +28,9 @@ export const createPost =
         {
           content: post.content,
           images: media,
+          hashtags: post.hashtags || [],
+          tags: post.tags.map((tag) => tag._id) || [],
+          location: post.location || {},
         },
         auth.token
       );
@@ -40,11 +43,31 @@ export const createPost =
         },
       });
 
-      // Notify
+      // Notify for tags
+      if (post.tags?.length > 0) {
+        const msg = {
+          id: res.data.post._id,
+          content: " đã gắn thẻ bạn trong một bài viết.",
+          recipients: post.tags,
+          url: `/post/${res.data.post._id}`,
+          image: res.data.post.images.find((img) => img.type === "image")?.url,
+          user: auth.user,
+        };
+
+        dispatch(createNotify({ msg, auth, socket }));
+      }
+
+      // Notify for followers
+      // Exclude the user who already got the notify from tags above
+      const tagsSet = new Set(post.tags.map((tag) => tag._id));
+      const followers = auth.user.followers.filter(
+        (user) => !tagsSet.has(user._id)
+      );
+
       const msg = {
         id: res.data.post._id,
         content: " đã thêm một bài viết.",
-        recipients: auth.user.followers,
+        recipients: followers,
         url: `/post/${res.data.post._id}`,
         image: res.data.post.images[0].url,
         user: auth.user,
@@ -96,6 +119,9 @@ export const updatePost =
         `post/${post._id}`,
         {
           content: post.content,
+          hashtags: post.hashtags || [],
+          tags: post.tags.map((tag) => tag._id) || [],
+          location: post.location || {},
         },
         auth.token
       );
@@ -147,17 +173,15 @@ export const likePost =
       likes: [...post.likes, auth.user._id],
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     // Notify
     const msg = {
@@ -190,17 +214,15 @@ export const unLikePost =
       likes: post.likes.filter((like) => like !== auth.user._id),
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     // Notify
     const msg = {

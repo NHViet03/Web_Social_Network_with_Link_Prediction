@@ -4,35 +4,35 @@ import FollowButton from "../FollowButton";
 import Loading from "../Loading";
 
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+import { getSuggestedUsers } from "../../redux/actions/suggestAction";
 
 const Suggestions = () => {
-  const [users, setUsers] = useState([]);
-  const { auth, developer } = useSelector((state) => ({
+  const { auth, developer, suggest } = useSelector((state) => ({
     auth: state.auth,
     developer: state.developer,
+    suggest: state.suggest,
   }));
+
+  const dispatch = useDispatch();
+
+  const users = suggest.users;
+
   const [loading, setLoading] = useState(false);
   const [predictionModel, setPredictionModel] = useState("CN");
 
   useEffect(() => {
-    const getLinkPredictionUsers = async () => {
-      try {
-        // setLoading(true);
-        // setUsers([]);
-        // const res = await axios.get(
-        //   `http://localhost:8000/SuggestionUserBy${predictionModel}${auth.user._id}`
-        // );
+    const fetchData = async () => {
+      if (suggest.model === predictionModel) return;
 
-        // setUsers(res.data.data);
-        // setLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
+      setLoading(true);
+
+      await dispatch(getSuggestedUsers(auth, predictionModel));
+
+      setLoading(false);
     };
 
-    getLinkPredictionUsers();
-  }, [auth.user._id, predictionModel]);
+    fetchData();
+  }, [auth, predictionModel]);
 
   const prediction_models = [
     {
@@ -52,6 +52,42 @@ const Suggestions = () => {
       value: "Katz",
     },
   ];
+
+  const getPredictSentense = (user) => {
+    let sentence = "";
+
+    if (user.followers?.length > 0) {
+      sentence = "Có ";
+
+      sentence += user.followers[0].username;
+
+      if (user.followers.length > 1) {
+        sentence += ", " + user.followers[1].username;
+      }
+
+      if (user.followers.length > 2) {
+        sentence += " và " + (user.followers.length - 2) + " người khác ";
+      }
+
+      sentence += " theo dõi";
+    } else if (user.following?.length > 0) {
+      sentence = "Đang theo dõi ";
+
+      sentence += user.following[0].username;
+
+      if (user.following.length > 1) {
+        sentence += ", " + user.following[1].username;
+      }
+
+      if (user.following.length > 2) {
+        sentence += " và " + (user.following.length - 2) + " người khác ";
+      }
+    } else {
+      return "Gợi ý cho bạn";
+    }
+
+    return sentence.length > 40 ? sentence.slice(0, 40) + "..." : sentence;
+  };
 
   return (
     <div className="col-4 suggestions">
@@ -102,16 +138,27 @@ const Suggestions = () => {
           </div>
         )}
       </div>
-      {loading && <Loading />}
-      <div className="suggest-list">
-        {users &&
-          users.map((user, index) => (
-            <UserCard key={index} user={user}>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div className="suggest-list">
+          {users?.map((user, index) => (
+            <UserCard
+              key={user._id}
+              user={{
+                _id: user._id,
+                username: user.username,
+                fullname: getPredictSentense(user),
+                avatar: user.avatar,
+              }}
+            >
               {" "}
               <FollowButton user={user} />
             </UserCard>
           ))}
-      </div>
+        </div>
+      )}
+
       <small
         style={{
           display: "block",

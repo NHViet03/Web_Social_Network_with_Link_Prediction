@@ -2,6 +2,7 @@ const Posts = require("../models/postModel");
 const Comments = require("../models/commentModel");
 const Users = require("../models/userModel");
 const Reports = require("../models/reportModel");
+const Hashtags = require("../models/hashtagsModel");
 
 class APIfeatures {
   constructor(query, queryString) {
@@ -18,7 +19,7 @@ class APIfeatures {
 const postCtrl = {
   createPost: async (req, res) => {
     try {
-      const { content, images } = req.body;
+      const { content, images, hashtags, tags, location } = req.body;
       if (images.length === 0) {
         return res
           .status(400)
@@ -29,12 +30,36 @@ const postCtrl = {
         content,
         images,
         user: req.user._id,
+        hashtags,
+        tags,
+        location,
       });
 
       await newPost.save();
+
+      const resonsePost = await Posts.findById(newPost._id).populate(
+        "tags",
+        "username"
+      );
+
+      // Insert hashtags into Hashtags collection if not exists
+      for (let hashtag of hashtags) {
+        const checkExists = await Hashtags.exists({
+          name: hashtag,
+        });
+
+        if (!checkExists) {
+          const newHashtag = new Hashtags({
+            name: hashtag,
+          });
+
+          newHashtag.save();
+        }
+      }
+
       return res.json({
         msg: "Đã tạo bài viết thành công",
-        post: newPost._doc,
+        post: resonsePost,
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -54,11 +79,35 @@ const postCtrl = {
         .populate("user", "avatar username fullname")
         .populate({
           path: "comments",
-          populate: {
-            path: "user",
-            select: "avatar username fullname",
-          },
-        });
+          populate: [
+            {
+              path: "user",
+              select: "avatar username fullname",
+            },
+          ],
+        })
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of posts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
 
       return res.json({
         posts,
@@ -78,7 +127,26 @@ const postCtrl = {
             path: "user",
             select: "avatar username fullname",
           },
-        });
+        })
+        .populate("tags", "avatar username")
+        .lean();
+
+      const parentComments = post.comments.filter(
+        (comment) =>
+          comment.replyCommentId == null || comment.replyCommentId === undefined
+      );
+
+      for (const comment of parentComments) {
+        const replies = post.comments.filter(
+          (reply) =>
+            reply.replyCommentId &&
+            reply.replyCommentId.toString() === comment._id.toString()
+        );
+
+        comment["replies"] = replies;
+      }
+
+      post.comments = parentComments;
 
       return res.json({
         post,
@@ -89,13 +157,31 @@ const postCtrl = {
   },
   updatePost: async (req, res) => {
     try {
-      const { content } = req.body;
-      const post = await Posts.findOneAndUpdate(
+      const { content, hashtags, tags, location } = req.body;
+
+      await Posts.findOneAndUpdate(
         { _id: req.params.id },
         {
           content,
+          hashtags,
+          tags,
+          location,
         }
       );
+
+      for (let hashtag of hashtags) {
+        const checkExists = await Hashtags.exists({
+          name: hashtag,
+        });
+
+        if (!checkExists) {
+          const newHashtag = new Hashtags({
+            name: hashtag,
+          });
+
+          newHashtag.save();
+        }
+      }
 
       return res.json({
         msg: "Cập nhật thành công",
@@ -192,7 +278,71 @@ const postCtrl = {
             path: "user",
             select: "avatar username fullname",
           },
-        });
+        })
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of posts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
+
+      return res.json({
+        posts,
+        result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  getExplorePostsByLocation: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const features = new APIfeatures(
+        Posts.find({
+          "location.id": id,
+        }),
+        req.query
+      ).paginating();
+
+      const posts = await features.query.sort("-createdAt");
+
+      return res.json({
+        posts,
+        result: posts.length,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+  getExplorePostsByHashtag: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const features = new APIfeatures(
+        Posts.find({
+          hashtags: id,
+        }),
+        req.query
+      ).paginating();
+
+      const posts = await features.query.sort("-createdAt");
 
       return res.json({
         posts,
@@ -264,7 +414,31 @@ const postCtrl = {
         }),
         req.query
       ).paginating();
-      const posts = await features.query.sort("-createdAt");
+      const posts = await features.query
+        .sort("-createdAt")
+        .populate("tags", "avatar username")
+        .lean();
+
+      for (const post of posts) {
+        const parentComments = post.comments.filter(
+          (comment) =>
+            comment.replyCommentId == null ||
+            comment.replyCommentId === undefined
+        );
+
+        for (const comment of parentComments) {
+          const replies = post.comments.filter(
+            (reply) =>
+              reply.replyCommentId &&
+              reply.replyCommentId.toString() === comment._id.toString()
+          );
+
+          comment["replies"] = replies;
+        }
+
+        post.comments = parentComments;
+      }
+
       res.json({
         posts,
         result: posts.length,
@@ -294,21 +468,44 @@ const postCtrl = {
   },
   getSavePosts: async (req, res) => {
     try {
-      const features = new APIfeatures(Posts.find({
-        _id: {$in : req.user.saved}
-      }), req.query).paginating()
+      const features = new APIfeatures(
+        Posts.find({
+          _id: { $in: req.user.saved },
+        }),
+        req.query
+      ).paginating();
 
-      const savePosts = await features.query.sort("-createdAt")
+      const savePosts = await features.query.sort("-createdAt");
 
       res.json({
         savePosts,
-        result: savePosts.length
-      })
-
+        result: savePosts.length,
+      });
     } catch (err) {
-      return res.status(500).json({msg: err.message})
+      return res.status(500).json({ msg: err.message });
     }
-  }
+  },
+  getTaggedPosts: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const features = new APIfeatures(
+        Posts.find({
+          tags: id,
+        }),
+        req.query
+      ).paginating();
+
+      const taggedPosts = await features.query.sort("-createdAt");
+
+      res.json({
+        data: taggedPosts,
+        result: taggedPosts.length,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
 };
 
 module.exports = postCtrl;

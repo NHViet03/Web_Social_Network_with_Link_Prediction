@@ -33,20 +33,86 @@ const CardHeader = ({ user, post, follow }) => {
     });
   };
 
+  const generateTags = () => {
+    if (!post.tags || post.tags.length === 0) return null;
+
+    const tags = [<span> cùng với </span>];
+
+    for (let i = 0; i < Math.min(post.tags.length, 3); i++) {
+      const tag = post.tags[i];
+
+      if (i === post.tags.length - 1 && i > 0) {
+        tags.push(<span> và </span>);
+      }
+
+      tags.push(
+        <Link
+          to={`/profile/${tag._id}`}
+          onClick={() =>
+            dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false })
+          }
+          className="card_header-content-username"
+        >
+          {tag.username}
+        </Link>
+      );
+
+      if (i < post.tags.length - 2 && i < 2) {
+        tags.push(<span>, </span>);
+      }
+    }
+
+    if (post.tags.length > 3) {
+      tags.push(
+        <Link to={"/"} className="card_header-content-username">
+          {` và ${post.tags.length - 3} người khác`}
+        </Link>
+      );
+    }
+
+    return tags;
+  };
+
   return (
     <div className="d-flex justify-content-between align-items-center card_header">
-      <Link
-        className="d-flex align-items-center card_header-content"
-        to={`/profile/${user._id}`}
-        onClick={() =>
-          dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false })
-        }
-      >
+      <div className="d-flex align-items-center card_header-content">
         <Avatar src={user.avatar} size="avatar-sm" />
-        <h6 className="my-0">{user.username}</h6>
-        <span className="material-icons">fiber_manual_record</span>
-        <small>{moment(post.createdAt).fromNow()}</small>
-      </Link>
+        <div
+          style={{
+            marginLeft: "12px",
+          }}
+        >
+          <div className="d-flex align-items-center gap-1">
+            <div
+              style={{
+                maxWidth: "330px",
+              }}
+            >
+              <Link
+                to={`/profile/${user._id}`}
+                onClick={() =>
+                  dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false })
+                }
+                className="card_header-content-username"
+              >
+                {user.username}
+              </Link>
+              {post.tags && post.tags.length > 0 && generateTags()}
+            </div>
+            <span className="material-icons">fiber_manual_record</span>
+            <small>{moment(post.createdAt).fromNow()}</small>
+          </div>
+          {post.location?.name && (
+            <Link
+              className="card_header-content-location"
+              to={`/explore/locations/${post.location.id}/${post.location.name}`}
+            >
+              {post.location.name}
+            </Link>
+          )}
+        </div>
+      </div>
+
       <div className="d-flex align-items-center gap-3">
         {follow && auth.user._id !== user._id && <FollowButton user={user} />}
         <div className="nav-item dropdown">

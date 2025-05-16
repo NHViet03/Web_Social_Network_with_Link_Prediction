@@ -1,8 +1,5 @@
 import React, { useMemo } from "react";
-import FilerobotImageEditor, {
-  TABS,
-  TOOLS,
-} from "react-filerobot-image-editor";
+import FilerobotImageEditor, { TABS } from "react-filerobot-image-editor";
 import { convertBase64ToFile } from "../../utils/imageUpload";
 
 const EditImages = ({ post, setPost, addStep, setAddStep }) => {
@@ -11,10 +8,10 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
   }, [post.images]);
 
   const handleNextStep = () => {
-    try {
-      const saveEditedImages = [];
+    const saveEditedImages = [];
 
-      for (let editorRef of editorRefs) {
+    for (const editorRef of editorRefs) {
+      try {
         if (editorRef?.current) {
           const imageData = editorRef?.current()?.imageData;
           const designState = editorRef?.current()?.designState;
@@ -38,19 +35,22 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
 
             saveEditedImages.push(file);
           }
+        } else {
+          saveEditedImages.push(null);
         }
+      } catch (error) {
+        console.error("Error saving image:", error);
+        saveEditedImages.push(null);
       }
-
-      setPost((prev) => ({
-        ...prev,
-        images: prev.images.map((img, id) => {
-          return saveEditedImages[id] ? saveEditedImages[id] : img;
-        }),
-      }));
-      setAddStep((pre) => pre + 1);
-    } catch (error) {
-      console.log(error);
     }
+
+    setPost((prev) => ({
+      ...prev,
+      images: prev.images.map((img, id) => {
+        return saveEditedImages[id] ? saveEditedImages[id] : img;
+      }),
+    }));
+    setAddStep((pre) => pre + 1);
   };
 
   return (
@@ -83,25 +83,29 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
         className="carousel slide carousel-fade flex-fill show_images carousel-edit"
       >
         <div className="carousel-inner">
-          {post.images.map((img, index) => (
-            <div
-              key={index}
-              className={`carousel-item h-100 ${index === 0 ? "active" : ""}`}
-            >
-              <FilerobotImageEditor
-                source={img.url}
-                removeSaveButton={true}
-                tabsIds={[TABS.FILTERS, TABS.FINETUNE]}
-                defaultTabId={TABS.FILTERS}
-                defaultSavedImageQuality={1}
-                savingPixelRatio={window.devicePixelRatio * 1.5}
-                resetOnImageSourceChange={true}
-                previewPixelRatio={window.devicePixelRatio * 1.5}
-                useBackendTranslations={false}
-                getCurrentImgDataFnRef={editorRefs[index]}
-              />
-            </div>
-          ))}
+          {post.images.map((img, index) =>
+            img.type.includes("video") ? (
+              <></>
+            ) : (
+              <div
+                key={index}
+                className={`carousel-item h-100 ${index === 0 ? "active" : ""}`}
+              >
+                <FilerobotImageEditor
+                  source={img.url}
+                  removeSaveButton={true}
+                  tabsIds={[TABS.FILTERS, TABS.FINETUNE]}
+                  defaultTabId={TABS.FILTERS}
+                  defaultSavedImageQuality={1}
+                  savingPixelRatio={window.devicePixelRatio * 1.5}
+                  resetOnImageSourceChange={true}
+                  previewPixelRatio={window.devicePixelRatio * 1.5}
+                  useBackendTranslations={false}
+                  getCurrentImgDataFnRef={editorRefs[index]}
+                />
+              </div>
+            )
+          )}
         </div>
         <button
           className="carousel-control-prev"

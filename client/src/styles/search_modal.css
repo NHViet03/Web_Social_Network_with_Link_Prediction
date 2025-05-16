@@ -52,6 +52,7 @@
     align-items: center;
     justify-content: space-between;
     padding-left: 24px;
+    
 }
 .search_modal .search_result_card:hover{
     background-color: rgba(0, 0, 0, 0.05);

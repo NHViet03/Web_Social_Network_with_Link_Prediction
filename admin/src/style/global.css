@@ -40,7 +40,7 @@ body {
 
 .main_container {
   min-height: 100vh;
-  margin-left: 250px;
+  margin-left: 280px;
   background-color: rgb(240 240 240);
   padding: 24px;
   transition: margin-left 0.3s ease;

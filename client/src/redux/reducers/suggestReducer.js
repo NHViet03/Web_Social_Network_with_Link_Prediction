@@ -1,7 +1,8 @@
 import { SUGGEST_TYPES } from "../actions/suggestAction";
 
 const initialState = {
-  users:[]
+  users:[],
+  model: ""
 };
 
 const suggestReducer = (state = initialState, action) => {
@@ -9,7 +10,8 @@ const suggestReducer = (state = initialState, action) => {
     case SUGGEST_TYPES.GET_USERS:
       return {
         ...state,
-        users:action.payload
+        users:action.payload.users,
+        model:action.payload.model
       };
     default:
       return state;
