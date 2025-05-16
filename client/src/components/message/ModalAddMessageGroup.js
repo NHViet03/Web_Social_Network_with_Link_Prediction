@@ -21,7 +21,7 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
     try {
       setLoad(true);
       const res = await getDataAPI(
-        `search?username=${search}&mesagechatbox=${auth.user._id}`,
+        `searchmessage?username=${search}&mesagechatbox=${auth.user._id}`,
         auth.token
       );
       setSearchUser(res.data.users);

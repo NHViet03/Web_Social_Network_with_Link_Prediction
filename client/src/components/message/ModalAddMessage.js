@@ -18,7 +18,7 @@ export const ModalAddMessage = ({ setOpenModal }) => {
    if (!search) return setSearchUser([]);
    try {
     setLoad(true);
-    const res = await getDataAPI(`search?username=${search}&mesagechatbox=${auth.user._id}`, auth.token);
+    const res = await getDataAPI(`searchmessage?username=${search}&mesagechatbox=${auth.user._id}`, auth.token);
     setSearchUser(res.data.users);
     setLoad(false);
   } catch (err) {

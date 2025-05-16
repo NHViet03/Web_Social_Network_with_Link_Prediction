@@ -2,6 +2,7 @@ const router = require("express").Router();
 const userCtrl = require("../controllers/userCtrl");
 const auth = require("../middleware/auth");
 
+router.get("/searchmessage", auth, userCtrl.searchMessage);
 router.get("/search", userCtrl.searchUser);
 router.get("/user/:id", auth, userCtrl.getUser);
 router.patch("/user", auth, userCtrl.updateUser);
