@@ -17,6 +17,7 @@ export const MESS_TYPES ={
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
+  // Cần chỉnh sửa lại
    dispatch({
        type: MESS_TYPES.ADD_MESSAGE,
        payload: msg
@@ -25,6 +26,7 @@ export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
    
    try {
     const res = await postDataAPI('message', msg, auth.token);
+    // Cần chỉnh sửa lại
     socket.emit('addMessage', {...msg, user: {_id, avatar, fullname, username}})
    } catch (err) {
      dispatch({
@@ -60,7 +62,7 @@ export const getConversations =
             text: item.text,
             media: item.media,
 
-            // hard code
+            // hard code ( cần chỉnh sửa lại )
             recipientAccept: true,
             isRead: true,
             isGroup: item.isGroup,
