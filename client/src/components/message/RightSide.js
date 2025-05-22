@@ -13,6 +13,7 @@ import {
   addMessage,
   getMessages,
   acceptConversation,
+  MESS_TYPES,
 } from "../../redux/actions/messageAction";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -38,9 +39,9 @@ const RightSide = () => {
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
   const [strangerModal, setStrangerModal] = useState(true);
+  const [isListenCLoseMsgDisplay, setIsListenCLoseMsgDisplay] = useState(false);
 
-
-   // UseEffect
+  // UseEffect
   // Lấy tin nhắn của đoạn hội thoại hiện tại từ redux và hiển thị
   useEffect(() => {
     const newData = message?.data?.find((item) => item._id === id);
@@ -178,12 +179,18 @@ const RightSide = () => {
       recipient: listId,
       text: text,
       media: newArr,
+      replymessage: message.replyMessage ? message.replyMessage._id : null,
       CreatedAt: new Date().toISOString(),
     };
     dispatch(addMessage({ msg, auth, socket }));
+
     setLoadMedia(false);
     refDisplay.current &&
       refDisplay.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    dispatch({
+      type: MESS_TYPES.REPLY_MESSAGE,
+      payload: null,
+    });
   };
   const handleEmojiSelect = (emoji) => {
     setText(text + emoji.native);
@@ -304,7 +311,10 @@ const RightSide = () => {
         )}
       </div>
 
-      <div className="conversation-message_chat-container">
+      <div
+        className="conversation-message_chat-container"
+        onClick={() => setIsListenCLoseMsgDisplay(!isListenCLoseMsgDisplay)}
+      >
         {call && <CallModal />}
         <div className="conversation-message_chat-display" ref={refDisplay}>
           <button
@@ -318,22 +328,30 @@ const RightSide = () => {
           {data1.map((msg, index) => (
             <div key={index}>
               {msg.sender._id !== auth.user._id && (
-                <div className="conversation-message_chat_row other_message">
+                <div
+                  className="conversation-message_chat_row other_message"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <MsgDisplay
                     user={user}
                     msg={msg}
                     theme={theme}
                     yourmessage={false}
+                    isListenCLoseMsgDisplay={isListenCLoseMsgDisplay}
                   />
                 </div>
               )}
               {msg.sender._id === auth.user._id && (
-                <div className="conversation-message_chat_row your-message">
+                <div
+                  className="conversation-message_chat_row your-message"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <MsgDisplay
                     user={auth.user}
                     msg={msg}
                     theme={theme}
                     yourmessage={true}
+                    isListenCLoseMsgDisplay={isListenCLoseMsgDisplay}
                   />
                 </div>
               )}
@@ -358,6 +376,38 @@ const RightSide = () => {
       </div>
 
       <form className="conversation-message_chat-input" onSubmit={handleSubmit}>
+        {message.replyMessage && (
+          <div
+            style={{
+              position: "absolute",
+              top: "0",
+              left: "0",
+              right: "0",
+              zIndex: "10",
+              backgroundColor: "#D97B5C",
+              color: "white",
+              padding: "10px",
+              borderRadius: "10px",
+              transform: "translateY(-50px)",
+              margin: "0 10px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>{message.replyMessage.text}</div>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                dispatch({
+                  type: MESS_TYPES.REPLY_MESSAGE,
+                  payload: null,
+                });
+              }}
+            >
+              x
+            </div>
+          </div>
+        )}
         <input
           type="text"
           value={text}

@@ -17,7 +17,7 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const { sender, recipient, text, media, call } = req.body;
+      const { sender, recipient, text, media, call, replymessage } = req.body;
       let newText = text;
       if (text == "" && media.length > 0) {
         newText = "Đã gửi một phương tiện";
@@ -32,6 +32,7 @@ const messageCtrl = {
 
       if (!recipient || (!newText.trim() && media.length === 0 && !call)) return;
 
+      // Tìm kiếm conversation với recipients là một mảng chứa sender và recipient
       let conversation = await Conversations.findOne({
         recipients: { $all: recipientList, $size: recipientList.length },
       });
@@ -43,6 +44,11 @@ const messageCtrl = {
           media,
           call,
           isGroup: recipient.length > 1 ? true : false,
+          // for each recipient in recipientList, set isVisible = true
+          isVisible: recipientList.reduce((acc, recipient) => {
+            acc[recipient] = true;
+            return acc;
+          }, {}),
           isRead: {
             [sender]: true,
             [recipient]: false,
@@ -52,6 +58,10 @@ const messageCtrl = {
         conversation.text = newText;
         conversation.media = media;
         conversation.call = call;
+        conversation.isVisible = recipientList.reduce((acc, recipient) => {
+            acc[recipient] = true;
+            return acc;
+          }, {}),
         conversation.isRead = {
           [sender]: true,
           [recipient]: false,
@@ -102,7 +112,12 @@ const messageCtrl = {
         call,
         recipients: recipients,
         text: newText,
+        replymessage: replymessage,
         media,
+        isVisible: recipientList.reduce((acc, recipient) => {
+            acc[recipient] = true;
+            return acc;
+          }, {}),
       });
 
       await newMessage.save();
@@ -245,7 +260,15 @@ const messageCtrl = {
         .sort("-createdAt")
         .populate("recipients", "avatar username fullname")
         .populate("sender", "avatar username fullname")
-        .populate("conversation", "isGroup");
+        .populate("conversation", "isGroup")
+         .populate({
+              path: "replymessage",
+              select: "text media sender",
+              populate: {
+                path: "sender",
+                select: "fullname username"
+              }
+        });
 
       res.json({
         messages,
@@ -263,11 +286,20 @@ const messageCtrl = {
       listID.push(req.user._id.toString());
     }
     try {
-      const newConversation = await Conversations.findOneAndDelete({
+      const newConversation = await Conversations.findOne({
         recipients: { $all: listID, $size: listID.length },
       });
 
-      await Messages.deleteMany({ conversation: newConversation._id });
+      newConversation.isVisible.set(req.user._id.toString(), false);
+      await newConversation.save();
+
+      // update many messages with conversation = newConversation._id
+    await Messages.updateMany(
+      { conversation: newConversation._id },
+      { $set: { [`isVisible.${req.user._id}`]: false } }
+    );
+
+      
 
       res.json({ msg: "Deleted Success!" });
     } catch (err) {

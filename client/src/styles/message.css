@@ -412,6 +412,7 @@
     align-items: center;
     padding: 10px;
     border-top: 1px solid #ddd;
+    position: relative;
 }
 .conversation-message_chat-input-btn{
     display: flex;

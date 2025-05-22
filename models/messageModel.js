@@ -4,6 +4,12 @@ const messageSchema = new mongoose.Schema({
     conversation: { type: mongoose.Types.ObjectId, ref: 'conversation' },
     sender: { type: mongoose.Types.ObjectId, ref: 'user' },
     recipients: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
+    replymessage: { type: mongoose.Types.ObjectId, ref: 'message' },
+    isVisible: {
+        type: Map,
+        of: Boolean,
+        default: {}
+      },
     text: String,
     media: Array,
     call: Object

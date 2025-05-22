@@ -5,6 +5,11 @@ const conversationSchema = new mongoose.Schema({
     text: String,
     media: Array,
     call: Object,
+    isVisible: {
+        type: Map,
+        of: Boolean,
+        default: {}
+      },
     recipientAccept: {
         type: Map,
         of: Boolean,

@@ -14,6 +14,7 @@ export const MESS_TYPES ={
     NUMBERNEWMESSAGE: 'NUMBERNEWMESSAGE',
     READMESSAGE: 'READMESSAGE',
     SOCKET_ISREADMESSAGE: 'SOCKET_ISREADMESSAGE',
+    REPLY_MESSAGE: 'REPLY_MESSAGE',
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
@@ -51,9 +52,9 @@ export const getConversations =
       let newArr = [];
       res.data.conversations.forEach((item) => {
         if (item.isGroup) {
-        
           const id = item.recipients.map((cv) => cv._id).join(".");
           const nameGroup = item.recipients.map((cv) => cv.username).join(", ")
+          const isVisible = item.isVisible[auth.user._id];
           newArr.push({
             avatar: imageGroupDefaultLink,
             _id: id,
@@ -61,21 +62,24 @@ export const getConversations =
             username: nameGroup,
             text: item.text,
             media: item.media,
-
+            isVisible: isVisible,
             // hard code ( cần chỉnh sửa lại )
             recipientAccept: true,
             isRead: true,
             isGroup: item.isGroup,
           });
         } else {
+        
+          const isVisible = item.isVisible[auth.user._id];
           item.recipients.forEach((cv) => {
             if (cv._id !== auth.user._id) {
               newArr.push({
                 ...cv,
                 text: item.text,
                 media: item.media,
-
+                isVisible: isVisible,
                 // hard code
+                
                 recipientAccept: true,
                 isRead: true,
                 isGroup: item.isGroup,
@@ -84,7 +88,8 @@ export const getConversations =
           });
         }
       });
-
+      // filter những cuộc hội thoại không có tin nhắn (isVisible = false)
+      newArr = newArr.filter((item) => item.isVisible === true);
       dispatch({
         type: MESS_TYPES.GET_CONVERSATIONS,
         payload: { newArr, result: res.data.result },
@@ -117,8 +122,9 @@ export const acceptConversation = ({auth, id}) => async (dispatch) => {
 export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
     try {
         const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
-        console.log(res.data)
-        const newData = {...res.data, messages: res.data.messages.reverse()}
+        // filter những res.data.messages với isVisible[auth.user._id] = true
+        const newArr = res.data.messages.filter((item) => item.isVisible[auth.user._id] === true).reverse()
+        const newData = {...res.data, messages: newArr}
         dispatch({
             type: MESS_TYPES.GET_MESSAGES,
             payload: {...newData , _id: id, page}
