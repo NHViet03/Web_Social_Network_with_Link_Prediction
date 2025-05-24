@@ -200,7 +200,7 @@ const RightSide = () => {
         _id: Math.random().toString(36).substring(2, 15),
         conversation: {
           _id: "",
-          isGroup: false,
+          isGroup: null, // true of false
         },
         sender: {
           _id: auth.user._id,

@@ -19,17 +19,15 @@ export const MESS_TYPES ={
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
-  // Cần chỉnh sửa lại
+
    dispatch({
        type: MESS_TYPES.ADD_MESSAGE,
        payload: msg
    })
-   const { _id, avatar, fullname, username } = auth.user
    
    try {
     const res = await postDataAPI('message', msg, auth.token);
-    // Cần chỉnh sửa lại
-    socket.emit('addMessage', {...msg, user: {_id, avatar, fullname, username}})
+      socket.emit('addMessage', {...msg})
    } catch (err) {
      dispatch({
          type: GLOBAL_TYPES.ALERT,

@@ -24,52 +24,83 @@ const messageReducer = (state = initialState, action) => {
         };
       }
       return state;
-    case MESS_TYPES.ADD_MESSAGE:
+    case MESS_TYPES.ADD_MESSAGE: {
+      // Cập nhật mảng data
+      const updatedData = state.data.map((item) => {
+        let itemIDs = item._id.split(".");
+        if (itemIDs.length === 1 && itemIDs[0] !== action.payload.sender._id) {
+          itemIDs.push(action.payload.sender._id);
+        } else if (itemIDs.length === 1 && itemIDs[0] === action.payload.sender._id)
+        {
+            itemIDs = action.payload.recipients;
+        }
+
+        const recipientsMatch = arraysEqualIgnoreOrder(
+          itemIDs,
+          action.payload.recipients
+        );
+
+        if (recipientsMatch) {
+          return {
+            ...item,
+            messages: [...item.messages, action.payload],
+            result: item.result + 1,
+          };
+        }
+
+        return item;
+      });
+
+      // Cập nhật từng user
+      const updatedUsers = state.users.map((user) => {
+        let userIDs = user._id.split(".");
+         if (userIDs.length === 1 && userIDs[0] !== action.payload.sender._id) {
+           userIDs.push(action.payload.sender._id);
+         } else if (
+           userIDs.length === 1 &&
+           userIDs[0] === action.payload.sender._id
+         ) {
+           userIDs =  action.payload.recipients;
+         }
+
+        const recipientsMatch = arraysEqualIgnoreOrder(
+          userIDs,
+          action.payload.recipients
+        );
+
+        if (recipientsMatch) {
+          return {
+            ...user,
+            text: action.payload.text,
+            media: action.payload.media,
+          };
+        }
+
+        return user;
+      });
+
+      // Tìm user vừa được cập nhật
+      const matchedUser = updatedUsers.find((user) => {
+        const userIDs = user._id.split(".");
+        if (userIDs.length === 1) {
+          userIDs.push(action.payload.sender._id);
+        }
+
+        return arraysEqualIgnoreOrder(userIDs, action.payload.recipients);
+      });
+
+      // Đưa user đó lên đầu
+      const reorderedUsers = matchedUser
+        ? [matchedUser, ...updatedUsers.filter((u) => u !== matchedUser)]
+        : updatedUsers;
+
       return {
         ...state,
-        data: state.data.map((item) => {
-          //item._id (id1.id2) => split('.')
-          const itemIDs = item._id.split(".");
-          // nếu itemIDs chỉ có 1 phần tử thì push thêm action.payload.sender._id
-          if (itemIDs.length === 1) {
-            itemIDs.push(action.payload.sender._id);
-          }
-          // so sánh itemIDs với action.payload.recipients : có giống nhau theo đúng các phần tử không
-          // nếu giống nhau thì push action.payload vào item.messages
-          // nếu không giống nhau thì push action.payload vào item.messages
-          const recipientsMatch = arraysEqualIgnoreOrder(
-            itemIDs,
-            action.payload.recipients
-          );
-          if (recipientsMatch) {
-            return {
-              ...item,
-              messages: [...item.messages, action.payload],
-              result: item.result + 1,
-            };
-          }
-          return item;
-        }),
-        users: state.users.map((user) => {
-          const userIDs = user._id.split(".");
-          // nếu itemIDs chỉ có 1 phần tử thì push thêm action.payload.sender._id
-          if (userIDs.length === 1) {
-            userIDs.push(action.payload.sender._id);
-          }
-          const recipientsMatch = arraysEqualIgnoreOrder(
-            userIDs,
-            action.payload.recipients
-          );
-          if (recipientsMatch) {
-            return {
-              ...user,
-              text: action.payload.text,
-              media: action.payload.media,
-            };
-          }
-          return user;
-        }),
+        data: updatedData,
+        users: reorderedUsers,
       };
+    }
+
     case MESS_TYPES.GET_CONVERSATIONS:
       return {
         ...state,

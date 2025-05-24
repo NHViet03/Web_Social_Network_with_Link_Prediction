@@ -1,3 +1,8 @@
+const Conversations = require('./models/conversationModel');
+const Messages = require('./models/messageModel');
+
+
+
 let users = [];
 
 const EditData = (data, id, call) => {
@@ -53,11 +58,25 @@ socket.on('disconnect', () => {
     });
   });
   // Message
-  socket.on("addMessage", msg =>{
-    const user = users.find(user => user.id === msg.recipient)
+  socket.on("addMessage", async (msg) => {
+  
+    //recepientList = msg.recipients filter msg.user._id
+    const recepientList = msg.recipients.filter(item => item !== msg.sender._id)
+    // usersListRecepient = là những user trong users có id trong recepientList
+    const usersListRecepient = users.filter(user => recepientList.find(item => item === user.id))
 
-    //find User from msg.recipient
-    user && socket.to(`${user.socketId}`).emit("addMessageToClient", msg)
+    let conversationExits = await Conversations.findOne({
+      recipients: { $all: msg.recipients, $size: msg.recipients.length },
+    });
+    msg = {
+      ...msg,
+      conversation: conversationExits
+    }
+    // foeach user trong usersListRecepient
+    usersListRecepient.length > 0 && usersListRecepient.forEach(user => {
+      // emit addMessageToClient cho user đó
+      socket.to(`${user.socketId}`).emit("addMessageToClient", msg)
+    })
   })
  
  
