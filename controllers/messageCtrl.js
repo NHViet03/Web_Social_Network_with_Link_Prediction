@@ -17,20 +17,20 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const { sender, recipient, text, media, call, replymessage } = req.body;
+      const { sender, recipients, text, media, call, replymessage } = req.body;
+      const senderId = sender._id;
       let newText = text;
       if (text == "" && media.length > 0) {
         newText = "Đã gửi một phương tiện";
       }
-      // recipientList = recipient
-     let recipientList = [...recipient];
+      // recipientList : danh sách người nhận, bao gồm cả người gửi
+      // senderId: người gửi tin nhắn
+      // recipients: mảng người nhận tin nhắn ( bao gồm cả người gửi )
+      // recipientsNosender: danh sách người nhận không bao gồm người gửi
+     const  recipientList = [...recipients];
+     const recipientsNosender = recipientList.filter((item) => item !== senderId);
 
-     //if recipient[] has no req.user._id.toString() push(req.user._id.toString())
-      if (!recipientList.includes(req.user._id.toString())) {
-        recipientList.push(req.user._id.toString());
-      } 
-
-      if (!recipient || (!newText.trim() && media.length === 0 && !call)) return;
+      if (!recipientList || (!newText.trim() && media.length === 0 && !call)) return;
 
       // Tìm kiếm conversation với recipients là một mảng chứa sender và recipient
       let conversation = await Conversations.findOne({
@@ -43,16 +43,28 @@ const messageCtrl = {
           text : newText,
           media,
           call,
-          isGroup: recipient.length > 1 ? true : false,
-          // for each recipient in recipientList, set isVisible = true
+          isGroup: recipientList.length > 1 ? true : false,
+          // isVisible: một mảng key-value với key là recipient 
+          // và value là true (hiện thị cuộc trò chuyện với người nhận) ( thường là chức năng xóa đoạn chat)
           isVisible: recipientList.reduce((acc, recipient) => {
             acc[recipient] = true;
             return acc;
           }, {}),
-          isRead: {
-            [sender]: true,
-            [recipient]: false,
-          },
+          // isRead: một mảng key-value với key là recipient
+          // và value là false (chưa đọc) với người gửi là true
+          // tính năng: đánh dấu cuộc trò chuyện là đã đọc với người gửi, chưa đọc với người nhận
+          isRead: recipientList.reduce((acc, recipient) => {
+            acc[recipient] = true;
+            return acc;
+          }, {}),
+          // newConversation.recipientAccept: là mảng key-value với key là recipient
+          // và value là true (đã chấp nhận cuộc trò chuyện) với người gửi là true
+          // tính năng: ở hộp tin nhắn chờ ( những người nào chưa theo dõi nhau sẽ ở hộp tin nhắn chờ ) >< tương ứng với recipientAccept[recipient] = false
+         // Đang hard code: tất cả đều là true => đều ở tin nhắn chính
+         recipientAccept: recipientList.reduce((acc, recipient) => {
+            acc[recipient] = true;
+            return acc;
+          }, {}),
         });
       } else {
         conversation.text = newText;
@@ -62,57 +74,26 @@ const messageCtrl = {
             acc[recipient] = true;
             return acc;
           }, {}),
-        conversation.isRead = {
-          [sender]: true,
-          [recipient]: false,
-        };
+        conversation.recipientAccept = recipientList.reduce((acc, recipient) => {
+          acc[recipient] = true;
+          return acc;
+        }, {}),
+        conversation.isRead = recipientList.reduce((acc, recipient) => {
+          acc[recipient] = true;
+          return acc;
+        }, {});
         await conversation.save();
       }
 
-
-      // kiểm tra rằng newConversation.recipientAccept với các key[sender, recipient] có là true hay không
-      if (conversation.recipientAccept) {
-        const allAccepted =
-          conversation.recipientAccept.get(sender) === true &&
-          conversation.recipientAccept.get(recipient) === true;
-        if (!allAccepted) {
-          //find User recipient
-          const recipientUser = await User.findOne({ _id: recipient });
-
-          const isSenderInFollowing = recipientUser.following.includes(sender);
-
-          // Cập nhật recipientAccept map
-
-          const AcceptedRecepiant =
-            conversation.recipientAccept.get(recipient) === true;
-
-          let recipientAcceptMap;
-          if (AcceptedRecepiant) {
-            recipientAcceptMap = {
-              [sender]: true,
-              [recipient]: true,
-            };
-          } else {
-            recipientAcceptMap = {
-              [sender]: true,
-              [recipient]: isSenderInFollowing,
-            };
-          }
-          await Conversations.updateOne(
-            { _id: conversation._id },
-            { $set: { recipientAccept: recipientAcceptMap } }
-          );
-        }
-      }
-
-      const recipients = recipientList.filter((item) => item !== sender);
       const newMessage = new Messages({
         conversation: conversation._id,
-        sender,
+        sender: senderId,
         call,
-        recipients: recipients,
+        recipients: recipientsNosender,
         text: newText,
         replymessage: replymessage,
+        isRevoke: false,
+        isEdit: false,
         media,
         isVisible: recipientList.reduce((acc, recipient) => {
             acc[recipient] = true;
@@ -194,6 +175,35 @@ const messageCtrl = {
       await conversation.save();
 
       res.json({ msg: "Accepted Success!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  revokeMessage: async (req, res) => {
+    try {
+      const message = await Messages.findById(req.params.id);
+      if (!message) return res.status(400).json({ msg: "Not found!" });
+
+      message.isRevoke = true;
+      await message.save();
+
+      res.json({ msg: "Revoke Success!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  editMessage: async (req, res) => {
+    try {
+      const { textEdit } = req.body;
+      const message = await Messages.findById(req.params.id);
+      if (!message) return res.status(400).json({ msg: "Not found!" });
+
+      message.text = textEdit;
+      message.isEdit = true;
+
+      await message.save();
+
+      res.json({ msg: "Edit Success!" });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

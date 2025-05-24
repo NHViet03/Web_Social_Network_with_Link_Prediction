@@ -15,6 +15,7 @@ export const MESS_TYPES ={
     READMESSAGE: 'READMESSAGE',
     SOCKET_ISREADMESSAGE: 'SOCKET_ISREADMESSAGE',
     REPLY_MESSAGE: 'REPLY_MESSAGE',
+    EDIT_MESSAGE: 'EDIT_MESSAGE',
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
@@ -161,6 +162,44 @@ export const deleteConversation = ({auth, id}) => async (dispatch) => {
     })
     try {
         await deleteDataAPI(`conversation/${id}`, auth.token);
+    } catch (err) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {error: err.response.data.msg}
+        })
+    }
+}
+
+export const revokeMessage = ({auth, msg, socket}) => async (dispatch) => {
+ 
+    // dispatch({
+    //     type: MESS_TYPES.UPDATE_MESSAGES,
+    //     payload: {...msg, isRevoke: true}
+    // })
+    // socket.emit('revokeMessage', msg)
+    try {
+        await putDataAPI(`revokeMessage/${msg._id}`, {auth, msg}, auth.token);
+    } catch (err) {
+        dispatch({
+            type: GLOBAL_TYPES.ALERT,
+            payload: {error: err.response.data.msg}
+        })
+    }
+}
+
+export const editMessage = ({auth, msg, textEdit, socket}) => async (dispatch) => {
+    // dispatch({
+    //     type: MESS_TYPES.EDIT_MESSAGE,
+    //     payload: msg
+    // })
+    // socket.emit('editMessage', msg)
+    try {
+       dispatch({
+            type: MESS_TYPES.EDIT_MESSAGE,
+            payload: null
+        })
+        await putDataAPI(`editMessage/${msg._id}`, {textEdit}, auth.token);
+       
     } catch (err) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,

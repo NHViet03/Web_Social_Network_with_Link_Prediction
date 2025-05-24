@@ -5,6 +5,8 @@ const messageSchema = new mongoose.Schema({
     sender: { type: mongoose.Types.ObjectId, ref: 'user' },
     recipients: [{ type: mongoose.Types.ObjectId, ref: 'user' }],
     replymessage: { type: mongoose.Types.ObjectId, ref: 'message' },
+    isRevoke: { type: Boolean, default: false },
+    isEdit: { type: Boolean, default: false },
     isVisible: {
         type: Map,
         of: Boolean,
