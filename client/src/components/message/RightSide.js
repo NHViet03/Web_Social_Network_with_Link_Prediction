@@ -7,6 +7,7 @@ import MsgDisplay from "./MsgDisplay";
 import { imageShow, videoShow } from "../../utils/mediaShow";
 import { imageUpload, videoUpload } from "../../utils//imageUpload";
 import Swal from "sweetalert2";
+
 import {
   loadMoreMessages,
   deleteConversation,
@@ -20,6 +21,7 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CallModal from "./CallModal";
 import Loading from "../Loading";
+import { generateObjectId } from "../../utils/helper";
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -190,14 +192,14 @@ const RightSide = () => {
     if (!listId.includes(auth.user._id)) {
       listId.push(auth.user._id);
     }
+
       const msg = {
         recipients: [...listId],
         isRevoke: false,
         isEdit: false,
         isVisible: {},
         media: [...newArr],
-        // new Id
-        _id: Math.random().toString(36).substring(2, 15),
+        _id: generateObjectId(),
         conversation: {
           _id: "",
           isGroup: null, // true of false
@@ -209,10 +211,11 @@ const RightSide = () => {
           username: auth.user.username,
         },
         text: text,
-        replymessage: message.replyMessage ? message.replyMessage._id : null,
+        replymessage: message.replyMessage ? message.replyMessage : null,
         createAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
+      console.log("msg", msg);
     dispatch(addMessage({ msg, auth, socket }));
 
     setLoadMedia(false);

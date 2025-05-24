@@ -17,7 +17,7 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const { sender, recipients, text, media, call, replymessage } = req.body;
+      const { sender, recipients, _id, text, media, call, replymessage } = req.body;
       const senderId = sender._id;
       let newText = text;
       if (text == "" && media.length > 0) {
@@ -86,6 +86,7 @@ const messageCtrl = {
       }
 
       const newMessage = new Messages({
+        _id: _id,
         conversation: conversation._id,
         sender: senderId,
         call,
