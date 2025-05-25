@@ -29,7 +29,30 @@ export const ModalAddMessage = ({ setOpenModal }) => {
   }
   }
   const handleAddUser = (user) => {
-    dispatch({ type: MESS_TYPES.ADD_USER, payload: {...user, text: '', media: []} })
+    const userData =
+    {
+      avatar : user.avatar,
+      fullname: user.fullname,
+      username: user.username,
+      _id: user._id,
+      text: '',
+      media: [],
+      isVisible: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      recipientAccept: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      isRead: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      isGroup: false,
+      online: false,
+    }
+    dispatch({ type: MESS_TYPES.ADD_USER, payload: userData });
     navigate(`/message/${user._id}`)
     setOpenModal(false)
   }

@@ -6,7 +6,7 @@ import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
-import {imageGroupDefaultLink} from "../../utils/imageGroupDefaultLink";
+import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
 export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
   const navigate = useNavigate();
   const { auth, message } = useSelector((state) => state);
@@ -37,30 +37,80 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
     if (groupUsersChat.length === 0) return;
     if (groupUsersChat.length === 1) {
       const user = groupUsersChat[0];
+      const userData =
+
+    {
+      avatar : user.avatar,
+      fullname: user.fullname,
+      username: user.username,
+      _id: user._id,
+      text: '',
+      media: [],
+      isVisible: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      recipientAccept: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      isRead: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      isGroup: false,
+      online: false,
+    }
       dispatch({
         type: MESS_TYPES.ADD_USER,
-        payload: { ...user, text: "", media: [] },
+        payload: userData,
       });
       navigate(`/message/${user._id}`);
+      setOpenModalGroup(false);
       return;
     }
     if (groupUsersChat.length > 1) {
-      const userIds = groupUsersChat.map((user) => user._id).join(".");
-      const nameGroup = groupUsersChat.map((user) => user.fullname).join(", ") +", "+  auth.user.fullname;
+      let userIds = groupUsersChat.map((user) => user._id).join(".");
+      userIds += `.${auth.user._id}`;
+      const nameGroup =
+        groupUsersChat.map((user) => user.fullname).join(", ") +
+        ", " +
+        auth.user.fullname;
       const avatarGroup = imageGroupDefaultLink;
-      const media = [];
-      const text = "";
+      const userData = {
+        avatar: avatarGroup,
+        fullname: nameGroup,
+        username: nameGroup,
+        _id: userIds,
+        text: "",
+        media: [],
+        isVisible: {
+          [auth.user._id]: true,
+          ...groupUsersChat.reduce((acc, user) => {
+            acc[user._id] = true;
+            return acc;
+          }, {}),
+        },
+        recipientAccept: {
+          [auth.user._id]: true,
+          ...groupUsersChat.reduce((acc, user) => {
+            acc[user._id] = true;
+            return acc;
+          }, {}),
+        },
+        isRead: {
+          [auth.user._id]: true,
+          ...groupUsersChat.reduce((acc, user) => {
+            acc[user._id] = true;
+            return acc;
+          }, {}),
+        },
+        isGroup: true,
+        online: false,
+      };
       dispatch({
         type: MESS_TYPES.ADD_USER,
-        payload: {
-          avatar: avatarGroup,
-          _id: userIds,
-          fullname: nameGroup,
-          username: nameGroup,
-          text,
-          media,
-          isGroup: true,
-        },
+        payload: userData,
       });
       setGroupUsersChat([]);
       setOpenModalGroup(false);

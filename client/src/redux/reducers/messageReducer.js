@@ -1,6 +1,7 @@
 import { MESS_TYPES } from "../actions/messageAction";
 import { EditData, DeleteData } from "../actions/globalTypes";
 import { arraysEqualIgnoreOrder } from "../../utils/helper";
+import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
 
 const initialState = {
   users: [],
@@ -24,6 +25,49 @@ const messageReducer = (state = initialState, action) => {
         };
       }
       return state;
+    case MESS_TYPES.ADD_USER_SECOND: {
+      const newUser = {
+        _id: action.payload.recipients.join("."),
+        avatar: action.payload.conversation.isGroup
+          ? imageGroupDefaultLink
+          : action.payload.sender.avatar,
+        fullname: action.payload.conversation.isGroup
+          ? action.payload.nameGroup
+          : action.payload.sender.fullname,
+        username: action.payload.conversation.isGroup
+          ? action.payload.nameGroup
+          : action.payload.sender.username,
+        text: action.payload.text,
+        media: action.payload.media,
+        isVisible: action.payload.conversation.isVisible,
+        recipientAccept: action.payload.conversation.recipientAccept,
+        isRead: action.payload.conversation.isRead,
+        isGroup: action.payload.conversation.isGroup,
+      };
+
+      // Kiểm tra tất cả users trong danh sách với action.payload.recipients, nếu check bằng false thì thêm user mới
+      let isUserExists = false;
+      state.users.forEach((user) => {
+        let userIDs = user._id.split(".");
+        if (
+          userIDs.length === 1 &&
+          userIDs[0] === action.payload.sender._id &&
+          action.payload.recipients.length === 2
+        ) {
+          userIDs = [...action.payload.recipients];
+        }
+        if (arraysEqualIgnoreOrder(userIDs, action.payload.recipients)) {
+          isUserExists = true;
+        }
+      });
+      if (!isUserExists) {
+        return {
+          ...state,
+          users: [newUser, ...state.users],
+        };
+      }
+      return state;
+    }
     case MESS_TYPES.ADD_MESSAGE: {
       // Cập nhật mảng data
       const updatedData = state.data.map((item) => {
@@ -96,9 +140,13 @@ const messageReducer = (state = initialState, action) => {
       // Cập nhật mảng data
       const updatedData = state.data.map((item) => {
         let itemIDs = item._id.split(".");
-        if (itemIDs.length === 1 && action.payload.recipients.length == 2 && itemIDs[0] === action.payload.sender._id) {
+        if (
+          itemIDs.length === 1 &&
+          action.payload.recipients.length == 2 &&
+          itemIDs[0] === action.payload.sender._id
+        ) {
           itemIDs = [...action.payload.recipients];
-        } 
+        }
 
         const recipientsMatch = arraysEqualIgnoreOrder(
           itemIDs,
@@ -112,7 +160,6 @@ const messageReducer = (state = initialState, action) => {
             result: item.result + 1,
           };
         }
-
         return item;
       });
 
@@ -147,7 +194,7 @@ const messageReducer = (state = initialState, action) => {
       // Tìm user vừa được cập nhật
       const matchedUser = updatedUsers.find((user) => {
         let userIDs = user._id.split(".");
-         if (
+        if (
           userIDs.length === 1 &&
           action.payload.recipients.length === 2 &&
           userIDs[0] === action.payload.sender._id

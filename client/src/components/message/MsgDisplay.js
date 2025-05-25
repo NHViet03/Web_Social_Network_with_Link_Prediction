@@ -51,7 +51,7 @@ const MsgDisplay = ({
   return (
     <>
     <div className="chat_title">
-            {msg.conversation.isGroup ? (
+            {msg.conversation?.isGroup ? (
               <div
                 style={{
                   display: "flex",

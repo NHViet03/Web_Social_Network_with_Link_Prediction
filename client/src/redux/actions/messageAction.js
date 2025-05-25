@@ -3,6 +3,7 @@ import {deleteDataAPI, getDataAPI, postDataAPI, putDataAPI} from '../../utils/fe
 import {imageGroupDefaultLink} from '../../utils/imageGroupDefaultLink'
 export const MESS_TYPES ={
     ADD_USER: 'ADD_USER',
+    ADD_USER_SECOND: 'ADD_USER_SECOND',
     ADD_MESSAGE: 'ADD_MESSAGE',
     ADD_MESSAGE_SECOND: 'ADD_MESSAGE_SECOND',
     GET_CONVERSATIONS: 'GET_CONVERSATIONS',

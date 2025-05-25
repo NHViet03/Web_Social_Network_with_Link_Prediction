@@ -41,22 +41,9 @@ const SocketClient = () => {
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
+        console.log("message", msg);
      dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
-
-    //  let id = msg.recepients
-    // đang sửa lở dở
-    //  // define user redux message
-    //  const newUser = {
-    //   _id: msg.sender._id,
-    //   avatar: msg.sender.avatar,
-    //   fullname: msg.sender.fullname,
-    //   username: msg.sender.username,
-    //   text: msg.text,
-    //   media: msg.media
-    //  }
-
-
-    // dispatch({ type: MESS_TYPES.ADD_USER, payload: {...msg.user, text: msg.text, media: msg.media} })
+     dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg })
     });
     return () => socket.off("addMessageToClient");
   }, [dispatch, socket]);

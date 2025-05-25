@@ -43,7 +43,7 @@ const messageCtrl = {
           text : newText,
           media,
           call,
-          isGroup: recipientList.length > 1 ? true : false,
+          isGroup: recipientList.length > 2 ? true : false,
           // isVisible: một mảng key-value với key là recipient 
           // và value là true (hiện thị cuộc trò chuyện với người nhận) ( thường là chức năng xóa đoạn chat)
           isVisible: recipientList.reduce((acc, recipient) => {
