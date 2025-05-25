@@ -4,6 +4,7 @@ import {imageGroupDefaultLink} from '../../utils/imageGroupDefaultLink'
 export const MESS_TYPES ={
     ADD_USER: 'ADD_USER',
     ADD_MESSAGE: 'ADD_MESSAGE',
+    ADD_MESSAGE_SECOND: 'ADD_MESSAGE_SECOND',
     GET_CONVERSATIONS: 'GET_CONVERSATIONS',
     GET_MESSAGES: 'GET_MESSAGES',
     UPDATE_MESSAGES: 'UPDATE_MESSAGES',

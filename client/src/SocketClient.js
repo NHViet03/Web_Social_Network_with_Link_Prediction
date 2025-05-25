@@ -41,9 +41,8 @@ const SocketClient = () => {
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
-     dispatch({ type: MESS_TYPES.ADD_MESSAGE, payload: msg });
+     dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
 
-     console.log("addMessageToClient", msg);
     //  let id = msg.recepients
     // đang sửa lở dở
     //  // define user redux message
