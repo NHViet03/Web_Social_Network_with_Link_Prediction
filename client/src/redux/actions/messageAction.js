@@ -108,9 +108,9 @@ export const getConversations =
   };
 
 
-export const acceptConversation = ({auth, id}) => async (dispatch) => {
+export const acceptConversation = ({auth, listID}) => async (dispatch) => {
     try {
-     await putDataAPI('accept-conversation', {auth,id}, auth.token);
+     await putDataAPI('accept-conversation', {listID}, auth.token);
 
     } catch (err) {
         dispatch({

@@ -42,6 +42,17 @@ const messageCtrl = {
       });
 
       if (!conversation) {
+        const recipientAccept = {};
+
+        for (const recipient of recipientList) {
+          if (recipient === senderId) {
+            recipientAccept[recipient] = true;
+          } else {
+            const userRecipientAccept = await User.findById(recipient);
+            recipientAccept[recipient] =
+              userRecipientAccept.following.includes(senderId);
+          }
+        }
         conversation = await Conversations.create({
           recipients: recipientList,
           text: newText,
@@ -66,31 +77,23 @@ const messageCtrl = {
           // và value là true (đã chấp nhận cuộc trò chuyện) với người gửi là true
           // tính năng: ở hộp tin nhắn chờ ( những người nào chưa theo dõi nhau sẽ ở hộp tin nhắn chờ ) >< tương ứng với recipientAccept[recipient] = false
           // Đang hard code: tất cả đều là true => đều ở tin nhắn chính
-          recipientAccept: recipientList.reduce((acc, recipient) => {
-            acc[recipient] = true;
-            return acc;
-          }, {}),
+          recipientAccept: recipientAccept,
         });
       } else {
         conversation.text = newText;
         conversation.media = media;
         conversation.call = call;
-        (conversation.isVisible = recipientList.reduce((acc, recipient) => {
+        conversation.isVisible = recipientList.reduce((acc, recipient) => {
           acc[recipient] = true;
           return acc;
-        }, {})),
-          (conversation.recipientAccept = recipientList.reduce(
-            (acc, recipient) => {
-              acc[recipient] = true;
-              return acc;
-            },
-            {}
-          )),
-          (conversation.isRead = recipientList.reduce((acc, recipient) => {
-            // nếu recipient là senderId thì set là true (đã đọc), còn lại là false (chưa đọc)
-            acc[recipient] = recipient === senderId ? true : false;
-            return acc;
-          }, {}));
+        }, {});
+        // conversation.recipientAccept không thay đổi gì, chỉ cập nhật recipientAccept[senderId] = true
+        conversation.recipientAccept.set(senderId.toString(), true);
+        conversation.isRead = recipientList.reduce((acc, recipient) => {
+          // nếu recipient là senderId thì set là true (đã đọc), còn lại là false (chưa đọc)
+          acc[recipient] = recipient === senderId ? true : false;
+          return acc;
+        }, {});
         await conversation.save();
       }
 
@@ -166,16 +169,17 @@ const messageCtrl = {
     }
   },
   acceptConversation: async (req, res) => {
-    const sender = req.body.auth.user._id;
-    const recipient = req.body.id;
+    const sender = req.user._id.toString();
+    let listID = req.body.listID;
+    // nếu listID chưa có sender thì thêm vào
+    if (!listID.includes(sender)) {
+      listID.push(sender);
+    }
     try {
       const conversation = await Conversations.findOne({
-        $or: [
-          { recipients: [sender, recipient] },
-          { recipients: [recipient, sender] },
-        ],
+        recipients: { $all: listID, $size: listID.length },
       });
-      if (!conversation) return res.status(400).json({ msg: "Not found!" });
+      if (!conversation) return res.json({ msg: "Not found!" });
 
       // set  key conversation.recipientAccept[sender]  with value true
       conversation.recipientAccept.set(sender.toString(), true);

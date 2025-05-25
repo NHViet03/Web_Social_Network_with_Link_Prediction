@@ -64,7 +64,10 @@ const RightSide = () => {
     // Kiểm tra phải tin nhắn chờ hay không
     const user = message?.users.find((user) => user._id === id);
     if (!user) return;
-    const checkRecipientAccept = checkMapTrue(auth.user._id, user?.recipientAccept);
+    const checkRecipientAccept = checkMapTrue(
+      auth.user._id,
+      user?.recipientAccept
+    );
     setIsWaitingBox(!checkRecipientAccept);
   }, [message.data, id]);
 
@@ -121,9 +124,10 @@ const RightSide = () => {
       }
     }
   }, [isLoadMore]);
-  const handleAcceptWaitingBox = async () => {
-    const recipientID = id;
-    await dispatch(acceptConversation({ auth, id: recipientID }));
+  const handleAcceptWaitingBox = () => {
+    const recipientID = id.split(".");
+    dispatch(acceptConversation({ auth, listID: recipientID }));
+    setIsWaitingBox(false);
   };
 
   // Tự động cuộn xuống khi người dùng gõ chữ
@@ -139,14 +143,14 @@ const RightSide = () => {
     if (!textEdit.trim()) return;
     msg = {
       ...msg,
-      conversation : {
+      conversation: {
         _id: msg.conversation._id,
         isGroup: msg.conversation.isGroup,
         idPath: id,
       },
-    }
-     dispatch(editMessage({ auth, msg, textEdit, socket }));
-  }
+    };
+    dispatch(editMessage({ auth, msg, textEdit, socket }));
+  };
 
   const handleChangeMedia = (e) => {
     const files = [...e.target.files];
@@ -178,7 +182,7 @@ const RightSide = () => {
     setText("");
     setMedia([]);
     setLoadMedia(true);
-
+    setIsWaitingBox(false);
     //if (media.length > 0) newArr = await imageUpload(media);
     let newArr = [];
     if (media.length > 0) {
@@ -200,28 +204,28 @@ const RightSide = () => {
       listId.push(auth.user._id);
     }
 
-      const msg = {
-        recipients: [...listId],
-        isRevoke: false,
-        isEdit: false,
-        isVisible: {},
-        media: [...newArr],
-        _id: generateObjectId(),
-        conversation: {
-          _id: "",
-          isGroup: null, // true of false
-        },
-        sender: {
-          _id: auth.user._id,
-          avatar: auth.user.avatar,
-          fullname: auth.user.fullname,
-          username: auth.user.username,
-        },
-        text: text,
-        replymessage: message.replyMessage ? message.replyMessage : null,
-        createAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+    const msg = {
+      recipients: [...listId],
+      isRevoke: false,
+      isEdit: false,
+      isVisible: {},
+      media: [...newArr],
+      _id: generateObjectId(),
+      conversation: {
+        _id: "",
+        isGroup: null, // true of false
+      },
+      sender: {
+        _id: auth.user._id,
+        avatar: auth.user.avatar,
+        fullname: auth.user.fullname,
+        username: auth.user.username,
+      },
+      text: text,
+      replymessage: message.replyMessage ? message.replyMessage : null,
+      createAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
     dispatch(addMessage({ msg, auth, socket }));
 
     setLoadMedia(false);
@@ -469,26 +473,27 @@ const RightSide = () => {
             }}
           >
             <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              fontWeight: "500",
-              fontSize: "15px",
-              cursor: "pointer",
-            }}
-            ><div>Chỉnh sửa tin nhắn</div>
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                dispatch({
-                  type: MESS_TYPES.EDIT_MESSAGE,
-                  payload: null,
-                });
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                fontWeight: "500",
+                fontSize: "15px",
+                cursor: "pointer",
               }}
             >
-              x
-            </div>
+              <div>Chỉnh sửa tin nhắn</div>
+              <div
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  dispatch({
+                    type: MESS_TYPES.EDIT_MESSAGE,
+                    payload: null,
+                  });
+                }}
+              >
+                x
+              </div>
             </div>
             <div
               style={{
@@ -499,11 +504,11 @@ const RightSide = () => {
                 fontSize: "13px",
                 fontWeight: "500",
                 color: theme.text,
-              }}            
+              }}
             >
               <input
                 type="text"
-                value= {textEdit}
+                value={textEdit}
                 onChange={(e) => setTextEdit(e.target.value)}
                 //Enter
                 onKeyDown={(e) => {
@@ -521,10 +526,20 @@ const RightSide = () => {
                   color: "black",
                 }}
               />
-              <div><i 
-              onClick={() => handleEditMessage(message.editMessage, textEdit)}
-              style={{ cursor: "pointer" , fontSize: "20px", color: "#e2ef36", hover : "red"}}
-              class="fa-solid fa-circle-check"></i></div>
+              <div>
+                <i
+                  onClick={() =>
+                    handleEditMessage(message.editMessage, textEdit)
+                  }
+                  style={{
+                    cursor: "pointer",
+                    fontSize: "20px",
+                    color: "#e2ef36",
+                    hover: "red",
+                  }}
+                  class="fa-solid fa-circle-check"
+                ></i>
+              </div>
             </div>
           </div>
         )}

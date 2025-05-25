@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { NOTIFIES_TYPES } from "./redux/actions/notifyAction";
 import { MESS_TYPES } from "./redux/actions/messageAction";
 import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
+import { checkMapTrue } from "./utils/helper";
 
 const SocketClient = () => {
   const auth = useSelector((state) => state.auth);
@@ -11,9 +12,7 @@ const SocketClient = () => {
   const call = useSelector((state) => state.call);
   const message = useSelector((state) => state.message);
 
-
   const dispatch = useDispatch();
-
 
   // Notification
   useEffect(() => {
@@ -41,9 +40,18 @@ const SocketClient = () => {
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
-        console.log("message", msg);
-     dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
-     dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg })
+      console.log("message", msg);
+      dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
+      if (message?.mainBoxMessage === true) {
+        const check = checkMapTrue(
+          auth.user.id,
+          msg.conversation.recipientAccept
+        );
+        if (check) {
+          console.log("Dung roi do");
+          dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
+        }
+      }
     });
     return () => socket.off("addMessageToClient");
   }, [dispatch, socket]);
@@ -52,7 +60,6 @@ const SocketClient = () => {
   useEffect(() => {
     socket.on("editMessageToClient", (msg) => {
       dispatch({ type: MESS_TYPES.EDIT_MESSAGE_SOCKET_SECOND, payload: msg });
-     
     });
     return () => socket.off("editMessageToClient");
   }, [dispatch, socket]);
@@ -63,60 +70,63 @@ const SocketClient = () => {
     });
     return () => socket.off("revokeMessageToClient");
   }, [dispatch, socket]);
- 
+
   // joinUser
   useEffect(() => {
-    socket.emit('joinUser', auth.user)
-  },[socket, auth.user])
-  
-    // Check User Online / Offline
+    socket.emit("joinUser", auth.user);
+  }, [socket, auth.user]);
+
+  // Check User Online / Offline
   useEffect(() => {
     socket.emit("checkUserOnline", auth.user);
   }, [auth.user, socket]);
 
   useEffect(() => {
-    socket.on("checkUserOnlineToMe", data => {
-      data.forEach(item => {
-        if(!online.includes(item.id)){
-          dispatch({type: GLOBAL_TYPES.ONLINE, payload: item.id})
+    socket.on("checkUserOnlineToMe", (data) => {
+      data.forEach((item) => {
+        if (!online.includes(item.id)) {
+          dispatch({ type: GLOBAL_TYPES.ONLINE, payload: item.id });
         }
-      })
+      });
     });
- 
+
     return () => socket.off("checkUserOnlineToMe");
   }, [dispatch, socket, online]);
 
   useEffect(() => {
-    socket.on("checkUserOnlineToClient", id => {
-      if(!online.includes(id)){
-        dispatch({type: GLOBAL_TYPES.ONLINE, payload: id})
+    socket.on("checkUserOnlineToClient", (id) => {
+      if (!online.includes(id)) {
+        dispatch({ type: GLOBAL_TYPES.ONLINE, payload: id });
       }
     });
- 
+
     return () => socket.off("checkUserOnlineToClient");
   }, [dispatch, socket, online]);
 
   // Check User Offline
   useEffect(() => {
-    socket.on("CheckUserOffline", id => {
-      dispatch({type: GLOBAL_TYPES.OFFLINE, payload: id})
+    socket.on("CheckUserOffline", (id) => {
+      dispatch({ type: GLOBAL_TYPES.OFFLINE, payload: id });
     });
- 
+
     return () => socket.off("CheckUserOffline");
   }, [dispatch, socket]);
 
-
   // Call User
-   useEffect(() => {
-    socket.on("callUserToClient", data => {
-      dispatch({type: GLOBAL_TYPES.CALL, payload: data})
+  useEffect(() => {
+    socket.on("callUserToClient", (data) => {
+      dispatch({ type: GLOBAL_TYPES.CALL, payload: data });
     });
     return () => socket.off("callUserToClient");
   }, [dispatch, socket]);
 
   useEffect(() => {
-    socket.on("userBusy", data => {
-      dispatch({type: GLOBAL_TYPES.ALERT, payload: {error: `${call.username} đang bận`}})    });
+    socket.on("userBusy", (data) => {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: `${call.username} đang bận` },
+      });
+    });
     return () => socket.off("userBusy");
   }, [dispatch, socket, call]);
 
