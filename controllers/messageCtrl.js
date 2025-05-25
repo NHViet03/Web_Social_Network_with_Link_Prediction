@@ -123,16 +123,13 @@ const messageCtrl = {
   },
   getConversations: async (req, res) => {
     try {
+      const mainBoxMessage = req.query.mainBoxMessage === "true" ? true : false;
       // Tạo bộ lọc ban đầu: user phải là một recipient
       const filter = {
         recipients: req.user._id,
       };
-
-      // Nếu có truyền mainBoxMessage (dưới dạng chuỗi "true"/"false"), lọc thêm theo recipientAccept
-      // if (req.query.mainBoxMessage !== undefined) {
-      //   const mainBoxMessage = req.query.mainBoxMessage === "true";
-      //   filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
-      // }
+      // Lọc theo trạng thái recipientAccept của user
+      filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
 
       // Áp dụng phân trang (chỉ có limit theo class bạn cung cấp)
       const features = new APIfeatures(

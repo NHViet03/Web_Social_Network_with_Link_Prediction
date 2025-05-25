@@ -21,7 +21,7 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import CallModal from "./CallModal";
 import Loading from "../Loading";
-import { generateObjectId } from "../../utils/helper";
+import { checkMapTrue, generateObjectId } from "../../utils/helper";
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -42,7 +42,7 @@ const RightSide = () => {
   const [isLoadMore, setIsLoadMore] = useState(0);
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
-  const [strangerModal, setStrangerModal] = useState(true);
+  const [isWaitingBox, setIsWaitingBox] = useState(false);
   const [isListenCLoseMsgDisplay, setIsListenCLoseMsgDisplay] = useState(false);
 
   // UseEffect
@@ -60,12 +60,12 @@ const RightSide = () => {
       setData(newData.messages);
       setResult(newData.result);
       setPage(newData.page);
-
-      const currentChat = message.users.find(
-        (user) => user._id === newData._id
-      );
-      setStrangerModal(currentChat?.recipientAccept);
     }
+    // Kiểm tra phải tin nhắn chờ hay không
+    const user = message?.users.find((user) => user._id === id);
+    if (!user) return;
+    const checkRecipientAccept = checkMapTrue(auth.user._id, user?.recipientAccept);
+    setIsWaitingBox(!checkRecipientAccept);
   }, [message.data, id]);
 
   //  Lấy thông tin user đang nhắn tin + cuộn xuống cuối
@@ -124,7 +124,6 @@ const RightSide = () => {
   const handleAcceptWaitingBox = async () => {
     const recipientID = id;
     await dispatch(acceptConversation({ auth, id: recipientID }));
-    setStrangerModal(true);
   };
 
   // Tự động cuộn xuống khi người dùng gõ chữ
@@ -322,7 +321,7 @@ const RightSide = () => {
             </>
           )}
         </div>
-        {strangerModal !== undefined && strangerModal === false && (
+        {isWaitingBox && (
           <div
             className="d-flex flex-direction-row justify-content-between align-items-center"
             style={{
