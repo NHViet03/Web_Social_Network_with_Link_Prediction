@@ -42,9 +42,40 @@ const SocketClient = () => {
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
      dispatch({ type: MESS_TYPES.ADD_MESSAGE, payload: msg });
+
+     console.log("addMessageToClient", msg);
+    //  let id = msg.recepients
+    // đang sửa lở dở
+    //  // define user redux message
+    //  const newUser = {
+    //   _id: msg.sender._id,
+    //   avatar: msg.sender.avatar,
+    //   fullname: msg.sender.fullname,
+    //   username: msg.sender.username,
+    //   text: msg.text,
+    //   media: msg.media
+    //  }
+
+
     // dispatch({ type: MESS_TYPES.ADD_USER, payload: {...msg.user, text: msg.text, media: msg.media} })
     });
     return () => socket.off("addMessageToClient");
+  }, [dispatch, socket]);
+
+  //editMessageToClient
+  useEffect(() => {
+    socket.on("editMessageToClient", (msg) => {
+      dispatch({ type: MESS_TYPES.EDIT_MESSAGE_SOCKET_SECOND, payload: msg });
+     
+    });
+    return () => socket.off("editMessageToClient");
+  }, [dispatch, socket]);
+  //revokeMessageToClient
+  useEffect(() => {
+    socket.on("revokeMessageToClient", (msg) => {
+      dispatch({ type: MESS_TYPES.REVOKE_MESSAGE_SECOND, payload: msg });
+    });
+    return () => socket.off("revokeMessageToClient");
   }, [dispatch, socket]);
  
   // joinUser

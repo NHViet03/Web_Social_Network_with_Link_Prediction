@@ -30,9 +30,11 @@ const messageReducer = (state = initialState, action) => {
         let itemIDs = item._id.split(".");
         if (itemIDs.length === 1 && itemIDs[0] !== action.payload.sender._id) {
           itemIDs.push(action.payload.sender._id);
-        } else if (itemIDs.length === 1 && itemIDs[0] === action.payload.sender._id)
-        {
-            itemIDs = action.payload.recipients;
+        } else if (
+          itemIDs.length === 1 &&
+          itemIDs[0] === action.payload.sender._id
+        ) {
+          itemIDs = action.payload.recipients;
         }
 
         const recipientsMatch = arraysEqualIgnoreOrder(
@@ -54,14 +56,14 @@ const messageReducer = (state = initialState, action) => {
       // Cập nhật từng user
       const updatedUsers = state.users.map((user) => {
         let userIDs = user._id.split(".");
-         if (userIDs.length === 1 && userIDs[0] !== action.payload.sender._id) {
-           userIDs.push(action.payload.sender._id);
-         } else if (
-           userIDs.length === 1 &&
-           userIDs[0] === action.payload.sender._id
-         ) {
-           userIDs =  action.payload.recipients;
-         }
+        if (userIDs.length === 1 && userIDs[0] !== action.payload.sender._id) {
+          userIDs.push(action.payload.sender._id);
+        } else if (
+          userIDs.length === 1 &&
+          userIDs[0] === action.payload.sender._id
+        ) {
+          userIDs = action.payload.recipients;
+        }
 
         const recipientsMatch = arraysEqualIgnoreOrder(
           userIDs,
@@ -167,6 +169,67 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         editMessage: action.payload,
       };
+    case MESS_TYPES.EDIT_MESSAGE_SOCKET_FIRST:
+      console.log("EDIT_MESSAGE_SOCKET_FIRST", action.payload);
+      return {
+        ...state,
+        data: state.data.map((item) =>
+          item._id === action.payload.conversation.idPath
+            ? {
+                ...item,
+                messages: item.messages.map((msg) =>
+                  msg._id === action.payload._id
+                    ? {
+                        ...msg,
+                        text: action.payload.textEdit,
+                        isEdit: true,
+                      }
+                    : msg
+                ),
+              }
+            : item
+        ),
+      };
+    case MESS_TYPES.EDIT_MESSAGE_SOCKET_SECOND:
+      let listID = action.payload.conversation.idPath.split(".");
+      if (listID.length === 1) {
+        listID[0] = action.payload.sender._id;
+      }
+      return {
+        ...state,
+        data: state.data.map((item) => {
+          const listIDItem = item._id.split(".");
+          const checkListID = arraysEqualIgnoreOrder(listIDItem, listID);
+          if (checkListID) {
+            return {
+              ...item,
+              messages: item.messages.map((msg) =>
+                msg._id === action.payload._id
+                  ? {
+                      ...msg,
+                      text: action.payload.textEdit,
+                      isEdit: true,
+                    }
+                  : msg
+              ),
+            };
+          }
+          return item;
+          //   ? {
+          //       ...item,
+          //       messages: item.messages.map((msg) =>
+          //         msg._id === action.payload._id
+          //           ? {
+          //               ...msg,
+          //               text: action.payload.textEdit,
+          //               isEdit: true,
+          //             }
+          //           : msg
+          //       ),
+          //     }
+          //   : item
+        }),
+      };
     case MESS_TYPES.CHECK_ONLINE_OFFLINE:
       return {
         ...state,
@@ -175,6 +238,45 @@ const messageReducer = (state = initialState, action) => {
             ? { ...user, online: true }
             : { ...user, online: false }
         ),
+      };
+    case MESS_TYPES.REVOKE_MESSAGE_FIRST:
+      return {
+        ...state,
+        data: state.data.map((item) =>
+          item._id === action.payload.conversation.idPath
+            ? {
+                ...item,
+                messages: item.messages.map((msg) =>
+                  msg._id === action.payload._id
+                    ? { ...msg, isRevoke: true }
+                    : msg
+                ),
+              }
+            : item
+        ),
+      };
+    case MESS_TYPES.REVOKE_MESSAGE_SECOND:
+      let listIDRevoke = action.payload.conversation.idPath.split(".");
+      if (listIDRevoke.length === 1) {
+        listIDRevoke[0] = action.payload.sender._id;
+      }
+      return {
+        ...state,
+        data: state.data.map((item) => {
+          const listIDItem = item._id.split(".");
+          const checkListID = arraysEqualIgnoreOrder(listIDItem, listIDRevoke);
+          if (checkListID) {
+            return {
+              ...item,
+              messages: item.messages.map((msg) =>
+                msg._id === action.payload._id
+                  ? { ...msg, isRevoke: true }
+                  : msg
+              ),
+            };
+          }
+          return item;
+        }),
       };
     default:
       return state;

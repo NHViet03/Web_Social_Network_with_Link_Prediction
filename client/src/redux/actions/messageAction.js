@@ -16,6 +16,10 @@ export const MESS_TYPES ={
     SOCKET_ISREADMESSAGE: 'SOCKET_ISREADMESSAGE',
     REPLY_MESSAGE: 'REPLY_MESSAGE',
     EDIT_MESSAGE: 'EDIT_MESSAGE',
+    EDIT_MESSAGE_SOCKET_FIRST: 'EDIT_MESSAGE_SOCKET_FIRST',
+    EDIT_MESSAGE_SOCKET_SECOND: 'EDIT_MESSAGE_SOCKET_SECOND',
+    REVOKE_MESSAGE_FIRST: 'REVOKE_MESSAGE_FIRST',
+    REVOKE_MESSAGE_SECOND: 'REVOKE_MESSAGE_SECOND',
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
@@ -45,7 +49,7 @@ export const getConversations =
         payload: true,
       });
       const res = await getDataAPI(
-        `conversations?limit=${page * 50}&mainBoxMessage=${mainBoxMessage}`,
+        `conversations?limit=${page * 20}&mainBoxMessage=${mainBoxMessage}`,
         auth.token
       );
       let newArr = [];
@@ -53,7 +57,6 @@ export const getConversations =
         if (item.isGroup) {
           const id = item.recipients.map((cv) => cv._id).join(".");
           const nameGroup = item.recipients.map((cv) => cv.username).join(", ")
-          const isVisible = item.isVisible[auth.user._id];
           newArr.push({
             avatar: imageGroupDefaultLink,
             _id: id,
@@ -61,34 +64,30 @@ export const getConversations =
             username: nameGroup,
             text: item.text,
             media: item.media,
-            isVisible: isVisible,
-            // hard code ( cần chỉnh sửa lại )
-            recipientAccept: true,
-            isRead: true,
+            isVisible: item.isVisible,
+            recipientAccept: item.recipientAccept,
+            isRead: item.isRead,
             isGroup: item.isGroup,
           });
         } else {
-        
-          const isVisible = item.isVisible[auth.user._id];
           item.recipients.forEach((cv) => {
             if (cv._id !== auth.user._id) {
               newArr.push({
                 ...cv,
                 text: item.text,
                 media: item.media,
-                isVisible: isVisible,
-                // hard code
-                
-                recipientAccept: true,
-                isRead: true,
+                isVisible: item.isVisible, 
+                recipientAccept: item.recipientAccept,
+                isRead: item.isRead,
                 isGroup: item.isGroup,
               });
             }
           });
         }
       });
-      // filter những cuộc hội thoại không có tin nhắn (isVisible = false)
-      newArr = newArr.filter((item) => item.isVisible === true);
+      // // filter những cuộc hội thoại không có tin nhắn (isVisible[auth.user._id] = false)
+      newArr = newArr.filter((item) => item.isVisible[auth.user._id] === true);
+
       dispatch({
         type: MESS_TYPES.GET_CONVERSATIONS,
         payload: { newArr, result: res.data.result },
@@ -170,13 +169,13 @@ export const deleteConversation = ({auth, id}) => async (dispatch) => {
 
 export const revokeMessage = ({auth, msg, socket}) => async (dispatch) => {
  
-    // dispatch({
-    //     type: MESS_TYPES.UPDATE_MESSAGES,
-    //     payload: {...msg, isRevoke: true}
-    // })
-    // socket.emit('revokeMessage', msg)
     try {
+      dispatch({
+          type: MESS_TYPES.REVOKE_MESSAGE_FIRST,
+          payload: msg
+      })
         await putDataAPI(`revokeMessage/${msg._id}`, {auth, msg}, auth.token);
+         socket.emit('revokeMessage', msg)
     } catch (err) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
@@ -186,18 +185,19 @@ export const revokeMessage = ({auth, msg, socket}) => async (dispatch) => {
 }
 
 export const editMessage = ({auth, msg, textEdit, socket}) => async (dispatch) => {
-    // dispatch({
-    //     type: MESS_TYPES.EDIT_MESSAGE,
-    //     payload: msg
-    // })
-    // socket.emit('editMessage', msg)
+
+   
     try {
        dispatch({
             type: MESS_TYPES.EDIT_MESSAGE,
             payload: null
         })
+        dispatch({
+            type: MESS_TYPES.EDIT_MESSAGE_SOCKET_FIRST,
+            payload: {...msg, textEdit}
+        })
         await putDataAPI(`editMessage/${msg._id}`, {textEdit}, auth.token);
-       
+       socket.emit('editMessage', {...msg, textEdit})
     } catch (err) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,

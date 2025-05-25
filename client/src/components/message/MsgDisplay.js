@@ -4,6 +4,7 @@ import { imageShow, videoShow } from "../../utils/mediaShow";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MESS_TYPES, revokeMessage } from "../../redux/actions/messageAction";
+import { useParams } from "react-router-dom";
 
 const MsgDisplay = ({
   user,
@@ -21,9 +22,9 @@ const MsgDisplay = ({
     );
 
   const dispatch = useDispatch();
+  const {id} = useParams();
   const [isOptionChat, setIsOptionChat] = useState(false);
   const handleReply = (msg) => {
-    console.log("reply", msg);
     dispatch({
       type: MESS_TYPES.REPLY_MESSAGE,
       payload: msg,
@@ -36,6 +37,14 @@ const MsgDisplay = ({
     });
   }
   const handleRevoke = (msg) => {
+    msg = {
+      ...msg,
+      conversation: {
+        idPath: id,
+        isGroup: msg.conversation.isGroup,
+        _id : msg.conversation._id,
+      },
+    }
     dispatch(revokeMessage({ auth, msg, socket }));
   }
 

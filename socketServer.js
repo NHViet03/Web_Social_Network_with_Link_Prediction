@@ -92,6 +92,33 @@ socket.on('disconnect', () => {
     }
   }
   );
+
+  // editMessage
+  socket.on("editMessage", async (msg) => {
+    let recepientList = msg.conversation.idPath.split('.').filter(item => item !== msg.sender._id)
+      const usersListRecepient = users.filter((user) =>
+        recepientList.find((item) => item === user.id)
+      );
+
+      usersListRecepient.length > 0 &&
+        usersListRecepient.forEach((user) => {
+          socket.to(`${user.socketId}`).emit("editMessageToClient", msg);
+        });
+    }
+  );
+
+  //revokeMessage
+  socket.on("revokeMessage", async (msg) => {
+    let recepientList = msg.conversation.idPath.split('.').filter(item => item !== msg.sender._id)
+    const usersListRecepient = users.filter((user) =>
+      recepientList.find((item) => item === user.id)
+    );
+
+    usersListRecepient.length > 0 &&
+      usersListRecepient.forEach((user) => {
+        socket.to(`${user.socketId}`).emit("revokeMessageToClient", msg);
+      });
+  });
   
 
   // Call

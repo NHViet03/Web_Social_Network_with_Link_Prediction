@@ -13,3 +13,8 @@ export const generateObjectId = () => {
   );
   return (timestamp + random).substring(0, 24);
 }
+
+export const checkMapTrue = (id, map) => {
+  if (!map || typeof map.get !== 'function') return false;
+  return map.get(id) === true;
+}
