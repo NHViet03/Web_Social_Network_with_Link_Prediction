@@ -261,6 +261,12 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         numberNewMessage: action.payload,
       };
+    case MESS_TYPES.NUMBERNEWMESSAGE_MINUS:
+      return {
+        ...state,
+        numberNewMessage:
+          state.numberNewMessage > 0 ? state.numberNewMessage - 1 : 0,
+      };
     case MESS_TYPES.SOCKET_ISREADMESSAGE:
       return {
         ...state,

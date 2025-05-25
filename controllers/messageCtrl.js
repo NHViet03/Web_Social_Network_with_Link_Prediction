@@ -160,6 +160,7 @@ const messageCtrl = {
       const numberNewMessage = await Conversations.countDocuments({
         recipients: userId,
         [key]: false,
+        [`isVisible.${userId}`]: true,
       });
 
       res.json({ numberNewMessage });

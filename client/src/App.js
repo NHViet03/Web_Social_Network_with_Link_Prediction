@@ -31,6 +31,8 @@ import ExploreLocations from "./pages/exploreLocations.js";
 import ExploreHashtags from "./pages/exploreHashtags.js";
 import Loading from "./components/alert/Loading.js";
 import getClientInfo from "./utils/getClientInfo.js";
+import { getDataAPI } from "./utils/fetchData.js";
+import { MESS_TYPES } from "./redux/actions/messageAction.js";
 
 // Config moment
 moment.updateLocale("vi", {
@@ -55,16 +57,35 @@ moment.updateLocale("vi", {
 });
 
 function App() {
-  const { postDetail, sharePost, addPostModal, auth, modal, call } =
+  const { postDetail, sharePost, message, addPostModal, auth, modal, call } =
     useSelector((state) => ({
       postDetail: state.postDetail,
       sharePost: state.sharePost,
+      message: state.message,
       addPostModal: state.addPostModal,
       auth: state.auth,
       modal: state.modal,
     }));
   const [loading, setLoading] = React.useState(true);
   const dispatch = useDispatch();
+
+   useEffect(() => {
+      const fetchNumberNewMessage = async () => {
+        try {
+          const res = await getDataAPI('numberNewMessage', auth.token);
+          dispatch({
+            type: MESS_TYPES.NUMBERNEWMESSAGE,
+            payload: res.data?.numberNewMessage,
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      };
+    
+      if (auth.token) {
+        fetchNumberNewMessage();
+      }
+    }, [message.numberNewMessage, auth.token]);
 
   useEffect(() => {
     if (postDetail || sharePost || addPostModal || modal) {

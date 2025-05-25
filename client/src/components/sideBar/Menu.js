@@ -49,23 +49,7 @@ const SideBar = () => {
     setActive(index);
   };
 
-  useEffect(() => {
-    const fetchNumberNewMessage = async () => {
-      try {
-        const res = await getDataAPI('numberNewMessage', auth.token);
-        dispatch({
-          type: MESS_TYPES.NUMBERNEWMESSAGE,
-          payload: res.data.numberNewMessage,
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-  
-    if (auth.token) {
-      fetchNumberNewMessage();
-    }
-  }, [message.numberNewMessage, auth.token]);
+ 
 
   const navLinks = useMemo(
     () => [
