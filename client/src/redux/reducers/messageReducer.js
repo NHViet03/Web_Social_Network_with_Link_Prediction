@@ -185,6 +185,12 @@ const messageReducer = (state = initialState, action) => {
             ...user,
             text: action.payload.text,
             media: action.payload.media,
+            isRead: {
+              ...action.payload.recipients.reduce((acc, recipient) => {
+                acc[recipient] = false;
+                return acc;
+              }, {}),
+            },
           };
         }
 
@@ -269,7 +275,13 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         users: state.users.map((user) =>
           user._id === action.payload.id
-            ? { ...user, isRead: action.payload.isRead }
+            ? {
+                ...user,
+                isRead: {
+                  ...user.isRead,
+                  [action.payload.userId]: true,
+                },
+              }
             : user
         ),
       };

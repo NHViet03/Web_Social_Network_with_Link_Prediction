@@ -17,7 +17,8 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const { sender, recipients, _id, text, media, call, replymessage } = req.body;
+      const { sender, recipients, _id, text, media, call, replymessage } =
+        req.body;
       const senderId = sender._id;
       let newText = text;
       if (text == "" && media.length > 0) {
@@ -27,10 +28,13 @@ const messageCtrl = {
       // senderId: người gửi tin nhắn
       // recipients: mảng người nhận tin nhắn ( bao gồm cả người gửi )
       // recipientsNosender: danh sách người nhận không bao gồm người gửi
-     const  recipientList = [...recipients];
-     const recipientsNosender = recipientList.filter((item) => item !== senderId);
+      const recipientList = [...recipients];
+      const recipientsNosender = recipientList.filter(
+        (item) => item !== senderId
+      );
 
-      if (!recipientList || (!newText.trim() && media.length === 0 && !call)) return;
+      if (!recipientList || (!newText.trim() && media.length === 0 && !call))
+        return;
 
       // Tìm kiếm conversation với recipients là một mảng chứa sender và recipient
       let conversation = await Conversations.findOne({
@@ -40,11 +44,11 @@ const messageCtrl = {
       if (!conversation) {
         conversation = await Conversations.create({
           recipients: recipientList,
-          text : newText,
+          text: newText,
           media,
           call,
           isGroup: recipientList.length > 2 ? true : false,
-          // isVisible: một mảng key-value với key là recipient 
+          // isVisible: một mảng key-value với key là recipient
           // và value là true (hiện thị cuộc trò chuyện với người nhận) ( thường là chức năng xóa đoạn chat)
           isVisible: recipientList.reduce((acc, recipient) => {
             acc[recipient] = true;
@@ -54,14 +58,15 @@ const messageCtrl = {
           // và value là false (chưa đọc) với người gửi là true
           // tính năng: đánh dấu cuộc trò chuyện là đã đọc với người gửi, chưa đọc với người nhận
           isRead: recipientList.reduce((acc, recipient) => {
-            acc[recipient] = true;
+            // nếu recipient là senderId thì set là true (đã đọc), còn lại là false (chưa đọc)
+            acc[recipient] = recipient === senderId ? true : false;
             return acc;
           }, {}),
           // newConversation.recipientAccept: là mảng key-value với key là recipient
           // và value là true (đã chấp nhận cuộc trò chuyện) với người gửi là true
           // tính năng: ở hộp tin nhắn chờ ( những người nào chưa theo dõi nhau sẽ ở hộp tin nhắn chờ ) >< tương ứng với recipientAccept[recipient] = false
-         // Đang hard code: tất cả đều là true => đều ở tin nhắn chính
-         recipientAccept: recipientList.reduce((acc, recipient) => {
+          // Đang hard code: tất cả đều là true => đều ở tin nhắn chính
+          recipientAccept: recipientList.reduce((acc, recipient) => {
             acc[recipient] = true;
             return acc;
           }, {}),
@@ -70,18 +75,22 @@ const messageCtrl = {
         conversation.text = newText;
         conversation.media = media;
         conversation.call = call;
-        conversation.isVisible = recipientList.reduce((acc, recipient) => {
-            acc[recipient] = true;
+        (conversation.isVisible = recipientList.reduce((acc, recipient) => {
+          acc[recipient] = true;
+          return acc;
+        }, {})),
+          (conversation.recipientAccept = recipientList.reduce(
+            (acc, recipient) => {
+              acc[recipient] = true;
+              return acc;
+            },
+            {}
+          )),
+          (conversation.isRead = recipientList.reduce((acc, recipient) => {
+            // nếu recipient là senderId thì set là true (đã đọc), còn lại là false (chưa đọc)
+            acc[recipient] = recipient === senderId ? true : false;
             return acc;
-          }, {}),
-        conversation.recipientAccept = recipientList.reduce((acc, recipient) => {
-          acc[recipient] = true;
-          return acc;
-        }, {}),
-        conversation.isRead = recipientList.reduce((acc, recipient) => {
-          acc[recipient] = true;
-          return acc;
-        }, {});
+          }, {}));
         await conversation.save();
       }
 
@@ -97,9 +106,9 @@ const messageCtrl = {
         isEdit: false,
         media,
         isVisible: recipientList.reduce((acc, recipient) => {
-            acc[recipient] = true;
-            return acc;
-          }, {}),
+          acc[recipient] = true;
+          return acc;
+        }, {}),
       });
 
       await newMessage.save();
@@ -211,20 +220,24 @@ const messageCtrl = {
   },
   readMessage: async (req, res) => {
     try {
-      const listId = req.params.id.split(".");
-      const userID = req.user._id;
-      const recipientList = [...listId, userID.toString()];
+      const userID = req.params.id;
+      const listID = req.body.listID;
 
       const conversation = await Conversations.findOne({
-        recipients: { $all: recipientList, $size: recipientList.length },
+        recipients: { $all: listID, $size: listID.length },
       });
 
-      if (!conversation) return res.status(400).json({ msg: "Not found!" });
+      // nếu không tim thấy conversation thì không cần làm gì
 
-      conversation.isRead.set(userID.toString(), true);
-      await conversation.save();
-
-      res.json({ msg: "Read Success!" });
+      if (conversation) {
+        // set lại conversation.isRead[userID] = true;
+        //còn lại vẫn giữ nguyên giá trị cũ
+        conversation.isRead.set(userID, true);
+        await conversation.save();
+        res.json({ msg: "Read Success!" });
+      } else {
+        return res.json({ msg: "No conversation found!" });
+      }
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -234,20 +247,20 @@ const messageCtrl = {
       // may be req.params.id like that: 67c3e08776a9ee127c26240e.67c3f264f042c866508255a5.67c3f9b19c797e619cd729e0 => spilt by "."
       const listId = req.params.id.split(".");
       if (listId.length > 1) {
-          const orConditions = listId.map((senderId) => {
-            const recipientList = listId.filter(id => id !== senderId);
-            return {
-              sender: senderId,
-               recipients: { $all: recipientList, $size: recipientList.length },
-            };
-          });
+        const orConditions = listId.map((senderId) => {
+          const recipientList = listId.filter((id) => id !== senderId);
+          return {
+            sender: senderId,
+            recipients: { $all: recipientList, $size: recipientList.length },
+          };
+        });
         // find sender = req.user._id, and recipients include all id in listId
         features = new APIfeatures(
-            Messages.find({
-              $or: orConditions,
-            }),
-            req.query
-          ).paginating();
+          Messages.find({
+            $or: orConditions,
+          }),
+          req.query
+        ).paginating();
       } else if (listId.length === 1) {
         features = new APIfeatures(
           Messages.find({
@@ -266,32 +279,30 @@ const messageCtrl = {
         ).paginating();
       }
 
-
       const messages = await features.query
         .sort("-createdAt")
         .populate("recipients", "avatar username fullname")
         .populate("sender", "avatar username fullname")
         .populate("conversation", "isGroup")
-         .populate({
-              path: "replymessage",
-              select: "text media sender",
-              populate: {
-                path: "sender",
-                select: "fullname username"
-              }
+        .populate({
+          path: "replymessage",
+          select: "text media sender",
+          populate: {
+            path: "sender",
+            select: "fullname username",
+          },
         });
 
       res.json({
         messages,
         result: messages.length,
       });
-    }
-    catch (err) {
+    } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
   },
   deleteConversation: async (req, res) => {
-    const listID = req.params.id.split(".")
+    const listID = req.params.id.split(".");
     //if listID has no req.user._id.toString() push(req.user._id.toString())
     if (!listID.includes(req.user._id.toString())) {
       listID.push(req.user._id.toString());
@@ -305,12 +316,10 @@ const messageCtrl = {
       await newConversation.save();
 
       // update many messages with conversation = newConversation._id
-    await Messages.updateMany(
-      { conversation: newConversation._id },
-      { $set: { [`isVisible.${req.user._id}`]: false } }
-    );
-
-      
+      await Messages.updateMany(
+        { conversation: newConversation._id },
+        { $set: { [`isVisible.${req.user._id}`]: false } }
+      );
 
       res.json({ msg: "Deleted Success!" });
     } catch (err) {

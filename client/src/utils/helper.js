@@ -15,6 +15,17 @@ export const generateObjectId = () => {
 }
 
 export const checkMapTrue = (id, map) => {
-  if (!map || typeof map.get !== 'function') return false;
-  return map.get(id) === true;
+ if (!map) return false;
+
+  // Nếu là Map
+  if (typeof map.get === 'function') {
+    return map.get(id) === true;
+  }
+
+  // Nếu là plain object
+  if (typeof map === 'object') {
+    return map[id] === true;
+  }
+
+  return false;
 }

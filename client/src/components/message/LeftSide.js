@@ -9,6 +9,7 @@ import {
 import Loading from "../Loading";
 import { postDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { checkMapTrue } from "../../utils/helper";
 
 export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
   const { auth, message, online } = useSelector((state) => state);
@@ -24,36 +25,37 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     if (id === user._id) return "active";
     return "";
   };
-  const isRead = (isRead) => {
-    if (isRead === false) return "unread";
-    return "";
+  const isRead = (user) => {
+    const checkUserIsRead = checkMapTrue(auth.user._id, user.isRead);
+    return checkUserIsRead ? "" : "unread";
   };
   const handleClickMessageUser = (user) => {
     //Update UI read messageư
     navigate(`/message/${user._id}`);
 
-    // Check if user from message.users._id
-    const checkUser = message.users.find((item) => item._id === user._id);
-    if (checkUser.text != "") {
-      // Read message action
-      // dispatch({
-      //   type: MESS_TYPES.READMESSAGE,
-      //   payload: {
-      //     id: user._id,
-      //     isRead: true,
-      //   },
-      // });
-      // try {
-      //   //Save to DB read message = true
-      //   postDataAPI(`readMessage/${user._id}`, null, auth.token);
-      // } catch (err) {
-      //   dispatch({
-      //     type: GLOBAL_TYPES.ALERT,
-      //     payload: {
-      //       error: err.response.data.msg,
-      //     },
-      //   });
-      // }
+    let listID = user._id.split(".");
+    // nếu listID chưa có auth.user._id thì thêm vào
+    if (!listID.includes(auth.user._id)) {
+      listID.push(auth.user._id);
+    }
+    // Read message action
+    dispatch({
+      type: MESS_TYPES.READMESSAGE,
+      payload: {
+        id: user._id,
+        userId: auth.user._id,
+      },
+    });
+    try {
+      //Save to DB read message = true
+      postDataAPI(`readMessage/${auth.user._id}`, {listID}, auth.token);
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: err.response.data.msg,
+        },
+      });
     }
   };
 
@@ -64,8 +66,8 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     });
   };
 
-  // UseEffect 
-  
+  // UseEffect
+
   useEffect(() => {
     if (message.firstLoad) return;
     dispatch(
@@ -167,9 +169,7 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
             ) : (
               message.users.map((user) => (
                 <div
-                  className={`message_user ${isRead(user.isRead)}  ${isActive(
-                    user
-                  )}`}
+                  className={`message_user ${isRead(user)}  ${isActive(user)}`}
                   key={user._id}
                   onClick={() => handleClickMessageUser(user)}
                 >
