@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MESS_TYPES, revokeMessage } from "../../redux/actions/messageAction";
 import { useParams } from "react-router-dom";
+import { useRef } from "react";
 
 const MsgDisplay = ({
   user,
@@ -17,12 +18,24 @@ const MsgDisplay = ({
     setIsOptionChat(false);
   }, [isListenCLoseMsgDisplay]);
 
-   const { auth, socket } = useSelector(
-      (state) => state
-    );
+  const { auth, socket } = useSelector((state) => state);
+
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOptionChat(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const dispatch = useDispatch();
-  const {id} = useParams();
+  const { id } = useParams();
   const [isOptionChat, setIsOptionChat] = useState(false);
   const handleReply = (msg) => {
     dispatch({
@@ -35,47 +48,47 @@ const MsgDisplay = ({
       type: MESS_TYPES.EDIT_MESSAGE,
       payload: msg,
     });
-  }
+  };
   const handleRevoke = (msg) => {
     msg = {
       ...msg,
       conversation: {
         idPath: id,
         isGroup: msg.conversation.isGroup,
-        _id : msg.conversation._id,
+        _id: msg.conversation._id,
       },
-    }
+    };
     dispatch(revokeMessage({ auth, msg, socket }));
-  }
+  };
 
   return (
     <>
-    <div className="chat_title">
-            {msg.conversation?.isGroup ? (
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  alignItems: "center",
-                  cursor: "pointer",
-                }}
-              >
-                <Avatar src={msg.sender.avatar} size="avatar-sm"></Avatar>
-                <p
-                  style={{
-                    marginBottom: "0px",
-                    fontSize: "13px",
-                    fontWeight: "500",
-                    color: theme.text,
-                  }}
-                >
-                  {msg.sender.username}
-                </p>
-              </div>
-            ) : (
-              <Avatar src={user.avatar} size="avatar-sm"></Avatar>
-            )}
+      <div className="chat_title">
+        {msg.conversation?.isGroup ? (
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+          >
+            <Avatar src={msg.sender.avatar} size="avatar-sm"></Avatar>
+            <p
+              style={{
+                marginBottom: "0px",
+                fontSize: "13px",
+                fontWeight: "500",
+                color: theme.text,
+              }}
+            >
+              {msg.sender.username}
+            </p>
           </div>
+        ) : (
+          <Avatar src={user.avatar} size="avatar-sm"></Avatar>
+        )}
+      </div>
       {msg && msg.replymessage && (
         <div className="reply_message">
           <div
@@ -124,13 +137,13 @@ const MsgDisplay = ({
                 fontSize: "13px",
                 width: "fit-content",
                 cursor: "pointer",
-                color: "#0505056b"
+                color: "#0505056b",
               }}
             >
-              Đã chỉnh sửa 
+              Đã chỉnh sửa
             </div>
           )}
-          
+
           {msg.isRevoke ? (
             <div
               style={{
@@ -167,6 +180,7 @@ const MsgDisplay = ({
                     </div>
                     {isOptionChat && (
                       <ul
+                        ref={dropdownRef}
                         style={{
                           ...(yourmessage ? { right: "0px" } : { left: "0px" }),
                         }}
@@ -177,9 +191,9 @@ const MsgDisplay = ({
                       >
                         {yourmessage ? (
                           <>
-                            <li
-                            onClick={() => handleEditMessage(msg)}
-                            >Chỉnh sửa</li>
+                            <li onClick={() => handleEditMessage(msg)}>
+                              Chỉnh sửa
+                            </li>
                             <li onClick={() => handleRevoke(msg)}>Thu hồi</li>
                           </>
                         ) : (
