@@ -233,7 +233,7 @@ const messageReducer = (state = initialState, action) => {
     case MESS_TYPES.GET_MESSAGES:
       return {
         ...state,
-        data: [...state.data, action.payload],
+        data: [action.payload],
       };
     case MESS_TYPES.UPDATE_MESSAGES:
       return {
@@ -245,6 +245,12 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         users: DeleteData(state.users, action.payload),
         data: DeleteData(state.data, action.payload),
+      };
+    case MESS_TYPES.ACCEPT_CONVERSATION:
+      return {
+        ...state,
+        //Filter user có _id có action.payload
+        users: state.users.filter((user) => user._id !== action.payload._id),
       };
     case MESS_TYPES.LOADINGCONVERSATIONS:
       return {

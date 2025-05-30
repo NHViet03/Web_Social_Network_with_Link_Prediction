@@ -49,8 +49,6 @@ const SideBar = () => {
     setActive(index);
   };
 
- 
-
   const navLinks = useMemo(
     () => [
       {
@@ -120,13 +118,34 @@ const SideBar = () => {
     }
   }, []);
 
+  const handleCallNumberUnReadMess= () => {
+    const fetchNumberNewMessage = async () => {
+      try {
+        const res = await getDataAPI("numberNewMessage", auth.token);
+        dispatch({
+          type: MESS_TYPES.NUMBERNEWMESSAGE,
+          payload: res.data?.numberNewMessage,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (auth.token) {
+      fetchNumberNewMessage();
+    }
+  };
+
   return (
-    <div className="menu">
+    <div className="menu" >
       <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-column">
         {navLinks.map((link, index) => (
-           <React.Fragment key={index}>
+          <React.Fragment key={index}>
             {link.path ? (
-              <div onClick={() => handleClickMenuItem(index)}>
+              <div onClick={() => {
+                handleClickMenuItem(index);
+                handleCallNumberUnReadMess();
+              }}>
                 <MenuItem
                   link={link}
                   active={active === index ? true : ""}
@@ -140,7 +159,10 @@ const SideBar = () => {
                 }
                 ${link.label === "Thông báo" && isShowNotify ? "active" : ""}
                 `}
-                onClick={link.onClick}
+                onClick={() => {
+                  link.onClick();
+                  handleCallNumberUnReadMess();
+                }}
                 style={{
                   cursor: "pointer",
                 }}

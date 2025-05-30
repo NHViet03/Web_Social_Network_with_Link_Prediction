@@ -10,6 +10,7 @@ export const MESS_TYPES ={
     GET_MESSAGES: 'GET_MESSAGES',
     UPDATE_MESSAGES: 'UPDATE_MESSAGES',
     DELETE_CONVERSATION: 'DELETE_CONVERSATION',
+    ACCEPT_CONVERSATION: 'ACCEPT_CONVERSATION',
     CHECK_ONLINE_OFFLINE: 'CHECK_ONLINE_OFFLINE',
     LOADINGCONVERSATIONS: 'LOADING_CONVERSATIONS',
     MAINBOXMESSAGE : 'MAINBOXMESSAGE',
@@ -108,8 +109,12 @@ export const getConversations =
   };
 
 
-export const acceptConversation = ({auth, listID}) => async (dispatch) => {
+export const acceptConversation = ({auth, listID,id}) => async (dispatch) => {
     try {
+        dispatch({
+            type: MESS_TYPES.ACCEPT_CONVERSATION,
+            payload: {_id: id}
+        })
      await putDataAPI('accept-conversation', {listID}, auth.token);
 
     } catch (err) {

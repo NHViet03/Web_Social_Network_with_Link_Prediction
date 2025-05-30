@@ -22,6 +22,7 @@ import Picker from "@emoji-mart/react";
 import CallModal from "./CallModal";
 import Loading from "../Loading";
 import { checkMapTrue, generateObjectId } from "../../utils/helper";
+import { set } from "mongoose";
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -40,6 +41,7 @@ const RightSide = () => {
   const [page, setPage] = useState(0);
   const [result, setResult] = useState(9);
   const [isLoadMore, setIsLoadMore] = useState(0);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const [loadMedia, setLoadMedia] = useState(false);
   const [isWaitingBox, setIsWaitingBox] = useState(false);
@@ -61,6 +63,7 @@ const RightSide = () => {
       setResult(newData.result);
       setPage(newData.page);
     }
+    setIsLoadingMessages(false);
     // Kiểm tra phải tin nhắn chờ hay không
     const user = message?.users.find((user) => user._id === id);
     if (!user) return;
@@ -84,9 +87,11 @@ const RightSide = () => {
 
   // Lấy dữ liệu tin nhắn từ backend nếu chưa có
   useEffect(() => {
-    const getMessagesData = async () => {
+    const getMessagesData = () => {
       if (message.data.every((item) => item._id !== id)) {
-        await dispatch(getMessages({ auth, id }));
+        setIsLoadingMessages(true);
+        setData([]);
+        dispatch(getMessages({ auth, id }));
         setTimeout(() => {
           if (refDisplay.current) {
             refDisplay.current.scrollIntoView({
@@ -126,8 +131,9 @@ const RightSide = () => {
   }, [isLoadMore]);
   const handleAcceptWaitingBox = () => {
     const recipientID = id.split(".");
-    dispatch(acceptConversation({ auth, listID: recipientID }));
+    dispatch(acceptConversation({ auth, listID: recipientID, id: id }));
     setIsWaitingBox(false);
+    navigate("/message");
   };
 
   // Tự động cuộn xuống khi người dùng gõ chữ
@@ -369,38 +375,60 @@ const RightSide = () => {
           >
             Load More
           </button>
-          {data1.map((msg, index) => (
-            <div key={index}>
-              {msg.sender._id !== auth.user._id && (
-                <div
-                  className="conversation-message_chat_row other_message"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MsgDisplay
-                    user={user}
-                    msg={msg}
-                    theme={theme}
-                    yourmessage={false}
-                    isListenCLoseMsgDisplay={isListenCLoseMsgDisplay}
-                  />
-                </div>
-              )}
-              {msg.sender._id === auth.user._id && (
-                <div
-                  className="conversation-message_chat_row your-message"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MsgDisplay
-                    user={auth.user}
-                    msg={msg}
-                    theme={theme}
-                    yourmessage={true}
-                    isListenCLoseMsgDisplay={isListenCLoseMsgDisplay}
-                  />
-                </div>
-              )}
+          {/* Thẻ div ở giữa: Đang tải đoạn chat... */}
+          {isLoadingMessages && (
+            <div
+              className="conversation-message_chat_row"
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <div
+                className="loading-conversation"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+              >
+                <Loading />
+                <div>Đang tải đoạn chat...</div>
+              </div>
             </div>
-          ))}
+          )}
+
+          {!isLoadingMessages &&
+            data1.map((msg, index) => (
+              <div key={index}>
+                {msg.sender._id !== auth.user._id && (
+                  <div
+                    className="conversation-message_chat_row other_message"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MsgDisplay
+                      user={user}
+                      msg={msg}
+                      theme={theme}
+                      yourmessage={false}
+                      isListenCLoseMsgDisplay={isListenCLoseMsgDisplay}
+                    />
+                  </div>
+                )}
+                {msg.sender._id === auth.user._id && (
+                  <div
+                    className="conversation-message_chat_row your-message"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MsgDisplay
+                      user={auth.user}
+                      msg={msg}
+                      theme={theme}
+                      yourmessage={true}
+                      isListenCLoseMsgDisplay={isListenCLoseMsgDisplay}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
           <div className="show_media">
             {media.map((item, index) => (
               <div key={index} id="file_media">

@@ -64,6 +64,7 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
   };
 
   const handleChangeMainBoxMessage = (mainBoxMessage) => {
+    navigate("/message");
     dispatch({
       type: MESS_TYPES.MAINBOXMESSAGE,
       payload: mainBoxMessage,
