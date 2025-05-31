@@ -4,6 +4,7 @@ import { NOTIFIES_TYPES } from "./redux/actions/notifyAction";
 import { MESS_TYPES } from "./redux/actions/messageAction";
 import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
 import { checkMapTrue } from "./utils/helper";
+import { getDataAPI } from "./utils/fetchData";
 
 const SocketClient = () => {
   const auth = useSelector((state) => state.auth);
@@ -37,26 +38,40 @@ const SocketClient = () => {
     return () => socket.off("removeNotifyToClient");
   }, [dispatch, socket]);
 
+  // Gọi để cập nhật số lượng tin nhắn mới
+  const fetchNumberNewMessage = async () => {
+    try {
+      const res = await getDataAPI("numberNewMessage", auth.token);
+      console.log("res.data?.numberNewMessage", res.data?.numberNewMessage);
+      dispatch({
+        type: MESS_TYPES.NUMBERNEWMESSAGE,
+        payload: res.data?.numberNewMessage,
+      });
+    } catch (err) {
+      console.error("Lỗi khi lấy số lượng tin nhắn mới:", err);
+    }
+  };
+
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
+      console.log("O day goi ahahaha");
+      fetchNumberNewMessage();
+      console.log("O day goi addMessageToClient");
       dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
 
       const checkUserAccept = checkMapTrue(
         auth.user._id,
         msg.conversation.recipientAccept
       );
-      // Nếu checkUserAccept là true thì sẽ dispatch ADD_USER_SECOND
-      console.log("checkUserAccept", checkUserAccept);
-      console.log("message.mainBoxMessage", message.mainBoxMessage);
       if (
         (checkUserAccept && message.mainBoxMessage) ||
         (!checkUserAccept && !message.mainBoxMessage)
       ) {
-        console.log("Ok rồi");
-        dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg } );
+        dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
       }
     });
+
     return () => socket.off("addMessageToClient");
   }, [dispatch, socket, auth.user._id, message.mainBoxMessage]);
 

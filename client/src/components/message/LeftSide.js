@@ -48,10 +48,6 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     });
     try {
       //Save to DB read message = true
-       dispatch({
-      type: MESS_TYPES.NUMBERNEWMESSAGE_MINUS,
-      payload: { },
-    });
       postDataAPI(`readMessage/${auth.user._id}`, {listID}, auth.token);
     } catch (err) {
       dispatch({

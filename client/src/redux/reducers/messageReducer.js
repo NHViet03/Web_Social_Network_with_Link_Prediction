@@ -1,6 +1,6 @@
 import { MESS_TYPES } from "../actions/messageAction";
 import { EditData, DeleteData } from "../actions/globalTypes";
-import { arraysEqualIgnoreOrder } from "../../utils/helper";
+import { arraysEqualIgnoreOrder, checkMapTrue } from "../../utils/helper";
 import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
 
 const initialState = {
@@ -268,11 +268,20 @@ const messageReducer = (state = initialState, action) => {
         numberNewMessage: action.payload,
       };
     case MESS_TYPES.NUMBERNEWMESSAGE_MINUS:
-      return {
-        ...state,
-        numberNewMessage:
-          state.numberNewMessage > 0 ? state.numberNewMessage - 1 : 0,
-      };
+      // Lặp qua tưng user trong state.users
+      const user = state.users.find((user) =>
+        arraysEqualIgnoreOrder(user._id.split("."), action.payload.listID)
+      );
+      // Nếu tìm thấy user, kiểm tra xem user.isRead có chứa action.payload.userID = false không
+      if (user && !checkMapTrue(action.payload.userID, user.isRead)) {
+        // trả về state với numberNewMessage giảm đi 1
+        return {
+          ...state,
+          numberNewMessage: state.numberNewMessage - 1,
+        };
+      }
+      // Nếu không tìm thấy user hoặc user.isRead chứa action.payload.userID = true, không làm gì cả
+      return state;
     case MESS_TYPES.SOCKET_ISREADMESSAGE:
       return {
         ...state,
@@ -283,20 +292,30 @@ const messageReducer = (state = initialState, action) => {
         ),
       };
     case MESS_TYPES.READMESSAGE:
+      let shouldDecrease = false;
+
+      const updatedUsers = state.users.map((user) => {
+        if (user._id === action.payload.id) {
+          shouldDecrease = true;
+          return {
+            ...user,
+            isRead: {
+              ...user.isRead,
+              [action.payload.userId]: true,
+            },
+          };
+        }
+        return user;
+      });
+
       return {
         ...state,
-        users: state.users.map((user) =>
-          user._id === action.payload.id
-            ? {
-                ...user,
-                isRead: {
-                  ...user.isRead,
-                  [action.payload.userId]: true,
-                },
-              }
-            : user
-        ),
+        users: updatedUsers,
+        numberNewMessage: shouldDecrease
+          ? Math.max(state.numberNewMessage - 1, 0)
+          : state.numberNewMessage,
       };
+
     case MESS_TYPES.REPLY_MESSAGE:
       return {
         ...state,

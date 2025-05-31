@@ -158,10 +158,6 @@ const RightSide = () => {
     });
     try {
       //Save to DB read message = true
-      dispatch({
-        type: MESS_TYPES.NUMBERNEWMESSAGE_MINUS,
-        payload: {},
-      });
       const listID = id.split(".");
       postDataAPI(`readMessage/${auth.user._id}`, { listID }, auth.token);
     } catch (err) {

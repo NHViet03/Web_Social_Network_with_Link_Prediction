@@ -99,6 +99,7 @@ const SideBar = () => {
       handleShowNotify,
       handleShowSearch,
       notify.notifies,
+      message.numberNewMessage,
     ]
   );
 
@@ -118,23 +119,6 @@ const SideBar = () => {
     }
   }, []);
 
-  const handleCallNumberUnReadMess= () => {
-    const fetchNumberNewMessage = async () => {
-      try {
-        const res = await getDataAPI("numberNewMessage", auth.token);
-        dispatch({
-          type: MESS_TYPES.NUMBERNEWMESSAGE,
-          payload: res.data?.numberNewMessage,
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    if (auth.token) {
-      fetchNumberNewMessage();
-    }
-  };
 
   return (
     <div className="menu" >
@@ -144,7 +128,6 @@ const SideBar = () => {
             {link.path ? (
               <div onClick={() => {
                 handleClickMenuItem(index);
-                handleCallNumberUnReadMess();
               }}>
                 <MenuItem
                   link={link}
@@ -161,7 +144,6 @@ const SideBar = () => {
                 `}
                 onClick={() => {
                   link.onClick();
-                  handleCallNumberUnReadMess();
                 }}
                 style={{
                   cursor: "pointer",
