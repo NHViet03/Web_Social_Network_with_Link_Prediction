@@ -127,7 +127,7 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
   };
   return (
     <div className="modal-addmess">
-      <div className="modal-addmess_content">
+      <div className="modal-addmess_content" style={{ minHeight: "700px" }}>
         <div className="modal-addmess_header">
           <div></div>
           <h5 className="modal-addmess_content-h5">Tạo tin nhắn nhóm mới</h5>
@@ -232,6 +232,7 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
                   <input
                     type="checkbox"
                     className="form-check-input"
+                    style={{ border: "1px solid #db4e20" }}
                     id={user._id}
                     onChange={() => handleAddUserGroupChat(user)}
                     checked={groupUsersChat.some(

@@ -13,6 +13,7 @@ const initialState = {
   numberNewMessage: 0,
   replyMessage: null,
   editMessage: null,
+  modalManageGroup: null,
 };
 
 const messageReducer = (state = initialState, action) => {
@@ -512,6 +513,11 @@ const messageReducer = (state = initialState, action) => {
 
           return item;
         }),
+      };
+    case MESS_TYPES.MODAL_MANAGE_GROUP:
+      return {
+        ...state,
+        modalManageGroup: action.payload,
       };
     default:
       return state;

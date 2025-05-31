@@ -22,7 +22,7 @@ import Picker from "@emoji-mart/react";
 import CallModal from "./CallModal";
 import Loading from "../Loading";
 import { checkMapTrue, generateObjectId } from "../../utils/helper";
-import { set } from "mongoose";
+import ModalManageGroup from "./ModalManageGroup";
 import { postDataAPI } from "../../utils/fetchData";
 
 const RightSide = () => {
@@ -140,6 +140,18 @@ const RightSide = () => {
 
   //============================ Function ========================
 
+  const handleMangeGroup = (id) => {
+    let recipientID = id.split(".");
+    if (!recipientID.includes(auth.user._id)) {
+      recipientID.push(auth.user._id);
+    }
+    dispatch({
+      type: MESS_TYPES.MODAL_MANAGE_GROUP,
+      payload: {
+        listID: recipientID,
+      },
+    });
+  };
   const handleAcceptWaitingBox = () => {
     const recipientID = id.split(".");
     dispatch(acceptConversation({ auth, listID: recipientID, id: id }));
@@ -345,7 +357,11 @@ const RightSide = () => {
                 class="fa-solid fa-trash"
                 onClick={handleDeleteConversation(user)}
               ></i>
-              <i class="fa-solid fa-circle-info"></i>
+              <i
+                class="fa-solid fa-circle-info"
+                onClick={() => handleMangeGroup(id)}
+              ></i>
+              {message.modalManageGroup && <ModalManageGroup />}
             </>
           ) : (
             <>

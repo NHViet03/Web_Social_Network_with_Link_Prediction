@@ -25,6 +25,7 @@ export const MESS_TYPES ={
     EDIT_MESSAGE_SOCKET_SECOND: 'EDIT_MESSAGE_SOCKET_SECOND',
     REVOKE_MESSAGE_FIRST: 'REVOKE_MESSAGE_FIRST',
     REVOKE_MESSAGE_SECOND: 'REVOKE_MESSAGE_SECOND',
+    MODAL_MANAGE_GROUP: 'MODAL_MANAGE_GROUP',
 }
 
 export const addMessage = ({msg, auth, socket}) => async (dispatch) => {
