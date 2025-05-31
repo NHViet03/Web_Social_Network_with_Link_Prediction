@@ -23,6 +23,7 @@ import CallModal from "./CallModal";
 import Loading from "../Loading";
 import { checkMapTrue, generateObjectId } from "../../utils/helper";
 import { set } from "mongoose";
+import { postDataAPI } from "../../utils/fetchData";
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -144,6 +145,33 @@ const RightSide = () => {
   }, [text]);
 
   // Function
+
+  const haneleClickChatInput = () => {
+    // Read message action
+    dispatch({
+      type: MESS_TYPES.READMESSAGE,
+      payload: {
+        id: user._id,
+        userId: auth.user._id,
+      },
+    });
+    try {
+      //Save to DB read message = true
+      dispatch({
+        type: MESS_TYPES.NUMBERNEWMESSAGE_MINUS,
+        payload: {},
+      });
+      const listID = id.split(".");
+      postDataAPI(`readMessage/${auth.user._id}`, { listID }, auth.token);
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: err.response.data.msg,
+        },
+      });
+    }
+  };
 
   const handleEditMessage = async (msg, textEdit) => {
     if (!textEdit.trim()) return;
@@ -447,75 +475,53 @@ const RightSide = () => {
         </div>
       </div>
 
-      <form className="conversation-message_chat-input" onSubmit={handleSubmit}>
-        {message.replyMessage && (
+      {isWaitingBox && (
+        <form
+          className="conversation-message_chat-input"
+          style={{ padding: "20px", display: "flex", justifyContent: "center" }}
+        >
           <div
             style={{
-              position: "absolute",
-              top: "0",
-              left: "0",
-              right: "0",
-              zIndex: "10",
-              backgroundColor: "#D97B5C",
-              color: "white",
-              padding: "10px",
-              borderRadius: "10px",
-              transform: "translateY(-50px)",
-              margin: "0 10px",
-              display: "flex",
-              justifyContent: "space-between",
+              fontSize: "16px",
+              fontWeight: "500",
+              color: "rgb(120 120 120)",
+              cursor: "pointer",
+              textAlign: "center",
             }}
           >
-            <div>{message.replyMessage.text}</div>
-            <div
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                dispatch({
-                  type: MESS_TYPES.REPLY_MESSAGE,
-                  payload: null,
-                });
-              }}
-            >
-              x
-            </div>
+            Bạn phải chấp nhận tin nhắn mới có thể nhắn tin
           </div>
-        )}
-        {message.editMessage && (
-          <div
-            style={{
-              position: "absolute",
-              top: "0",
-              left: "0",
-              right: "0",
-              zIndex: "10",
-              backgroundColor: "#D97B5C",
-              color: "white",
-              padding: "10px",
-              borderRadius: "10px",
-              transform: "translateY(-90px)",
-              margin: "0 10px",
-              display: "flex",
-              gap: "10px",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-          >
+        </form>
+      )}
+      {!isWaitingBox && (
+        <form
+          className="conversation-message_chat-input"
+          onSubmit={handleSubmit}
+        >
+          {message.replyMessage && (
             <div
               style={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                right: "0",
+                zIndex: "10",
+                backgroundColor: "#D97B5C",
+                color: "white",
+                padding: "10px",
+                borderRadius: "10px",
+                transform: "translateY(-50px)",
+                margin: "0 10px",
                 display: "flex",
                 justifyContent: "space-between",
-                alignItems: "center",
-                fontWeight: "500",
-                fontSize: "15px",
-                cursor: "pointer",
               }}
             >
-              <div>Chỉnh sửa tin nhắn</div>
+              <div>{message.replyMessage.text}</div>
               <div
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   dispatch({
-                    type: MESS_TYPES.EDIT_MESSAGE,
+                    type: MESS_TYPES.REPLY_MESSAGE,
                     payload: null,
                   });
                 }}
@@ -523,99 +529,145 @@ const RightSide = () => {
                 x
               </div>
             </div>
+          )}
+          {message.editMessage && (
             <div
               style={{
+                position: "absolute",
+                top: "0",
+                left: "0",
+                right: "0",
+                zIndex: "10",
+                backgroundColor: "#D97B5C",
+                color: "white",
+                padding: "10px",
+                borderRadius: "10px",
+                transform: "translateY(-90px)",
+                margin: "0 10px",
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
                 gap: "10px",
-                fontSize: "13px",
-                fontWeight: "500",
-                color: theme.text,
+                flexDirection: "column",
+                justifyContent: "space-between",
               }}
             >
-              <input
-                type="text"
-                value={textEdit}
-                onChange={(e) => setTextEdit(e.target.value)}
-                //Enter
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleEditMessage(message.editMessage, textEdit);
-                  }
-                }}
-                placeholder="Nhập tin nhắn..."
+              <div
                 style={{
-                  width: "100%",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  border: "none",
-                  backgroundColor: "#fff",
-                  color: "black",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontWeight: "500",
+                  fontSize: "15px",
+                  cursor: "pointer",
                 }}
-              />
-              <div>
-                <i
-                  onClick={() =>
-                    handleEditMessage(message.editMessage, textEdit)
-                  }
-                  style={{
-                    cursor: "pointer",
-                    fontSize: "20px",
-                    color: "#e2ef36",
-                    hover: "red",
+              >
+                <div>Chỉnh sửa tin nhắn</div>
+                <div
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    dispatch({
+                      type: MESS_TYPES.EDIT_MESSAGE,
+                      payload: null,
+                    });
                   }}
-                  class="fa-solid fa-circle-check"
-                ></i>
+                >
+                  x
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
+                  fontSize: "13px",
+                  fontWeight: "500",
+                  color: theme.text,
+                }}
+              >
+                <input
+                  type="text"
+                  value={textEdit}
+                  onChange={(e) => setTextEdit(e.target.value)}
+                  //Enter
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleEditMessage(message.editMessage, textEdit);
+                    }
+                  }}
+                  placeholder="Nhập tin nhắn..."
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "10px",
+                    border: "none",
+                    backgroundColor: "#fff",
+                    color: "black",
+                  }}
+                />
+                <div>
+                  <i
+                    onClick={() =>
+                      handleEditMessage(message.editMessage, textEdit)
+                    }
+                    style={{
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      color: "#e2ef36",
+                      hover: "red",
+                    }}
+                    class="fa-solid fa-circle-check"
+                  ></i>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Nhập tin nhắn..."
-        />
-        <div className="conversation-message_chat-input-btn ">
-          <i
-            className="fa-regular fa-face-grin"
-            onClick={() => setShowEmoji(!showEmoji)}
+          )}
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onClick={haneleClickChatInput}
+            placeholder="Nhập tin nhắn..."
           />
-          {showEmoji && (
-            <div className="form-emoji-picker_mess">
-              <Picker
-                data={data}
-                previewPosition="none"
-                searchPosition="none"
-                theme="light"
-                set="native"
-                locale="vi"
-                perLine="7"
-                maxFrequentRows={14}
-                emojiSize={28}
-                navPosition="bottom"
-                onEmojiSelect={handleEmojiSelect}
+          <div className="conversation-message_chat-input-btn ">
+            <i
+              className="fa-regular fa-face-grin"
+              onClick={() => setShowEmoji(!showEmoji)}
+            />
+            {showEmoji && (
+              <div className="form-emoji-picker_mess">
+                <Picker
+                  data={data}
+                  previewPosition="none"
+                  searchPosition="none"
+                  theme="light"
+                  set="native"
+                  locale="vi"
+                  perLine="7"
+                  maxFrequentRows={14}
+                  emojiSize={28}
+                  navPosition="bottom"
+                  onEmojiSelect={handleEmojiSelect}
+                />
+              </div>
+            )}
+            <div className="file_upload">
+              <i class="fa-regular fa-image"></i>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                multiple
+                accept="image/*, video/*"
+                onChange={handleChangeMedia}
               />
             </div>
-          )}
-          <div className="file_upload">
-            <i class="fa-regular fa-image"></i>
-            <input
-              type="file"
-              name="file"
-              id="file"
-              multiple
-              accept="image/*, video/*"
-              onChange={handleChangeMedia}
-            />
-          </div>
 
-          <button className="button_submit_mess" type="Submit">
-            <i className="fa-regular fa-paper-plane"></i>
-          </button>
-        </div>
-      </form>
+            <button className="button_submit_mess" type="Submit">
+              <i className="fa-regular fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 };

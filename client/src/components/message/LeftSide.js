@@ -69,6 +69,9 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
       type: MESS_TYPES.MAINBOXMESSAGE,
       payload: mainBoxMessage,
     });
+    dispatch(
+      getConversations({ auth, mainBoxMessage: mainBoxMessage })
+    );
   };
 
   // UseEffect
