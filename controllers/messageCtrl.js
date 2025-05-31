@@ -288,7 +288,7 @@ const messageCtrl = {
         .populate("conversation", "isGroup")
         .populate({
           path: "replymessage",
-          select: "text media sender",
+          select: "text media sender isRevoke",
           populate: {
             path: "sender",
             select: "fullname username",

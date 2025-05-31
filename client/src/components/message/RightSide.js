@@ -48,7 +48,7 @@ const RightSide = () => {
   const [isWaitingBox, setIsWaitingBox] = useState(false);
   const [isListenCLoseMsgDisplay, setIsListenCLoseMsgDisplay] = useState(false);
 
-  // UseEffect
+  // ====================== UseEffect ========================
   // Lấy tin nhắn đang được chỉnh sửa
   useEffect(() => {
     if (message.editMessage) {
@@ -130,12 +130,6 @@ const RightSide = () => {
       }
     }
   }, [isLoadMore]);
-  const handleAcceptWaitingBox = () => {
-    const recipientID = id.split(".");
-    dispatch(acceptConversation({ auth, listID: recipientID, id: id }));
-    setIsWaitingBox(false);
-    navigate("/message");
-  };
 
   // Tự động cuộn xuống khi người dùng gõ chữ
   useEffect(() => {
@@ -144,7 +138,14 @@ const RightSide = () => {
     }
   }, [text]);
 
-  // Function
+  //============================ Function ========================
+
+  const handleAcceptWaitingBox = () => {
+    const recipientID = id.split(".");
+    dispatch(acceptConversation({ auth, listID: recipientID, id: id }));
+    setIsWaitingBox(false);
+    navigate("/message");
+  };
 
   const haneleClickChatInput = () => {
     // Read message action
@@ -331,6 +332,8 @@ const RightSide = () => {
     caller({ video: true });
     callUser({ video: true });
   };
+
+  // ====================== Render UI ========================
 
   return (
     <div className="conversation-message">

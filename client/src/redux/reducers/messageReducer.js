@@ -315,15 +315,33 @@ const messageReducer = (state = initialState, action) => {
           item._id === action.payload.conversation.idPath
             ? {
                 ...item,
-                messages: item.messages.map((msg) =>
-                  msg._id === action.payload._id
-                    ? {
-                        ...msg,
-                        text: action.payload.textEdit,
-                        isEdit: true,
-                      }
-                    : msg
-                ),
+                messages: item.messages.map((msg) => {
+                  // Logic 1: Cập nhật chính tin nhắn bị sửa
+                  if (msg._id === action.payload._id) {
+                    return {
+                      ...msg,
+                      text: action.payload.textEdit,
+                      isEdit: true,
+                    };
+                  }
+
+                  // Logic 2: Nếu là tin nhắn trả lời và replymessage._id trùng
+                  if (
+                    msg.replymessage &&
+                    msg.replymessage._id === action.payload._id
+                  ) {
+                    return {
+                      ...msg,
+                      replymessage: {
+                        ...msg.replymessage,
+                        text: action.payload.textEdit, // giả sử muốn cập nhật text của replyMessage luôn
+                      },
+                    };
+                  }
+
+                  // Không thay đổi
+                  return msg;
+                }),
               }
             : item
         ),
@@ -341,15 +359,33 @@ const messageReducer = (state = initialState, action) => {
           if (checkListID) {
             return {
               ...item,
-              messages: item.messages.map((msg) =>
-                msg._id === action.payload._id
-                  ? {
-                      ...msg,
-                      text: action.payload.textEdit,
-                      isEdit: true,
-                    }
-                  : msg
-              ),
+              messages: item.messages.map((msg) => {
+                // Logic 1: Cập nhật chính tin nhắn bị sửa
+                if (msg._id === action.payload._id) {
+                  return {
+                    ...msg,
+                    text: action.payload.textEdit,
+                    isEdit: true,
+                  };
+                }
+
+                // Logic 2: Nếu là tin nhắn trả lời và replymessage._id trùng
+                if (
+                  msg.replymessage &&
+                  msg.replymessage._id === action.payload._id
+                ) {
+                  return {
+                    ...msg,
+                    replymessage: {
+                      ...msg.replymessage,
+                      text: action.payload.textEdit, // giả sử muốn cập nhật text của replyMessage luôn
+                    },
+                  };
+                }
+
+                // Không thay đổi
+                return msg;
+              }),
             };
           }
           return item;
@@ -384,11 +420,31 @@ const messageReducer = (state = initialState, action) => {
           item._id === action.payload.conversation.idPath
             ? {
                 ...item,
-                messages: item.messages.map((msg) =>
-                  msg._id === action.payload._id
-                    ? { ...msg, isRevoke: true }
-                    : msg
-                ),
+                messages: item.messages.map((msg) => {
+                  // 1. Tin nhắn bị thu hồi
+                  if (msg._id === action.payload._id) {
+                    return {
+                      ...msg,
+                      isRevoke: true,
+                    };
+                  }
+
+                  // 2. Tin nhắn khác có replymessage trỏ đến tin nhắn bị thu hồi
+                  if (
+                    msg.replymessage &&
+                    msg.replymessage._id === action.payload._id
+                  ) {
+                    return {
+                      ...msg,
+                      replymessage: {
+                        ...msg.replymessage,
+                        isRevoke: true,
+                      },
+                    };
+                  }
+
+                  return msg;
+                }),
               }
             : item
         ),
@@ -403,16 +459,38 @@ const messageReducer = (state = initialState, action) => {
         data: state.data.map((item) => {
           const listIDItem = item._id.split(".");
           const checkListID = arraysEqualIgnoreOrder(listIDItem, listIDRevoke);
+
           if (checkListID) {
             return {
               ...item,
-              messages: item.messages.map((msg) =>
-                msg._id === action.payload._id
-                  ? { ...msg, isRevoke: true }
-                  : msg
-              ),
+              messages: item.messages.map((msg) => {
+                // 1. Tin nhắn bị thu hồi
+                if (msg._id === action.payload._id) {
+                  return {
+                    ...msg,
+                    isRevoke: true,
+                  };
+                }
+
+                // 2. Tin nhắn có replymessage trỏ đến tin nhắn bị thu hồi
+                if (
+                  msg.replymessage &&
+                  msg.replymessage._id === action.payload._id
+                ) {
+                  return {
+                    ...msg,
+                    replymessage: {
+                      ...msg.replymessage,
+                      isRevoke: true,
+                    },
+                  };
+                }
+
+                return msg;
+              }),
             };
           }
+
           return item;
         }),
       };

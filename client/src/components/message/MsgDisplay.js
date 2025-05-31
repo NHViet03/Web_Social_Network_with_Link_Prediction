@@ -124,7 +124,7 @@ const MsgDisplay = ({
                 width: "100%",
               }}
             >
-              {msg.replymessage.text}
+              {msg.replymessage.isRevoke ? "Đã thu hồi tin nhắn" :msg.replymessage.text}
             </div>
           </div>
         </div>

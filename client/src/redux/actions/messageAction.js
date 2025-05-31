@@ -194,7 +194,6 @@ export const revokeMessage = ({auth, msg, socket}) => async (dispatch) => {
 
 export const editMessage = ({auth, msg, textEdit, socket}) => async (dispatch) => {
 
-   
     try {
        dispatch({
             type: MESS_TYPES.EDIT_MESSAGE,
