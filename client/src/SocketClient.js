@@ -40,21 +40,25 @@ const SocketClient = () => {
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
-      console.log("message", msg);
       dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
-      if (message?.mainBoxMessage === true) {
-        const check = checkMapTrue(
-          auth.user.id,
-          msg.conversation.recipientAccept
-        );
-        if (check) {
-          console.log("Dung roi do");
-          dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
-        }
+
+      const checkUserAccept = checkMapTrue(
+        auth.user._id,
+        msg.conversation.recipientAccept
+      );
+      // Nếu checkUserAccept là true thì sẽ dispatch ADD_USER_SECOND
+      console.log("checkUserAccept", checkUserAccept);
+      console.log("message.mainBoxMessage", message.mainBoxMessage);
+      if (
+        (checkUserAccept && message.mainBoxMessage) ||
+        (!checkUserAccept && !message.mainBoxMessage)
+      ) {
+        console.log("Ok rồi");
+        dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg } );
       }
     });
     return () => socket.off("addMessageToClient");
-  }, [dispatch, socket]);
+  }, [dispatch, socket, auth.user._id, message.mainBoxMessage]);
 
   //editMessageToClient
   useEffect(() => {

@@ -18,7 +18,7 @@ const MsgDisplay = ({
     setIsOptionChat(false);
   }, [isListenCLoseMsgDisplay]);
 
-  const { auth, socket } = useSelector((state) => state);
+  const { auth, socket, message } = useSelector((state) => state);
 
   const dropdownRef = useRef(null);
   useEffect(() => {
@@ -124,7 +124,9 @@ const MsgDisplay = ({
                 width: "100%",
               }}
             >
-              {msg.replymessage.isRevoke ? "Đã thu hồi tin nhắn" :msg.replymessage.text}
+              {msg.replymessage.isRevoke
+                ? "Đã thu hồi tin nhắn"
+                : msg.replymessage.text}
             </div>
           </div>
         </div>
@@ -175,9 +177,11 @@ const MsgDisplay = ({
                       position: "relative",
                     }}
                   >
-                    <div onClick={() => setIsOptionChat(!isOptionChat)}>
-                      ...
-                    </div>
+                    {message.mainBoxMessage && (
+                      <div onClick={() => setIsOptionChat(!isOptionChat)}>
+                        ...
+                      </div>
+                    )}
                     {isOptionChat && (
                       <ul
                         ref={dropdownRef}
