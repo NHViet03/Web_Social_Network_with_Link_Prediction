@@ -23,7 +23,7 @@ import CallModal from "./CallModal";
 import Loading from "../Loading";
 import { checkMapTrue, generateObjectId } from "../../utils/helper";
 import ModalManageGroup from "./ModalManageGroup";
-import { postDataAPI } from "../../utils/fetchData";
+import { getDataAPI, postDataAPI } from "../../utils/fetchData";
 
 const RightSide = () => {
   const { auth, message, theme, socket, call, peer } = useSelector(
@@ -140,16 +140,10 @@ const RightSide = () => {
 
   //============================ Function ========================
 
-  const handleMangeGroup = (id) => {
-    let recipientID = id.split(".");
-    if (!recipientID.includes(auth.user._id)) {
-      recipientID.push(auth.user._id);
-    }
+  const handleMangeGroup = () => {
     dispatch({
       type: MESS_TYPES.MODAL_MANAGE_GROUP,
-      payload: {
-        listID: recipientID,
-      },
+      payload: true,
     });
   };
   const handleAcceptWaitingBox = () => {
@@ -359,7 +353,7 @@ const RightSide = () => {
               ></i>
               <i
                 class="fa-solid fa-circle-info"
-                onClick={() => handleMangeGroup(id)}
+                onClick={() => handleMangeGroup()}
               ></i>
               {message.modalManageGroup && <ModalManageGroup />}
             </>

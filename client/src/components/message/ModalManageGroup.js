@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserCard from "../UserCard";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
@@ -10,12 +10,65 @@ import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
 export const ModalManageGroup = () => {
   const navigate = useNavigate();
   const { auth, message } = useSelector((state) => state);
+  const { id } = useParams();
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [searchUsers, setSearchUser] = useState([]);
   const [groupUsersChat, setGroupUsersChat] = useState([]);
   const [load, setLoad] = useState(false);
+  const [loadInfoGroup, setLoadInfoGroup] = useState(false);
   const [isBoxManageGroup, setIsBoxManageGroup] = useState(true);
+  const [activeDropdownUserId, setActiveDropdownUserId] = useState(null);
+
+  //====UseEffect====
+  //useEffect gọi tới API conversation/${id} để lấy thông tin cuộc trò chuyện
+  const fetchConversation = async () => {
+    try {
+      setLoadInfoGroup(true);
+      const res = await getDataAPI(`conversation/${id}`, auth.token);
+      dispatch({
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: res.data.conversation,
+      });
+      setLoadInfoGroup(false);
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+  useEffect(() => {
+    fetchConversation();
+  }, [id, auth.token, dispatch]);
+
+  // ====Functions====
+  const handleToggleDropdown = (userId) => {
+    if (activeDropdownUserId === userId) {
+      setActiveDropdownUserId(null);
+    } else {
+      setActiveDropdownUserId(userId);
+    }
+  };
+
+  const handleAssignAdmin = (userId) => {
+    console.log("Chỉ định admin cho:", userId);
+    // TODO: Gửi API hoặc dispatch redux để cập nhật admin
+    setActiveDropdownUserId(null);
+  };
+
+  const handleRemoveAdmin = (userId) => {
+    console.log("Xóa quyền admin của:", userId);
+    // TODO: Gửi API hoặc dispatch redux để xóa quyền admin
+    setActiveDropdownUserId(null);
+  };
+
+  const handleRemoveFromGroup = (userId) => {
+    console.log("Xóa khỏi nhóm:", userId);
+    // TODO: Gửi API hoặc dispatch redux để xóa người dùng khỏi nhóm
+    setActiveDropdownUserId(null);
+  };
+
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!search) return setSearchUser([]);
@@ -122,6 +175,10 @@ export const ModalManageGroup = () => {
       setGroupUsersChat([...groupUsersChat, user]);
     }
   };
+  const handleChangeBoxManage = (isManageGroup) => {
+    fetchConversation();
+    setIsBoxManageGroup(isManageGroup);
+  };
   return (
     <div className="modal-addmess">
       <div className="modal-addmess_content">
@@ -148,7 +205,7 @@ export const ModalManageGroup = () => {
           }}
         >
           <div
-            onClick={() => setIsBoxManageGroup(true)}
+            onClick={() => handleChangeBoxManage(true)}
             style={{
               width: "50%",
               textAlign: "center",
@@ -166,7 +223,7 @@ export const ModalManageGroup = () => {
             Thành viên nhóm
           </div>
           <div
-            onClick={() => setIsBoxManageGroup(false)}
+            onClick={() => handleChangeBoxManage(false)}
             style={{
               width: "50%",
               textAlign: "center",
@@ -186,8 +243,183 @@ export const ModalManageGroup = () => {
         </div>
 
         {/* Thông tin nhóm */}
-        {isBoxManageGroup && <div>QUẢN LÝ THÔNG TIN NHÓM</div>}
+        {isBoxManageGroup && !loadInfoGroup && (
+          // map qua từng message.modalManageGroup.recipients để hiển thị UserCard
+          <div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+                minHeight: "650px",
+                overflowY: "auto",
+                marginTop: "10px",
+              }}
+            >
+              {message?.modalManageGroup?.recipients?.map((user) => (
+                <div
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                  }}
+                >
+                  <UserCard
+                    key={user._id}
+                    user={user}
+                    size="avatar-middle"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "5px 10px",
+                      borderBottom: "1px solid #ccc",
+                      cursor: "pointer",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    {/* Một cái thẻ div hiển thị Thành viên || Người tạo nhóm || Quản trị viên */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <p
+                        style={{
+                          fontSize: "15px",
+                          fontWeight: "700",
+                          color: "#333",
+                          marginBottom: "0px",
+                          marginLeft: "0px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {user._id === message.modalManageGroup.host
+                          ? "Người tạo nhóm"
+                          : // Kiểm tra xem có user._id có trong message.modalManageGroup.admins hay không,
+                          // nếu có thì hiển thị Quản trị viên, nếu không thì hiển thị Thành viên
+                          message.modalManageGroup.admins.includes(user._id)
+                          ? "Quản trị viên"
+                          : "Thành viên"}
+                      </p>
+                    </div>
+                    {/* Hiển thị một option để lựa chọn xóa người dùng khỏi nhóm */}
+                    <div style={{ position: "relative" }}>
+                      <div
+                        style={{
+                          cursor: "pointer",
+                          color: "#D97B5C",
+                          fontSize: "20px",
+                        }}
+                        onClick={() => handleToggleDropdown(user._id)}
+                      >
+                        ...
+                      </div>
 
+                      {activeDropdownUserId === user._id && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "25px",
+                            right: "0px",
+                            backgroundColor: "#fff",
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                            zIndex: 100,
+                            minWidth: "180px",
+                          }}
+                        >
+                          {user._id !== message.modalManageGroup.host._id &&
+                            (message.modalManageGroup.admins.includes(
+                              user._id
+                            ) ? (
+                              <>
+                                <div
+                                  onClick={() => handleRemoveAdmin(user._id)}
+                                  style={{
+                                    padding: "8px 12px",
+                                    cursor: "pointer",
+                                    borderBottom: "1px solid #eee",
+                                  }}
+                                >
+                                  Xóa quyền quản trị viên
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div
+                                  onClick={() => handleAssignAdmin(user._id)}
+                                  style={{
+                                    padding: "8px 12px",
+                                    cursor: "pointer",
+                                    borderBottom: "1px solid #eee",
+                                  }}
+                                >
+                                  Chỉ định quản trị viên
+                                </div>
+                              </>
+                            ))}
+
+                          {user._id !== message.modalManageGroup.host._id && (
+                            <div
+                              onClick={() => handleRemoveFromGroup(user._id)}
+                              style={{
+                                padding: "8px 12px",
+                                cursor: "pointer",
+                                color: "red",
+                              }}
+                            >
+                              Xóa khỏi nhóm
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </UserCard>
+                </div>
+              ))}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <button
+                className="btn btn-danger"
+                style={{
+                  width: "100%",
+                  height: "40px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  borderRadius: "20px",
+                  border: "none",
+                  backgroundColor: "#D97B5C",
+                  marginTop: "10px",
+                  marginBottom: "10px",
+                }}
+                onClick={() => {
+                  dispatch({
+                    type: MESS_TYPES.MODAL_MANAGE_GROUP,
+                    payload: null,
+                  });
+                  dispatch({
+                    type: MESS_TYPES.DELETE_CONVERSATION,
+                    payload: message.modalManageGroup._id,
+                  });
+                }}
+              >
+                Rời nhóm
+              </button>
+            </div>
+          </div>
+        )}
+        {isBoxManageGroup && loadInfoGroup && <Loading />}
         {/* Thêm người mới vào nhóm */}
         {!isBoxManageGroup && (
           <div>

@@ -58,6 +58,12 @@ const messageCtrl = {
           text: newText,
           media,
           call,
+          // admins: [], // admins: mảng người quản trị cuộc trò chuyện, hiện tại để trống
+          // nếu là cuộc trò chuyện nhóm thì sẽ có nhiều người quản trị, nếu là cuộc trò chuyện cá nhân thì không có người quản trị
+          admins: [],
+          // host: người tạo cuộc trò chuyện, nếu là nhóm thì sẽ là người đầu tiên trong danh sách
+          // nếu là cuộc trò chuyện nhóm thì sẽ có nhiều người nhận, nếu là cuộc trò chuyện cá nhân thì chỉ có 2 người
+          host: recipientList.length > 2 ? senderId : null,
           isGroup: recipientList.length > 2 ? true : false,
           // isVisible: một mảng key-value với key là recipient
           // và value là true (hiện thị cuộc trò chuyện với người nhận) ( thường là chức năng xóa đoạn chat)
@@ -147,6 +153,24 @@ const messageCtrl = {
       res.json({
         conversations,
         result: conversations.length,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  getConversation: async (req, res) => {
+    try {
+      // listId from /:id
+      const listID = req.params.id.split(".");
+      //Tìm kiếm cuộc trò chuyện với recipients là một mảng chứa listID
+      const conversation = await Conversations.findOne({
+        recipients: { $all: listID, $size: listID.length },
+      })
+        .populate("recipients", "avatar username fullname")
+        .populate("sender", "avatar username fullname");
+      if (!conversation) return res.json({ msg: "Not found!" });
+      res.json({
+        conversation,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
