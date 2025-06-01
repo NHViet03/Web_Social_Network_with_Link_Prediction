@@ -37,10 +37,16 @@ const postCtrl = {
 
       await newPost.save();
 
-      const resonsePost = await Posts.findById(newPost._id).populate(
-        "tags",
-        "username"
-      );
+      const responsePost = await Posts.findById(newPost._id).populate("user", "avatar username fullname")
+        .populate({
+          path: "comments",
+          populate: {
+            path: "user",
+            select: "avatar username fullname",
+          },
+        })
+        .populate("tags", "avatar username")
+        .lean();
 
       // Insert hashtags into Hashtags collection if not exists
       for (let hashtag of hashtags) {
@@ -57,9 +63,26 @@ const postCtrl = {
         }
       }
 
+            const parentComments = responsePost.comments.filter(
+        (comment) =>
+          comment.replyCommentId == null || comment.replyCommentId === undefined
+      );
+
+      for (const comment of parentComments) {
+        const replies = responsePost.comments.filter(
+          (reply) =>
+            reply.replyCommentId &&
+            reply.replyCommentId.toString() === comment._id.toString()
+        );
+
+        comment["replies"] = replies;
+      }
+
+      responsePost.comments = parentComments;
+
       return res.json({
         msg: "Đã tạo bài viết thành công",
-        post: resonsePost,
+        post: responsePost,
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
