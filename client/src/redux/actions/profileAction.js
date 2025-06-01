@@ -14,7 +14,7 @@ export const PROFILE_TYPES = {
 };
 
 export const getProfileUsers =
-  ({ users, id, auth }) =>
+  ({  id, auth }) =>
   async (dispatch) => {
     dispatch({
       type: PROFILE_TYPES.GET_ID,
