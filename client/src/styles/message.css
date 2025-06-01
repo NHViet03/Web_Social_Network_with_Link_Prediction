@@ -480,3 +480,8 @@
     max-width: 200px;
     max-height: 200px;
 }
+
+.dropdown-item-manage-group:hover{
+   background-color: #D97B5C;
+    color: #fff !important;
+}

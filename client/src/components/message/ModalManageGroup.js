@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserCard from "../UserCard";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
 import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
+import { use } from "react";
 export const ModalManageGroup = () => {
   const navigate = useNavigate();
   const { auth, message } = useSelector((state) => state);
@@ -21,6 +22,20 @@ export const ModalManageGroup = () => {
   const [activeDropdownUserId, setActiveDropdownUserId] = useState(null);
 
   //====UseEffect====
+  const dropdownRef = useRef(); // <-- thêm trong component
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setActiveDropdownUserId(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   //useEffect gọi tới API conversation/${id} để lấy thông tin cuộc trò chuyện
   const fetchConversation = async () => {
     try {
@@ -305,79 +320,98 @@ export const ModalManageGroup = () => {
                           : "Thành viên"}
                       </p>
                     </div>
-                    {/* Hiển thị một option để lựa chọn xóa người dùng khỏi nhóm */}
-                    <div style={{ position: "relative" }}>
-                      <div
-                        style={{
-                          cursor: "pointer",
-                          color: "#D97B5C",
-                          fontSize: "20px",
-                        }}
-                        onClick={() => handleToggleDropdown(user._id)}
-                      >
-                        ...
-                      </div>
+                    {/* Hiển thị một option để lựa chọn  người dùng với nhóm */}
+                    {user._id !== auth.user._id &&
+                      user._id !== message.modalManageGroup.host && (
+                        <div style={{ position: "relative" }} ref={dropdownRef}>
+                          <div
+                            style={{
+                              cursor: "pointer",
+                              color: "#D97B5C",
+                              fontSize: "20px",
+                            }}
+                            onClick={() => handleToggleDropdown(user._id)}
+                          >
+                            ...
+                          </div>
 
-                      {activeDropdownUserId === user._id && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "25px",
-                            right: "0px",
-                            backgroundColor: "#fff",
-                            border: "1px solid #ccc",
-                            borderRadius: "5px",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                            zIndex: 100,
-                            minWidth: "180px",
-                          }}
-                        >
-                          {user._id !== message.modalManageGroup.host._id &&
-                            (message.modalManageGroup.admins.includes(
-                              user._id
-                            ) ? (
-                              <>
-                                <div
-                                  onClick={() => handleRemoveAdmin(user._id)}
-                                  style={{
-                                    padding: "8px 12px",
-                                    cursor: "pointer",
-                                    borderBottom: "1px solid #eee",
-                                  }}
-                                >
-                                  Xóa quyền quản trị viên
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div
-                                  onClick={() => handleAssignAdmin(user._id)}
-                                  style={{
-                                    padding: "8px 12px",
-                                    cursor: "pointer",
-                                    borderBottom: "1px solid #eee",
-                                  }}
-                                >
-                                  Chỉ định quản trị viên
-                                </div>
-                              </>
-                            ))}
-
-                          {user._id !== message.modalManageGroup.host._id && (
+                          {activeDropdownUserId === user._id && (
                             <div
-                              onClick={() => handleRemoveFromGroup(user._id)}
                               style={{
-                                padding: "8px 12px",
-                                cursor: "pointer",
-                                color: "red",
+                                position: "absolute",
+                                top: "25px",
+                                right: "0px",
+                                backgroundColor: "#fff",
+                                border: "1px solid #ccc",
+                                borderRadius: "10px",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                zIndex: 100,
+                                minWidth: "180px",
                               }}
                             >
-                              Xóa khỏi nhóm
+                              {user._id !== message.modalManageGroup.host._id &&
+                                (message.modalManageGroup.admins.includes(
+                                  user._id
+                                ) ? (
+                                  <>
+                                    <div
+                                      className="dropdown-item-manage-group"
+                                      onClick={() =>
+                                        handleRemoveAdmin(user._id)
+                                      }
+                                      style={{
+                                        padding: "8px 12px",
+                                        cursor: "pointer",
+                                        borderBottom: "1px solid #eee",
+                                      }}
+                                    >
+                                      Xóa quyền quản trị viên
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div
+                                      className="dropdown-item-manage-group"
+                                      onClick={() =>
+                                        handleAssignAdmin(user._id)
+                                      }
+                                      style={{
+                                        padding: "8px 12px",
+                                        cursor: "pointer",
+                                        borderBottom: "1px solid #eee",
+                                      }}
+                                    >
+                                      Chỉ định quản trị viên
+                                    </div>
+                                  </>
+                                ))}
+
+                              {user._id !== message.modalManageGroup.host._id &&
+                                (message.modalManageGroup.admins.includes(
+                                  auth.user._id
+                                ) ||
+                                  auth.user._id ==
+                                    message.modalManageGroup.host) && (
+                                  <div
+                                    className="dropdown-item-manage-group"
+                                    onClick={() =>
+                                      handleRemoveFromGroup(user._id)
+                                    }
+                                    style={{
+                                      padding: "8px 12px",
+                                      cursor: "pointer",
+                                      color: "rgb(217, 123, 92)",
+                                    }}
+                                  >
+                                    Xóa khỏi nhóm
+                                  </div>
+                                )}
                             </div>
                           )}
                         </div>
                       )}
-                    </div>
+                    {(user._id === auth.user._id ||
+                      user._id == message.modalManageGroup.host) && <div></div>}
                   </UserCard>
                 </div>
               ))}
