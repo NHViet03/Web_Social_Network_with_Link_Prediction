@@ -393,7 +393,7 @@ const RightSide = () => {
             >
               Xóa tin nhắn
             </div>
-            <div className="btn btn-danger">Chặn</div>
+            {/* <div className="btn btn-danger">Chặn</div> */}
           </div>
         )}
       </div>
