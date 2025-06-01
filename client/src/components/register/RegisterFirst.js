@@ -61,9 +61,9 @@ const RegisterFirst = ({ userData, setUserData, setRegisterStep }) => {
 
       <FacebookLogin
         cssClass="btn btn_primary register_facebook"
-        textButton="Đăng nhập bằng Facebook"
+        textButton="Đăng ký bằng Facebook"
         icon="fa-brands fa-square-facebook"
-        appId="1141768957449727"
+        appId="1270760671135470"
         autoLoad={false}
         fields="name,email,picture"
         callback={handleFacebookCallback}

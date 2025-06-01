@@ -112,7 +112,7 @@ const Activity = () => {
       ))}
 
       <div className="activity_section-title">
-        Các thiết bị đã bị chặn truy nhập:
+        Các thiết bị đã bị chặn truy cập:
       </div>
       {activities?.blockedDevices?.map((device, key) => (
         <div className="activity_device-box block" key={device._id}>

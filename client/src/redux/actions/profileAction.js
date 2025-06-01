@@ -10,6 +10,7 @@ export const PROFILE_TYPES = {
   UNFOLLOW: "UNFOLLOW",
   GET_ID: "GET_PROFILE_ID",
   GET_POSTS: "GET_PROFILE_POSTS",
+  DELETE_POST_PROFILE: "DELETE_POST_PROFILE",
 };
 
 export const getProfileUsers =

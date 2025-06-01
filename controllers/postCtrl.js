@@ -131,6 +131,10 @@ const postCtrl = {
         .populate("tags", "avatar username")
         .lean();
 
+      if (!post) {
+        return res.status(404).json({ msg: "Bài viết không tồn tại" });
+      }
+
       const parentComments = post.comments.filter(
         (comment) =>
           comment.replyCommentId == null || comment.replyCommentId === undefined

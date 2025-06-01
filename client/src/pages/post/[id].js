@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { getDataAPI } from "../../utils/fetchData";
 import CardHeader from "../../components/postCard/CardHeader";
 import CardBody from "../../components/postCard/CardBody";
 import CardFooterDetail from "../../components/postCard/CardFooterDetail";
-import Loading from '../../components/Loading'
+import Loading from "../../components/Loading";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 
 const PostDetail = () => {
   const auth = useSelector((state) => state.auth);
   const [post, setPost] = useState(false);
-  const [loading,setLoading]=useState(false);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const { id } = useParams();
 
@@ -18,9 +23,19 @@ const PostDetail = () => {
     const getPost = async () => {
       if (!id) return;
       setLoading(true);
-      const res = await getDataAPI(`post/${id}`, auth.token);
-      setPost(res.data.post);
-      setLoading(false);
+      try {
+        const res = await getDataAPI(`post/${id}`, auth.token);
+        setPost(res.data.post);
+      } catch (error) {
+        dispatch({
+          type: GLOBAL_TYPES.ALERT,
+          payload: { error: error.response.data.msg },
+        });
+
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
     };
 
     getPost();

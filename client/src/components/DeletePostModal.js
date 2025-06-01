@@ -1,14 +1,21 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deletePost } from "../redux/actions/postAction";
+import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
+import { PROFILE_TYPES } from "../redux/actions/profileAction";
 
 const DeletePostModal = ({ post, setShowDelete }) => {
   const auth = useSelector((state) => state.auth);
   const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
-  
+
   const handleDeletePost = () => {
     dispatch(deletePost({ post, auth, socket }));
+    dispatch({
+      type: GLOBAL_TYPES.POST_DETAIL,
+      payload: false,
+    });
+   
     setShowDelete(false);
   };
 

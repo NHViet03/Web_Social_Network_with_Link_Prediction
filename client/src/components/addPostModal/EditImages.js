@@ -53,6 +53,51 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
     setAddStep((pre) => pre + 1);
   };
 
+    const handleNextImage = () => {
+    const saveEditedImages = [];
+
+    for (const editorRef of editorRefs) {
+      try {
+        if (editorRef?.current) {
+          const imageData = editorRef?.current()?.imageData;
+          const designState = editorRef?.current()?.designState;
+
+          // If no changed image, skip saving
+          if (
+            designState.filter == null &&
+            designState.finetunes.length === 0
+          ) {
+            saveEditedImages.push(null);
+            continue;
+          }
+
+          if (imageData?.imageBase64) {
+            const file = convertBase64ToFile(
+              imageData?.imageBase64,
+              imageData?.fullName
+            );
+
+            file.url = URL.createObjectURL(file);
+
+            saveEditedImages.push(file);
+          }
+        } else {
+          saveEditedImages.push(null);
+        }
+      } catch (error) {
+        console.error("Error saving image:", error);
+        saveEditedImages.push(null);
+      }
+    }
+
+    setPost((prev) => ({
+      ...prev,
+      images: prev.images.map((img, id) => {
+        return saveEditedImages[id] ? saveEditedImages[id] : img;
+      }),
+    }));
+  };
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center px-3 addPost_modal_header">
@@ -112,6 +157,7 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
           type="button"
           data-bs-target={"#imageSelected"}
           data-bs-slide="prev"
+          onClick={handleNextImage}
         >
           <span className="carousel-control-prev-icon">
             <i className="fa-solid fa-chevron-left" />
@@ -122,6 +168,7 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
           type="button"
           data-bs-target={"#imageSelected"}
           data-bs-slide="next"
+          onClick={handleNextImage}
         >
           <span className="carousel-control-next-icon">
             <i className="fa-solid fa-chevron-right" />

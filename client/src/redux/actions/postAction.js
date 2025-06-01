@@ -7,6 +7,7 @@ import {
   deleteDataAPI,
 } from "../../utils/fetchData";
 import { EXPLORE_TYPES } from "./exploreAction";
+import { PROFILE_TYPES } from "./profileAction";
 import { createNotify, removeNotify } from "./notifyAction";
 
 export const POST_TYPES = {
@@ -141,6 +142,15 @@ export const deletePost =
     dispatch({
       type: POST_TYPES.DELETE_POST,
       payload: post,
+    });
+
+    //
+    dispatch({
+      type: PROFILE_TYPES.DELETE_POST_PROFILE,
+      payload: {
+        _id: auth.user._id,
+        postId: post._id,
+      },
     });
 
     // Notify

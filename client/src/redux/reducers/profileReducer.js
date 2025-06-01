@@ -39,6 +39,15 @@ const profileReducer = (state = initialState, action) =>{
             return {
                 ...state,
                 posts: [...state.posts, action.payload]
+            };
+        case PROFILE_TYPES.DELETE_POST_PROFILE:
+            return {
+                ...state,
+                posts: state.posts.map((post) =>
+                    post._id === action.payload._id
+                        ? { ...post, posts: post.posts.filter((item) => item._id !== action.payload.postId) }
+                        : post
+                )
             };               
         default:
             return state;
