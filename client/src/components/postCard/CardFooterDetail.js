@@ -93,7 +93,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
   const handleComment = async (e) => {
     e.preventDefault();
 
-    if (!comment.trim() || loadComment) return;
+    if ((!comment.trim() && image == null) || loadComment) return;
     setLoadComment(true);
     setComment("");
     setReply({});
@@ -109,8 +109,8 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
       postId: post._id,
       postUserId: post.user._id,
       createdAt: new Date().toISOString(),
-      replyCommentId: reply.commentId,
-      replyUser: reply.user,
+      replyCommentId: reply?.commentId,
+      replyUser: reply?.user,
       replies: [],
       image: image,
     };
@@ -369,7 +369,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
             <button
               className="btn pe-0 btn-comment"
               type="submit"
-              disabled={comment.length < 1 ? true : false}
+              disabled={comment.length < 1 && image == null ? true : false}
               style={{ color: "var(--primary-color)" }}
             >
               Đăng
@@ -389,7 +389,6 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
             >
               <img
                 src={URL.createObjectURL(image)}
-                alt="image"
                 style={{
                   width: "100%",
                   height: "100%",
