@@ -55,17 +55,16 @@ export const getConversations =
         payload: true,
       });
       const res = await getDataAPI(
-        `conversations?limit=${page * 20}&mainBoxMessage=${mainBoxMessage}`,
+        `conversations?limit=${page * 50}&mainBoxMessage=${mainBoxMessage}`,
         auth.token
       );
       let newArr = [];
       res.data.conversations.forEach((item) => {
         if (item.isGroup) {
-          const id = item.recipients.map((cv) => cv._id).join(".");
           const nameGroup = item.recipients.map((cv) => cv.username).join(", ")
           newArr.push({
             avatar: imageGroupDefaultLink,
-            _id: id,
+            _id: item._id,
             fullname: nameGroup,
             username: nameGroup,
             text: item.text,
@@ -127,9 +126,9 @@ export const acceptConversation = ({auth, listID,id}) => async (dispatch) => {
     }
 }
 
-export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
+export const getMessages = ({auth, id, page = 1, converstation}) => async (dispatch) => {
     try {
-        const res = await getDataAPI(`message/${id}?limit=${page * 9}`, auth.token);
+        const res = await getDataAPI(`message/${id}?limit=${page * 9}&isGroup=${converstation.isGroup}&conversationID=${converstation._id}`, auth.token);
         // filter những res.data.messages với isVisible[auth.user._id] = true
         const newArr = res.data.messages.filter((item) => item.isVisible[auth.user._id] === true).reverse()
         const newData = {...res.data, messages: newArr}
@@ -141,7 +140,7 @@ export const getMessages = ({auth, id, page = 1}) => async (dispatch) => {
     } catch (err) {
         dispatch({
             type: GLOBAL_TYPES.ALERT,
-            payload: {error: err.response.data.msg}
+            payload: {error: err?.response?.data.msg}
         })
     }
 }

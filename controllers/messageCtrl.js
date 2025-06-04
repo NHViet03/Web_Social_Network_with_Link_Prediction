@@ -139,6 +139,7 @@ const messageCtrl = {
       };
       // Lọc theo trạng thái recipientAccept của user
       filter[`recipientAccept.${req.user._id}`] = mainBoxMessage;
+      //lọc theo isVisible của user
 
       // Áp dụng phân trang (chỉ có limit theo class bạn cung cấp)
       const features = new APIfeatures(
@@ -270,24 +271,17 @@ const messageCtrl = {
   },
   getMessages: async (req, res) => {
     try {
-      // may be req.params.id like that: 67c3e08776a9ee127c26240e.67c3f264f042c866508255a5.67c3f9b19c797e619cd729e0 => spilt by "."
-      const listId = req.params.id.split(".");
-      if (listId.length > 1) {
-        const orConditions = listId.map((senderId) => {
-          const recipientList = listId.filter((id) => id !== senderId);
-          return {
-            sender: senderId,
-            recipients: { $all: recipientList, $size: recipientList.length },
-          };
-        });
+      const isGroup = req.query.isGroup === "true" ? true : false;
+      const conversationID = req.query.conversationID;
+      if (isGroup) {
         // find sender = req.user._id, and recipients include all id in listId
         features = new APIfeatures(
           Messages.find({
-            $or: orConditions,
+            conversation: conversationID,
           }),
           req.query
         ).paginating();
-      } else if (listId.length === 1) {
+      } else {
         features = new APIfeatures(
           Messages.find({
             $or: [

@@ -55,9 +55,7 @@ const SocketClient = () => {
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
-      console.log("O day goi ahahaha");
       fetchNumberNewMessage();
-      console.log("O day goi addMessageToClient");
       dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
 
       const checkUserAccept = checkMapTrue(

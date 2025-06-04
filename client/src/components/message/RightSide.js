@@ -89,10 +89,13 @@ const RightSide = () => {
   // Lấy dữ liệu tin nhắn từ backend nếu chưa có
   useEffect(() => {
     const getMessagesData = () => {
+
+      //lấy converstation để gửi đi biết có group true hay false
+      const converstation = message.users.find((user) => user._id === id);
       if (message.data.every((item) => item._id !== id)) {
         setIsLoadingMessages(true);
         setData([]);
-        dispatch(getMessages({ auth, id }));
+        dispatch(getMessages({ auth, id, converstation }));
         setTimeout(() => {
           if (refDisplay.current) {
             refDisplay.current.scrollIntoView({
