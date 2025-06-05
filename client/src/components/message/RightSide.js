@@ -349,10 +349,10 @@ const RightSide = () => {
         <div className="conversation-message_header-icon">
           {user?.isGroup && user.isGroup == true ? (
             <>
-              <i
+              {/* <i
                 class="fa-solid fa-trash"
                 onClick={handleDeleteConversation(user)}
-              ></i>
+              ></i> */}
               <i
                 class="fa-solid fa-circle-info"
                 onClick={() => handleMangeGroup()}

@@ -94,15 +94,24 @@ const messageReducer = (state = initialState, action) => {
 
       // Cập nhật từng user
       const updatedUsers = state.users.map((user) => {
-        let userIDs = user._id.split(".");
-        if (userIDs.length === 1 && userIDs[0] !== action.payload.sender._id) {
-          userIDs.push(action.payload.sender._id);
-        }
+        let recipientsMatch = false;
+        if (action.payload.isGroup) {
+          // Nếu là nhóm, kiểm tra recipients trong user._id
+          recipientsMatch = user._id === action.payload.conversationID;
+        } else {
+          let userIDs = user._id.split(".");
+          if (
+            userIDs.length === 1 &&
+            userIDs[0] !== action.payload.sender._id
+          ) {
+            userIDs.push(action.payload.sender._id);
+          }
 
-        const recipientsMatch = arraysEqualIgnoreOrder(
-          userIDs,
-          action.payload.recipients
-        );
+          recipientsMatch = arraysEqualIgnoreOrder(
+            userIDs,
+            action.payload.recipients
+          );
+        }
 
         if (recipientsMatch) {
           return {
@@ -117,12 +126,19 @@ const messageReducer = (state = initialState, action) => {
 
       // Tìm user vừa được cập nhật
       const matchedUser = updatedUsers.find((user) => {
-        const userIDs = user._id.split(".");
-        if (userIDs.length === 1) {
-          userIDs.push(action.payload.sender._id);
-        }
+        if (action.payload.isGroup) {
+          return user._id === action.payload.conversationID;
+        } else {
+          let userIDs = user._id.split(".");
+          if (
+            userIDs.length === 1 &&
+            userIDs[0] !== action.payload.sender._id
+          ) {
+            userIDs.push(action.payload.sender._id);
+          }
 
-        return arraysEqualIgnoreOrder(userIDs, action.payload.recipients);
+          return arraysEqualIgnoreOrder(userIDs, action.payload.recipients);
+        }
       });
 
       // Đưa user đó lên đầu
