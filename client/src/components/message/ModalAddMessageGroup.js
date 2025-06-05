@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import UserCard from "../UserCard";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getDataAPI } from "../../utils/fetchData";
+import { getDataAPI, postDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
 import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
 export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
   const navigate = useNavigate();
-  const { auth, message } = useSelector((state) => state);
+  const { auth, message, socket } = useSelector((state) => state);
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
   const [searchUsers, setSearchUser] = useState([]);
@@ -33,34 +33,32 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
       });
     }
   };
-  const handleCreateGroupChat = () => {
+  const handleCreateGroupChat = async () => {
     if (groupUsersChat.length === 0) return;
     if (groupUsersChat.length === 1) {
       const user = groupUsersChat[0];
-      const userData =
-
-    {
-      avatar : user.avatar,
-      fullname: user.fullname,
-      username: user.username,
-      _id: user._id,
-      text: '',
-      media: [],
-      isVisible: {
-        [auth.user._id]: true,
-        [user._id]: true
-      },
-      recipientAccept: {
-        [auth.user._id]: true,
-        [user._id]: true
-      },
-      isRead: {
-        [auth.user._id]: true,
-        [user._id]: true
-      },
-      isGroup: false,
-      online: false,
-    }
+      const userData = {
+        avatar: user.avatar,
+        fullname: user.fullname,
+        username: user.username,
+        _id: user._id,
+        text: "",
+        media: [],
+        isVisible: {
+          [auth.user._id]: true,
+          [user._id]: true,
+        },
+        recipientAccept: {
+          [auth.user._id]: true,
+          [user._id]: true,
+        },
+        isRead: {
+          [auth.user._id]: true,
+          [user._id]: true,
+        },
+        isGroup: false,
+        online: false,
+      };
       dispatch({
         type: MESS_TYPES.ADD_USER,
         payload: userData,
@@ -70,51 +68,57 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
       return;
     }
     if (groupUsersChat.length > 1) {
-      let userIds = groupUsersChat.map((user) => user._id).join(".");
-      userIds += `.${auth.user._id}`;
+      // create a group chat
+
+      const sender = auth.user._id;
+      const recipients = groupUsersChat.map((user) => user._id);
       const nameGroup =
         groupUsersChat.map((user) => user.fullname).join(", ") +
         ", " +
         auth.user.fullname;
       const avatarGroup = imageGroupDefaultLink;
+      let groupConversation = null;
+
+      try {
+        const res = await postDataAPI(
+          "create-group-chat",
+          { senderID: sender, recipients },
+          auth.token
+        );
+        groupConversation = res.data.conversation;
+      } catch (err) {
+        dispatch({
+          type: GLOBAL_TYPES.ALERT,
+          payload: { error: err.response.data.msg },
+        });
+      }
+
       const userData = {
         avatar: avatarGroup,
         fullname: nameGroup,
         username: nameGroup,
-        _id: userIds,
-        text: "",
+        _id: groupConversation._id,
+        text: groupConversation.text,
         media: [],
-        isVisible: {
-          [auth.user._id]: true,
-          ...groupUsersChat.reduce((acc, user) => {
-            acc[user._id] = true;
-            return acc;
-          }, {}),
-        },
-        recipientAccept: {
-          [auth.user._id]: true,
-          ...groupUsersChat.reduce((acc, user) => {
-            acc[user._id] = true;
-            return acc;
-          }, {}),
-        },
-        isRead: {
-          [auth.user._id]: true,
-          ...groupUsersChat.reduce((acc, user) => {
-            acc[user._id] = true;
-            return acc;
-          }, {}),
-        },
+        isVisible: groupConversation.isVisible,
+        recipientAccept: groupConversation.recipientAccept,
+        isRead: groupConversation.isRead,
+        recipients: groupConversation.recipients,
         isGroup: true,
         online: false,
       };
+      socket.emit("createGroupChat", {
+        userData: userData,
+        senderID: sender,
+        recipients,
+      });
       dispatch({
         type: MESS_TYPES.ADD_USER,
         payload: userData,
       });
       setGroupUsersChat([]);
       setOpenModalGroup(false);
-      navigate(`/message/${userIds}`);
+      navigate(`/message/${userData._id}`);
     }
   };
   const handleAddUserGroupChat = (user) => {

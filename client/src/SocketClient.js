@@ -66,12 +66,20 @@ const SocketClient = () => {
         (checkUserAccept && message.mainBoxMessage) ||
         (!checkUserAccept && !message.mainBoxMessage)
       ) {
-        dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
+       dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
       }
     });
 
     return () => socket.off("addMessageToClient");
   }, [dispatch, socket, auth.user._id, message.mainBoxMessage]);
+
+  //createGroupChatToClient
+  useEffect(() => {
+    socket.on("createGroupChatToClient", (data) => {
+      dispatch({ type: MESS_TYPES.ADD_GROUP_CHAT, payload: data });
+    });
+    return () => socket.off("createGroupChatToClient");
+  }, [dispatch, socket]);
 
   //editMessageToClient
   useEffect(() => {

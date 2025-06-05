@@ -17,8 +17,17 @@ class APIfeatures {
 const messageCtrl = {
   createMessage: async (req, res) => {
     try {
-      const { sender, recipients, _id, text, media, call, replymessage } =
-        req.body;
+      const {
+        sender,
+        recipients,
+        _id,
+        text,
+        media,
+        call,
+        replymessage,
+        isGroup,
+        conversationID,
+      } = req.body;
       const senderId = sender._id;
       let newText = text;
       if (text == "" && media.length > 0) {
@@ -29,17 +38,24 @@ const messageCtrl = {
       // recipients: mảng người nhận tin nhắn ( bao gồm cả người gửi )
       // recipientsNosender: danh sách người nhận không bao gồm người gửi
       const recipientList = [...recipients];
+      if (!recipientList.includes(senderId)) {
+        recipientList.push(senderId);
+      }
       const recipientsNosender = recipientList.filter(
         (item) => item !== senderId
       );
 
       if (!recipientList || (!newText.trim() && media.length === 0 && !call))
         return;
-
-      // Tìm kiếm conversation với recipients là một mảng chứa sender và recipient
-      let conversation = await Conversations.findOne({
-        recipients: { $all: recipientList, $size: recipientList.length },
-      });
+      let conversation = null;
+      if (isGroup) {
+        conversation = await Conversations.findById(conversationID);
+      } else {
+        // Tìm kiếm conversation với recipients là một mảng chứa sender và recipient
+        conversation = await Conversations.findOne({
+          recipients: { $all: recipientList, $size: recipientList.length },
+        });
+      }
 
       if (!conversation) {
         const recipientAccept = {};
@@ -125,6 +141,47 @@ const messageCtrl = {
       res.json({
         msg: "Create Success!",
         conversation: conversation,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  createGroupChat: async (req, res) => {
+    try {
+      const { senderID, recipients } = req.body;
+      var userSender = await User.findById(senderID);
+      const recipientList = [...recipients, senderID];
+      // Tạo một cuộc trò chuyện mới với recipients là một mảng chứa sender và recipient
+      const conversation = await Conversations.create({
+        recipients: recipientList,
+        text: `${userSender.username} đã tạo cuộc trò chuyện nhóm`,
+        media: [],
+        call: null,
+        admins: [], // người tạo cuộc trò chuyện là người quản trị
+        host: userSender._id, // người tạo cuộc trò chuyện là người chủ
+        isGroup: true, // cuộc trò chuyện nhóm
+        isVisible: recipientList.reduce((acc, recipient) => {
+          acc[recipient] = true;
+          return acc;
+        }, {}),
+        isRead: recipientList.reduce((acc, recipient) => {
+          // nếu recipient là sender thì set là true (đã đọc), còn lại là false (chưa đọc)
+          acc[recipient] = recipient === senderID ? true : false;
+          return acc;
+        }, {}),
+        recipientAccept: recipientList.reduce((acc, recipient) => {
+          acc[recipient] = true;
+          return acc;
+        }, {}),
+      });
+      // Trả về conversation.populate("recipients", "avatar username fullname");
+      const newConversation = await Conversations.findById(
+        conversation._id
+      ).populate("recipients", "avatar username fullname");
+      // Trả về cuộc trò chuyện mới
+      res.json({
+        msg: "Create Group Chat Success!",
+        conversation: newConversation,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });

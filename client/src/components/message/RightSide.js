@@ -89,7 +89,6 @@ const RightSide = () => {
   // Lấy dữ liệu tin nhắn từ backend nếu chưa có
   useEffect(() => {
     const getMessagesData = () => {
-
       //lấy converstation để gửi đi biết có group true hay false
       const converstation = message.users.find((user) => user._id === id);
       if (message.data.every((item) => item._id !== id)) {
@@ -238,8 +237,10 @@ const RightSide = () => {
         newArr.push(...img);
       }
     }
-    const listId = id.split(".");
-    // nếu listId chưa bao gồm id của người dùng hiện tại thì thêm vào
+    let listId = id.split(".");
+    if (user.isGroup) {
+      listId = [...user.recipients.map((item) => item._id)];
+    }
     if (!listId.includes(auth.user._id)) {
       listId.push(auth.user._id);
     }
@@ -251,10 +252,8 @@ const RightSide = () => {
       isVisible: {},
       media: [...newArr],
       _id: generateObjectId(),
-      conversation: {
-        _id: "",
-        isGroup: null, // true of false
-      },
+      isGroup: user.isGroup ? user.isGroup : false,
+      conversationID: id,
       sender: {
         _id: auth.user._id,
         avatar: auth.user.avatar,

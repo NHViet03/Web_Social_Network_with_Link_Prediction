@@ -8,6 +8,7 @@ export const MESS_TYPES ={
     ADD_MESSAGE_SECOND: 'ADD_MESSAGE_SECOND',
     GET_CONVERSATIONS: 'GET_CONVERSATIONS',
     GET_MESSAGES: 'GET_MESSAGES',
+    ADD_GROUP_CHAT: 'ADD_GROUP_CHAT',
     UPDATE_MESSAGES: 'UPDATE_MESSAGES',
     DELETE_CONVERSATION: 'DELETE_CONVERSATION',
     ACCEPT_CONVERSATION: 'ACCEPT_CONVERSATION',
@@ -73,6 +74,7 @@ export const getConversations =
             recipientAccept: item.recipientAccept,
             isRead: item.isRead,
             isGroup: item.isGroup,
+            recipients: item.recipients,
           });
         } else {
           item.recipients.forEach((cv) => {
@@ -85,6 +87,7 @@ export const getConversations =
                 recipientAccept: item.recipientAccept,
                 isRead: item.isRead,
                 isGroup: item.isGroup,
+                
               });
             }
           });
@@ -213,3 +216,4 @@ export const editMessage = ({auth, msg, textEdit, socket}) => async (dispatch) =
         })
     }
 }
+

@@ -48,19 +48,24 @@ const messageReducer = (state = initialState, action) => {
 
       // Kiểm tra tất cả users trong danh sách với action.payload.recipients, nếu check bằng false thì thêm user mới
       let isUserExists = false;
-      state.users.forEach((user) => {
-        let userIDs = user._id.split(".");
-        if (
-          userIDs.length === 1 &&
-          userIDs[0] === action.payload.sender._id &&
-          action.payload.recipients.length === 2
-        ) {
-          userIDs = [...action.payload.recipients];
-        }
-        if (arraysEqualIgnoreOrder(userIDs, action.payload.recipients)) {
-          isUserExists = true;
-        }
-      });
+      if (action.payload.conversation.isGroup) {
+        isUserExists = true;
+      } else {
+        state.users.forEach((user) => {
+          let userIDs = user._id.split(".");
+          if (
+            userIDs.length === 1 &&
+            userIDs[0] === action.payload.sender._id &&
+            action.payload.recipients.length === 2
+          ) {
+            userIDs = [...action.payload.recipients];
+          }
+          if (arraysEqualIgnoreOrder(userIDs, action.payload.recipients)) {
+            isUserExists = true;
+          }
+        });
+      }
+
       if (!isUserExists) {
         return {
           ...state,
@@ -70,19 +75,13 @@ const messageReducer = (state = initialState, action) => {
       return state;
     }
     case MESS_TYPES.ADD_MESSAGE: {
+      console.log("ADD_MESSAGE", action.payload);
       // Cập nhật mảng data
       const updatedData = state.data.map((item) => {
-        let itemIDs = item._id.split(".");
-        if (itemIDs.length === 1 && itemIDs[0] !== action.payload.sender._id) {
-          itemIDs.push(action.payload.sender._id);
-        }
+        // mình item nào có _id = action.payload.conversationID thì thêm vào messages
+        const checkID = item._id === action.payload.conversationID;
 
-        const recipientsMatch = arraysEqualIgnoreOrder(
-          itemIDs,
-          action.payload.recipients
-        );
-
-        if (recipientsMatch) {
+        if (checkID) {
           return {
             ...item,
             messages: [...item.messages, action.payload],
@@ -138,21 +137,28 @@ const messageReducer = (state = initialState, action) => {
       };
     }
     case MESS_TYPES.ADD_MESSAGE_SECOND: {
+      console.log("ADD_MESSAGE_SECOND", action.payload);
       // Cập nhật mảng data
       const updatedData = state.data.map((item) => {
-        let itemIDs = item._id.split(".");
-        if (
-          itemIDs.length === 1 &&
-          action.payload.recipients.length == 2 &&
-          itemIDs[0] === action.payload.sender._id
-        ) {
-          itemIDs = [...action.payload.recipients];
-        }
+        let recipientsMatch = false;
+        if (action.payload.isGroup) {
+          // Nếu là nhóm, kiểm tra recipients trong item._id
+          recipientsMatch = item._id === action.payload.conversation._id;
+        } else {
+          let itemIDs = item._id.split(".");
+          if (
+            itemIDs.length === 1 &&
+            action.payload.recipients.length == 2 &&
+            itemIDs[0] === action.payload.sender._id
+          ) {
+            itemIDs = [...action.payload.recipients];
+          }
 
-        const recipientsMatch = arraysEqualIgnoreOrder(
-          itemIDs,
-          action.payload.recipients
-        );
+          recipientsMatch = arraysEqualIgnoreOrder(
+            itemIDs,
+            action.payload.recipients
+          );
+        }
 
         if (recipientsMatch) {
           return {
@@ -166,20 +172,26 @@ const messageReducer = (state = initialState, action) => {
 
       // Cập nhật từng user
       const updatedUsers = state.users.map((user) => {
-        let userIDs = user._id.split(".");
+        let recipientsMatch = false;
+        if (action.payload.isGroup) {
+          // Nếu là nhóm, kiểm tra recipients trong user._id
+          recipientsMatch = user._id === action.payload.conversation._id;
+        } else {
+          let userIDs = user._id.split(".");
 
-        if (
-          userIDs.length === 1 &&
-          action.payload.recipients.length === 2 &&
-          userIDs[0] === action.payload.sender._id
-        ) {
-          userIDs = [...action.payload.recipients];
+          if (
+            userIDs.length === 1 &&
+            action.payload.recipients.length === 2 &&
+            userIDs[0] === action.payload.sender._id
+          ) {
+            userIDs = [...action.payload.recipients];
+          }
+
+          recipientsMatch = arraysEqualIgnoreOrder(
+            userIDs,
+            action.payload.recipients
+          );
         }
-
-        const recipientsMatch = arraysEqualIgnoreOrder(
-          userIDs,
-          action.payload.recipients
-        );
 
         if (recipientsMatch) {
           return {
@@ -200,16 +212,20 @@ const messageReducer = (state = initialState, action) => {
 
       // Tìm user vừa được cập nhật
       const matchedUser = updatedUsers.find((user) => {
-        let userIDs = user._id.split(".");
-        if (
-          userIDs.length === 1 &&
-          action.payload.recipients.length === 2 &&
-          userIDs[0] === action.payload.sender._id
-        ) {
-          userIDs = [...action.payload.recipients];
-        }
+        if (action.payload.isGroup) {
+          return user._id === action.payload.conversation._id;
+        } else {
+          let userIDs = user._id.split(".");
+          if (
+            userIDs.length === 1 &&
+            action.payload.recipients.length === 2 &&
+            userIDs[0] === action.payload.sender._id
+          ) {
+            userIDs = [...action.payload.recipients];
+          }
 
-        return arraysEqualIgnoreOrder(userIDs, action.payload.recipients);
+          return arraysEqualIgnoreOrder(userIDs, action.payload.recipients);
+        }
       });
 
       // Đưa user đó lên đầu
@@ -514,6 +530,17 @@ const messageReducer = (state = initialState, action) => {
           return item;
         }),
       };
+    case MESS_TYPES.ADD_GROUP_CHAT:
+      //thêm action.payload.userData vào state.users
+      if (
+        state.users.every((item) => item._id !== action.payload.userData._id)
+      ) {
+        return {
+          ...state,
+          users: [action.payload.userData, ...state.users],
+        };
+      }
+      return state;
     case MESS_TYPES.MODAL_MANAGE_GROUP:
       return {
         ...state,

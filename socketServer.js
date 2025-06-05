@@ -69,10 +69,17 @@ const SocketServer = (socket) => {
     const usersListRecepient = users.filter((user) =>
       recepientList.find((item) => item === user.id)
     );
+    let conversationExits = null;
+    if (msg.isGroup) {
+      conversationExits = await Conversations.findOne({
+        _id: msg.conversationID,
+      }).populate("recipients", "username fullname");
+    } else {
+      conversationExits = await Conversations.findOne({
+        recipients: { $all: msg.recipients, $size: msg.recipients.length },
+      }).populate("recipients", "username fullname");
+    }
 
-    let conversationExits = await Conversations.findOne({
-      recipients: { $all: msg.recipients, $size: msg.recipients.length },
-    }).populate("recipients", "username fullname");
     // lặp qua từng conversationExits.recipients. Join tên của những người trong conversationExits.recipients thành nameGroup
     let nameGroup = conversationExits.recipients
       .map((item) => item.username)
@@ -136,6 +143,18 @@ const SocketServer = (socket) => {
       usersListRecepient.forEach((user) => {
         socket.to(`${user.socketId}`).emit("revokeMessageToClient", msg);
       });
+  });
+
+  // createGroupChat
+  socket.on("createGroupChat", async (data) => {
+    const { userData, senderID, recipients } = data;
+    users.forEach((user) => {
+      if (recipients.includes(user.id)) {
+        socket.to(`${user.socketId}`).emit("createGroupChatToClient", {
+          userData,
+        });
+      }
+    });
   });
 
   // Call

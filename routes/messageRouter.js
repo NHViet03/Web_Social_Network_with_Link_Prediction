@@ -3,6 +3,7 @@ const messageCtrl = require('../controllers/messageCtrl')
 const auth = require('../middleware/auth')
 
 router.post('/message', auth, messageCtrl.createMessage)
+router.post('/create-group-chat', auth, messageCtrl.createGroupChat)
 router.get('/conversations', auth, messageCtrl.getConversations)
 router.get('/conversation/:id', auth, messageCtrl.getConversation)
 router.get('/numberNewMessage', auth, messageCtrl.getNumberNewMessage)
