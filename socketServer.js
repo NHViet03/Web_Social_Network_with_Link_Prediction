@@ -117,13 +117,25 @@ const SocketServer = (socket) => {
 
   // editMessage
   socket.on("editMessage", async (msg) => {
-    let recepientList = msg.conversation.idPath
-      .split(".")
-      .filter((item) => item !== msg.sender._id);
-    const usersListRecepient = users.filter((user) =>
-      recepientList.find((item) => item === user.id)
-    );
+    let conversationExits = null;
+    if (msg.conversation.isGroup) {
+      conversationExits = await Conversations.findOne({
+        _id: msg.conversation.idPath,
+      });
+    } else {
+      const listID = [msg.conversation.idPath, msg.sender._id];
+      conversationExits = await Conversations.findOne({
+        recipients: { $all: listID, $size: listID.length },
+      });
+    }
+    if (!conversationExits) return;
 
+    const recepientList = conversationExits.recipients
+      .filter((item) => item._id.toString() !== msg.sender._id)
+      .map((item) => item._id);
+    const usersListRecepient = users.filter((user) =>
+      recepientList.find((item) => item.toString() === user.id)
+    );
     usersListRecepient.length > 0 &&
       usersListRecepient.forEach((user) => {
         socket.to(`${user.socketId}`).emit("editMessageToClient", msg);
@@ -132,13 +144,25 @@ const SocketServer = (socket) => {
 
   //revokeMessage
   socket.on("revokeMessage", async (msg) => {
-    let recepientList = msg.conversation.idPath
-      .split(".")
-      .filter((item) => item !== msg.sender._id);
-    const usersListRecepient = users.filter((user) =>
-      recepientList.find((item) => item === user.id)
-    );
+    let conversationExits = null;
+    if (msg.conversation.isGroup) {
+      conversationExits = await Conversations.findOne({
+        _id: msg.conversation.idPath,
+      });
+    } else {
+      const listID = [msg.conversation.idPath, msg.sender._id];
+      conversationExits = await Conversations.findOne({
+        recipients: { $all: listID, $size: listID.length },
+      });
+    }
+    if (!conversationExits) return;
 
+    const recepientList = conversationExits.recipients
+      .filter((item) => item._id.toString() !== msg.sender._id)
+      .map((item) => item._id);
+    const usersListRecepient = users.filter((user) =>
+      recepientList.find((item) => item.toString() === user.id)
+    );
     usersListRecepient.length > 0 &&
       usersListRecepient.forEach((user) => {
         socket.to(`${user.socketId}`).emit("revokeMessageToClient", msg);

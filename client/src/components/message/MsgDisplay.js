@@ -53,9 +53,9 @@ const MsgDisplay = ({
     msg = {
       ...msg,
       conversation: {
+        _id: msg?.conversationID ?? msg?.conversation?._id,
+        isGroup: msg?.isGroup ?? msg?.conversation?.isGroup,
         idPath: id,
-        isGroup: msg.conversation.isGroup,
-        _id: msg.conversation._id,
       },
     };
     dispatch(revokeMessage({ auth, msg, socket }));

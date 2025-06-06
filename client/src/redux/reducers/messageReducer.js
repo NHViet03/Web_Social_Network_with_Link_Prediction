@@ -360,7 +360,6 @@ const messageReducer = (state = initialState, action) => {
         editMessage: action.payload,
       };
     case MESS_TYPES.EDIT_MESSAGE_SOCKET_FIRST:
-      console.log("EDIT_MESSAGE_SOCKET_FIRST", action.payload);
       return {
         ...state,
         data: state.data.map((item) =>
@@ -400,8 +399,10 @@ const messageReducer = (state = initialState, action) => {
       };
     case MESS_TYPES.EDIT_MESSAGE_SOCKET_SECOND:
       let listID = action.payload.conversation.idPath.split(".");
-      if (listID.length === 1) {
-        listID[0] = action.payload.sender._id;
+      if (action.payload.conversation.isGroup) {
+        listID = [action.payload.conversation._id];
+      } else {
+        listID = [action.payload.sender._id];
       }
       return {
         ...state,
@@ -503,8 +504,10 @@ const messageReducer = (state = initialState, action) => {
       };
     case MESS_TYPES.REVOKE_MESSAGE_SECOND:
       let listIDRevoke = action.payload.conversation.idPath.split(".");
-      if (listIDRevoke.length === 1) {
-        listIDRevoke[0] = action.payload.sender._id;
+      if (action.payload.conversation.isGroup) {
+        listIDRevoke = [action.payload.conversation._id];
+      } else {
+        listIDRevoke = [action.payload.sender._id];
       }
       return {
         ...state,
