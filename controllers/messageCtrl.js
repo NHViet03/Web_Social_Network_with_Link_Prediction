@@ -219,10 +219,10 @@ const messageCtrl = {
   getConversation: async (req, res) => {
     try {
       // listId from /:id
-      const listID = req.params.id.split(".");
+      const conversationID = req.params.id;
       //Tìm kiếm cuộc trò chuyện với recipients là một mảng chứa listID
       const conversation = await Conversations.findOne({
-        recipients: { $all: listID, $size: listID.length },
+        _id: conversationID,
       })
         .populate("recipients", "avatar username fullname")
         .populate("sender", "avatar username fullname");

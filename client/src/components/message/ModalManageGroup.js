@@ -272,57 +272,96 @@ export const ModalManageGroup = () => {
                 marginTop: "10px",
               }}
             >
-              {message?.modalManageGroup?.recipients?.map((user) => (
-                <div
-                  style={{
-                    width: "100%",
-                    padding: "10px",
-                  }}
-                >
-                  <UserCard
+              {message?.modalManageGroup?.recipients?.map((user) => {
+                const hostId =
+                  typeof message.modalManageGroup.host === "string"
+                    ? message.modalManageGroup.host
+                    : message.modalManageGroup.host._id;
+
+                const isHost = user._id === hostId;
+                const isAdmin = message.modalManageGroup.admins.includes(
+                  user._id
+                );
+                const isSelf = user._id === auth.user._id;
+                const isMember = !isHost && !isAdmin;
+
+                const isHostMe = auth.user._id === hostId;
+                const isAdminMe = message.modalManageGroup.admins.includes(
+                  auth.user._id
+                );
+
+                // Quyền thao tác dropdown
+                // Host có thể thao tác với admin và member (không thao tác với chính mình)
+                // Admin chỉ thao tác được với member (không thao tác với host hoặc admin khác)
+                const canManageUser =
+                  !isSelf &&
+                  ((isHostMe && (isAdmin || isMember)) ||
+                    (isAdminMe && isMember));
+
+                // Quyền assign admin:
+                // Host có thể assign admin cho member
+                // Admin có thể assign admin cho member
+                const canAssignAdmin =
+                  isMember && (isHostMe || (isAdminMe && !isHostMe));
+
+                // Quyền remove admin:
+                // Chỉ host được quyền remove admin
+                const canRemoveAdmin = isAdmin && isHostMe;
+
+                // Quyền xóa khỏi nhóm:
+                // Host có thể xóa admin và member (ngoại trừ chính mình)
+                // Admin có thể xóa member
+                const canRemoveFromGroup =
+                  !isSelf &&
+                  ((isHostMe && (isAdmin || isMember)) ||
+                    (isAdminMe && isMember));
+
+                return (
+                  <div
                     key={user._id}
-                    user={user}
-                    size="avatar-middle"
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "5px 10px",
-                      borderBottom: "1px solid #ccc",
-                      cursor: "pointer",
-                      borderRadius: "5px",
-                    }}
+                    style={{ width: "100%", padding: "10px" }}
                   >
-                    {/* Một cái thẻ div hiển thị Thành viên || Người tạo nhóm || Quản trị viên */}
-                    <div
+                    <UserCard
+                      user={user}
+                      size="avatar-middle"
                       style={{
                         display: "flex",
+                        justifyContent: "space-between",
                         alignItems: "center",
-                        gap: "10px",
+                        padding: "5px 10px",
+                        borderBottom: "1px solid #ccc",
+                        cursor: "pointer",
+                        borderRadius: "5px",
                       }}
                     >
-                      <p
+                      {/* Vai trò */}
+                      <div
                         style={{
-                          fontSize: "15px",
-                          fontWeight: "700",
-                          color: "#333",
-                          marginBottom: "0px",
-                          marginLeft: "0px",
-                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
                         }}
                       >
-                        {user._id === message.modalManageGroup.host
-                          ? "Người tạo nhóm"
-                          : // Kiểm tra xem có user._id có trong message.modalManageGroup.admins hay không,
-                          // nếu có thì hiển thị Quản trị viên, nếu không thì hiển thị Thành viên
-                          message.modalManageGroup.admins.includes(user._id)
-                          ? "Quản trị viên"
-                          : "Thành viên"}
-                      </p>
-                    </div>
-                    {/* Hiển thị một option để lựa chọn  người dùng với nhóm */}
-                    {user._id !== auth.user._id &&
-                      user._id !== message.modalManageGroup.host && (
+                        <p
+                          style={{
+                            fontSize: "15px",
+                            fontWeight: "700",
+                            color: "#333",
+                            marginBottom: "0px",
+                            marginLeft: "0px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          {isHost
+                            ? "Người tạo nhóm"
+                            : isAdmin
+                            ? "Quản trị viên"
+                            : "Thành viên"}
+                        </p>
+                      </div>
+
+                      {/* Dropdown chỉ hiện nếu có quyền thao tác */}
+                      {canManageUser ? (
                         <div style={{ position: "relative" }} ref={dropdownRef}>
                           <div
                             style={{
@@ -349,72 +388,62 @@ export const ModalManageGroup = () => {
                                 minWidth: "180px",
                               }}
                             >
-                              {user._id !== message.modalManageGroup.host._id &&
-                                (message.modalManageGroup.admins.includes(
-                                  user._id
-                                ) ? (
-                                  <>
-                                    <div
-                                      className="dropdown-item-manage-group"
-                                      onClick={() =>
-                                        handleRemoveAdmin(user._id)
-                                      }
-                                      style={{
-                                        padding: "8px 12px",
-                                        cursor: "pointer",
-                                        borderBottom: "1px solid #eee",
-                                      }}
-                                    >
-                                      Xóa quyền quản trị viên
-                                    </div>
-                                  </>
-                                ) : (
-                                  <>
-                                    <div
-                                      className="dropdown-item-manage-group"
-                                      onClick={() =>
-                                        handleAssignAdmin(user._id)
-                                      }
-                                      style={{
-                                        padding: "8px 12px",
-                                        cursor: "pointer",
-                                        borderBottom: "1px solid #eee",
-                                      }}
-                                    >
-                                      Chỉ định quản trị viên
-                                    </div>
-                                  </>
-                                ))}
+                              {/* Xóa quyền admin (chỉ host) */}
+                              {canRemoveAdmin && (
+                                <div
+                                  className="dropdown-item-manage-group"
+                                  onClick={() => handleRemoveAdmin(user._id)}
+                                  style={{
+                                    padding: "8px 12px",
+                                    cursor: "pointer",
+                                    borderBottom: "1px solid #eee",
+                                  }}
+                                >
+                                  Xóa quyền quản trị viên
+                                </div>
+                              )}
 
-                              {user._id !== message.modalManageGroup.host._id &&
-                                (message.modalManageGroup.admins.includes(
-                                  auth.user._id
-                                ) ||
-                                  auth.user._id ==
-                                    message.modalManageGroup.host) && (
-                                  <div
-                                    className="dropdown-item-manage-group"
-                                    onClick={() =>
-                                      handleRemoveFromGroup(user._id)
-                                    }
-                                    style={{
-                                      padding: "8px 12px",
-                                      cursor: "pointer",
-                                      color: "rgb(217, 123, 92)",
-                                    }}
-                                  >
-                                    Xóa khỏi nhóm
-                                  </div>
-                                )}
+                              {/* Chỉ định admin (host hoặc admin cho member) */}
+                              {canAssignAdmin && (
+                                <div
+                                  className="dropdown-item-manage-group"
+                                  onClick={() => handleAssignAdmin(user._id)}
+                                  style={{
+                                    padding: "8px 12px",
+                                    cursor: "pointer",
+                                    borderBottom: "1px solid #eee",
+                                  }}
+                                >
+                                  Chỉ định quản trị viên
+                                </div>
+                              )}
+
+                              {/* Xóa khỏi nhóm */}
+                              {canRemoveFromGroup && (
+                                <div
+                                  className="dropdown-item-manage-group"
+                                  onClick={() =>
+                                    handleRemoveFromGroup(user._id)
+                                  }
+                                  style={{
+                                    padding: "8px 12px",
+                                    cursor: "pointer",
+                                    color: "rgb(217, 123, 92)",
+                                  }}
+                                >
+                                  Xóa khỏi nhóm
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
+                      ) : (
+                        <div></div>
                       )}
-                    {(user._id === auth.user._id ||
-                      user._id == message.modalManageGroup.host) && <div></div>}
-                  </UserCard>
-                </div>
-              ))}
+                    </UserCard>
+                  </div>
+                );
+              })}
             </div>
             <div
               style={{
