@@ -91,13 +91,15 @@ const SocketClient = () => {
   //updateManagerGroupToClient
   useEffect(() => {
     socket.on("updateManagerGroupToClient", (data) => {
-      dispatch({
-        type: MESS_TYPES.MODAL_MANAGE_GROUP,
-        payload: data.conversation,
-      });
+      if (message.modalManageGroup !== null) {
+        dispatch({
+          type: MESS_TYPES.MODAL_MANAGE_GROUP,
+          payload: data.conversation,
+        });
+      }
     });
     return () => socket.off("updateManagerGroupToClient");
-  }, [dispatch, socket]);
+  }, [dispatch, socket, message.modalManageGroup]);
   //revokeMessageToClient
   useEffect(() => {
     socket.on("revokeMessageToClient", (msg) => {
