@@ -4,13 +4,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
-import { MESS_TYPES } from "../../redux/actions/messageAction";
+import {
+  MESS_TYPES,
+  removeAdminGroup,
+  setAdminGroup,
+} from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
 import { imageGroupDefaultLink } from "../../utils/imageGroupDefaultLink";
-import { use } from "react";
 export const ModalManageGroup = () => {
   const navigate = useNavigate();
-  const { auth, message } = useSelector((state) => state);
+  const { auth, message, socket } = useSelector((state) => state);
   const { id } = useParams();
   const dispatch = useDispatch();
   const [search, setSearch] = useState("");
@@ -21,21 +24,29 @@ export const ModalManageGroup = () => {
   const [isBoxManageGroup, setIsBoxManageGroup] = useState(true);
   const [activeDropdownUserId, setActiveDropdownUserId] = useState(null);
 
-  //====UseEffect====
-  const dropdownRef = useRef(); // <-- thêm trong component
+  /* ------- refs ------- */
+  // Lưu ref theo từng userId để click-outside hoạt động chuẩn
+  const dropdownRefs = useRef({});
 
+  /* ====================================================== */
+  /*  CLICK-OUTSIDE cho dropdown                            */
+  /* ====================================================== */
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (e) => {
+      const currentRef = dropdownRefs.current[activeDropdownUserId];
+      if (currentRef && !currentRef.contains(e.target)) {
         setActiveDropdownUserId(null);
       }
-    }
+    };
+
+    /* ---------------- handler helpers -------------------- */
+    const handleToggleDropdown = (userId) =>
+      setActiveDropdownUserId((prev) => (prev === userId ? null : userId));
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [activeDropdownUserId]);
+  /* ====================================================== */
   //useEffect gọi tới API conversation/${id} để lấy thông tin cuộc trò chuyện
   const fetchConversation = async () => {
     try {
@@ -70,12 +81,29 @@ export const ModalManageGroup = () => {
     console.log("Chỉ định admin cho:", userId);
     // TODO: Gửi API hoặc dispatch redux để cập nhật admin
     setActiveDropdownUserId(null);
+    dispatch(
+      setAdminGroup({
+        userId,
+        conversationId: message.modalManageGroup._id,
+        auth,
+        socket
+      })
+    );
   };
 
   const handleRemoveAdmin = (userId) => {
     console.log("Xóa quyền admin của:", userId);
     // TODO: Gửi API hoặc dispatch redux để xóa quyền admin
     setActiveDropdownUserId(null);
+
+    dispatch(
+      removeAdminGroup({
+        userId,
+        conversationId: message.modalManageGroup._id,
+        auth,
+        socket
+      })
+    );
   };
 
   const handleRemoveFromGroup = (userId) => {
@@ -362,7 +390,12 @@ export const ModalManageGroup = () => {
 
                       {/* Dropdown chỉ hiện nếu có quyền thao tác */}
                       {canManageUser ? (
-                        <div style={{ position: "relative" }} ref={dropdownRef}>
+                        <div
+                          style={{ position: "relative" }}
+                          ref={(el) => {
+                            if (el) dropdownRefs.current[user._id] = el;
+                          }}
+                        >
                           <div
                             style={{
                               cursor: "pointer",

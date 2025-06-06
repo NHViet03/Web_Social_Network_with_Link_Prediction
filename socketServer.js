@@ -169,6 +169,24 @@ const SocketServer = (socket) => {
       });
   });
 
+  //updateManagerGroup
+  socket.on("updateManagerGroup", async (data) => {
+    const { userId, conversation } = data;
+   const listID = conversation.recipients.map((item) => item._id);
+   //nếu listID chứa userId thì xóa userId khỏi listID
+   if (listID.includes(userId)) {
+     listID.splice(listID.indexOf(userId), 1);
+   }
+   const usersListRecepient = users.filter((user) =>
+     listID.find((item) => item === user.id)
+   );
+    usersListRecepient.length > 0 &&
+      usersListRecepient.forEach((user) => {
+        socket.to(`${user.socketId}`).emit("updateManagerGroupToClient", data);
+      });
+
+  });
+
   // createGroupChat
   socket.on("createGroupChat", async (data) => {
     const { userData, senderID, recipients } = data;

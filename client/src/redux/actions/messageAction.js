@@ -239,3 +239,54 @@ export const editMessage =
       });
     }
   };
+
+export const removeAdminGroup =
+  ({ userId, conversationId, auth, socket }) =>
+  async (dispatch) => {
+    try {
+      console.log("removeAdminGroup userId:", userId);
+      const res = await putDataAPI(
+        `remove-admin-group/${conversationId}`,
+        { userId },
+        auth.token
+      );
+      socket.emit("updateManagerGroup", {
+        userId: auth.user._id,
+        conversation: res.data.conversation,
+      });
+      dispatch({
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: res.data.conversation,
+      });
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+
+export const setAdminGroup =
+  ({ userId, conversationId, auth, socket }) =>
+  async (dispatch) => {
+    try {
+      const res = await putDataAPI(
+        `set-admin-group/${conversationId}`,
+        { userId },
+        auth.token
+      );
+      dispatch({
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: res.data.conversation,
+      });
+      socket.emit("updateManagerGroup", {
+        userId: auth.user._id,
+        conversation: res.data.conversation,
+      });
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };

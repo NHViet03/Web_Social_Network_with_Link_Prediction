@@ -250,6 +250,57 @@ const messageCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  removeAdminGroup: async (req, res) => {
+    try {
+      const conversationID = req.params.id;
+      const { userId } = req.body;
+      const conversation = await Conversations.findById(conversationID);
+      if (!conversation) return res.json({ msg: "Not found!" });
+
+      // Xóa userId khỏi danh sách admin
+      conversation.admins = conversation.admins.filter(
+        (admin) => admin.toString() !== userId
+      );
+      await conversation.save();
+
+      // Tìm lại conversation sau khi cập nhật
+      const updatedConversation = await Conversations.findById(
+        conversationID
+      ).populate("recipients", "avatar username fullname");
+
+      res.json({
+        msg: "Remove admin success!",
+        conversation: updatedConversation,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  setAdminGroup: async (req, res) => {
+    try {
+      const conversationID = req.params.id;
+      const { userId } = req.body;
+      const conversation = await Conversations.findById(conversationID);
+      if (!conversation) return res.json({ msg: "Not found!" });
+      // Kiểm tra xem userId đã là admin chưa
+      if (conversation.admins.includes(userId)) {
+        return res.status(400).json({ msg: "User is already an admin!" });
+      }
+      // Thêm userId vào danh sách admin
+      conversation.admins.push(userId);
+      await conversation.save();
+      // Tìm lại conversation sau khi cập nhật
+      const updatedConversation = await Conversations.findById(
+        conversationID
+      ).populate("recipients", "avatar username fullname");
+      res.json({
+        msg: "Set admin success!",
+        conversation: updatedConversation,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   acceptConversation: async (req, res) => {
     const sender = req.user._id.toString();
     let listID = req.body.listID;

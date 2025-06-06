@@ -65,7 +65,7 @@ const SocketClient = () => {
         (checkUserAccept && message.mainBoxMessage) ||
         (!checkUserAccept && !message.mainBoxMessage)
       ) {
-       dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
+        dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
       }
     });
 
@@ -86,6 +86,17 @@ const SocketClient = () => {
       dispatch({ type: MESS_TYPES.EDIT_MESSAGE_SOCKET_SECOND, payload: msg });
     });
     return () => socket.off("editMessageToClient");
+  }, [dispatch, socket]);
+
+  //updateManagerGroupToClient
+  useEffect(() => {
+    socket.on("updateManagerGroupToClient", (data) => {
+      dispatch({
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: data.conversation,
+      });
+    });
+    return () => socket.off("updateManagerGroupToClient");
   }, [dispatch, socket]);
   //revokeMessageToClient
   useEffect(() => {
