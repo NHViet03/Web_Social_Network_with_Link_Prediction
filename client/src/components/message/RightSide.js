@@ -88,25 +88,28 @@ const RightSide = () => {
 
   // Lấy dữ liệu tin nhắn từ backend nếu chưa có
   useEffect(() => {
-    const getMessagesData = () => {
-      //lấy converstation để gửi đi biết có group true hay false
-      const converstation = message.users.find((user) => user._id === id);
-      if (message.data.every((item) => item._id !== id)) {
-        setIsLoadingMessages(true);
-        setData([]);
-        dispatch(getMessages({ auth, id, converstation }));
-        setTimeout(() => {
-          if (refDisplay.current) {
-            refDisplay.current.scrollIntoView({
-              behavior: "smooth",
-              block: "end",
-            });
-          }
-        }, 50);
-      }
-    };
-    getMessagesData();
-  }, [dispatch, auth, id, message.data]);
+    // Chờ cho tới khi danh sách users đã load xong
+    if (!message.users || message.users.length === 0) return;
+
+    // Tìm conversation của user hiện tại
+    const conversation = message.users.find((user) => user._id === id);
+    if (!conversation) return; // Không tìm thấy thì cũng dừng
+
+    // Nếu chưa có message cho cuộc trò chuyện này thì load
+    if (message.data.every((item) => item._id !== id)) {
+      setIsLoadingMessages(true);
+      setData([]);
+      dispatch(getMessages({ auth, id, conversation }));
+
+      // Cuộn xuống cuối sau khi dispatch (đợi khung DOM đã vẽ xong một nhịp)
+      setTimeout(() => {
+        refDisplay.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }, 50);
+    }
+  }, [message.users, message.data, id, auth, dispatch]); // thêm message.users vào deps
 
   // Theo dõi pageEnd để kích hoạt “load more” khi người dùng scroll lên
   useEffect(() => {

@@ -305,12 +305,18 @@ const messageCtrl = {
   readMessage: async (req, res) => {
     try {
       const userID = req.params.id;
-      const listID = req.body.listID;
+      const { listID, isGroup, conversationID } = req.body;
 
-      const conversation = await Conversations.findOne({
-        recipients: { $all: listID, $size: listID.length },
-      });
+      let conversation = null;
 
+      if (isGroup) {
+        // nếu là cuộc trò chuyện nhóm thì tìm kiếm theo conversationID
+        conversation = await Conversations.findById(conversationID);
+      } else {
+        conversation = await Conversations.findOne({
+          recipients: { $all: listID, $size: listID.length },
+        });
+      }
       // nếu không tim thấy conversation thì không cần làm gì
 
       if (conversation) {

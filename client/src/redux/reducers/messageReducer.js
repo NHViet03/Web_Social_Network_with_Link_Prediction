@@ -28,7 +28,9 @@ const messageReducer = (state = initialState, action) => {
       return state;
     case MESS_TYPES.ADD_USER_SECOND: {
       const newUser = {
-        _id: action.payload.recipients.join("."),
+        _id: action.payload.conversation.isGroup
+          ? action.payload.conversation._id
+          : action.payload.sender._id,
         avatar: action.payload.conversation.isGroup
           ? imageGroupDefaultLink
           : action.payload.sender.avatar,

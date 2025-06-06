@@ -48,7 +48,11 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     });
     try {
       //Save to DB read message = true
-      postDataAPI(`readMessage/${auth.user._id}`, {listID}, auth.token);
+      postDataAPI(`readMessage/${auth.user._id}`, {
+        listID: listID,
+        isGroup: user.isGroup,
+        conversationID: user._id,
+      }, auth.token);
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
