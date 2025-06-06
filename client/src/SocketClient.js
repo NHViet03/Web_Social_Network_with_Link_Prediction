@@ -42,7 +42,6 @@ const SocketClient = () => {
   const fetchNumberNewMessage = async () => {
     try {
       const res = await getDataAPI("numberNewMessage", auth.token);
-      console.log("res.data?.numberNewMessage", res.data?.numberNewMessage);
       dispatch({
         type: MESS_TYPES.NUMBERNEWMESSAGE,
         payload: res.data?.numberNewMessage,

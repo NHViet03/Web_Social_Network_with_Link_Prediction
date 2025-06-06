@@ -77,7 +77,6 @@ const messageReducer = (state = initialState, action) => {
       return state;
     }
     case MESS_TYPES.ADD_MESSAGE: {
-      console.log("ADD_MESSAGE", action.payload);
       // Cập nhật mảng data
       const updatedData = state.data.map((item) => {
         // mình item nào có _id = action.payload.conversationID thì thêm vào messages
@@ -155,7 +154,6 @@ const messageReducer = (state = initialState, action) => {
       };
     }
     case MESS_TYPES.ADD_MESSAGE_SECOND: {
-      console.log("ADD_MESSAGE_SECOND", action.payload);
       // Cập nhật mảng data
       const updatedData = state.data.map((item) => {
         let recipientsMatch = false;

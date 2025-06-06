@@ -183,14 +183,16 @@ const RightSide = () => {
 
   const handleEditMessage = async (msg, textEdit) => {
     if (!textEdit.trim()) return;
+    console.log("msg", msg);
     msg = {
       ...msg,
       conversation: {
-        _id: msg.conversation._id,
-        isGroup: msg.conversation.isGroup,
+        _id: msg.conversationID,
+        isGroup: msg.isGroup,
         idPath: id,
       },
     };
+    console.log("msg", msg);
     dispatch(editMessage({ auth, msg, textEdit, socket }));
   };
 
