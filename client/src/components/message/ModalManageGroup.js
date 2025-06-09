@@ -7,6 +7,7 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import {
   MESS_TYPES,
   removeAdminGroup,
+  removeUserFromGroupChat,
   setAdminGroup,
 } from "../../redux/actions/messageAction";
 import Loading from "../../components/Loading";
@@ -86,7 +87,7 @@ export const ModalManageGroup = () => {
         userId,
         conversationId: message.modalManageGroup._id,
         auth,
-        socket
+        socket,
       })
     );
   };
@@ -101,7 +102,7 @@ export const ModalManageGroup = () => {
         userId,
         conversationId: message.modalManageGroup._id,
         auth,
-        socket
+        socket,
       })
     );
   };
@@ -110,6 +111,14 @@ export const ModalManageGroup = () => {
     console.log("Xóa khỏi nhóm:", userId);
     // TODO: Gửi API hoặc dispatch redux để xóa người dùng khỏi nhóm
     setActiveDropdownUserId(null);
+    dispatch(
+      removeUserFromGroupChat({
+        userId,
+        conversationId: message.modalManageGroup._id,
+        auth,
+        socket,
+      })
+    );
   };
 
   const handleSearch = async (e) => {

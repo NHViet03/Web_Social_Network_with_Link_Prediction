@@ -565,6 +565,31 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         modalManageGroup: action.payload,
       };
+    case MESS_TYPES.ALERT_IN_GROUP:
+      return {
+        ...state,
+        users: state.users.map((user) => {
+          if (user._id === action.payload._id) {
+            return {
+              ...user,
+              text: action.payload.text,
+            };
+          }
+          return user;
+        }),
+      };
+      return {
+        ...state,
+        users: state.users.map((user) => {
+          if (user._id === action.payload._id) {
+            return {
+              ...user,
+              text: action.payload.text,
+            };
+          }
+          return user;
+        }),
+      };
     default:
       return state;
   }

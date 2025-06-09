@@ -32,6 +32,7 @@ export const MESS_TYPES = {
   REVOKE_MESSAGE_FIRST: "REVOKE_MESSAGE_FIRST",
   REVOKE_MESSAGE_SECOND: "REVOKE_MESSAGE_SECOND",
   MODAL_MANAGE_GROUP: "MODAL_MANAGE_GROUP",
+  ALERT_IN_GROUP: "ALERT_IN_GROUP",
 };
 
 export const addMessage =
@@ -258,6 +259,10 @@ export const removeAdminGroup =
         type: MESS_TYPES.MODAL_MANAGE_GROUP,
         payload: res.data.conversation,
       });
+      dispatch({
+        type: MESS_TYPES.ALERT_IN_GROUP,
+        payload: res.data.conversation,
+      });
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -279,9 +284,42 @@ export const setAdminGroup =
         type: MESS_TYPES.MODAL_MANAGE_GROUP,
         payload: res.data.conversation,
       });
+      dispatch({
+        type: MESS_TYPES.ALERT_IN_GROUP,
+        payload: res.data.conversation,
+      });
       socket.emit("updateManagerGroup", {
         userId: auth.user._id,
         conversation: res.data.conversation,
+      });
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+
+export const removeUserFromGroupChat =
+  ({ userId, conversationId, auth, socket }) =>
+  async (dispatch) => {
+    try {
+      const res = await putDataAPI(
+        `remove-admin-group/${conversationId}`,
+        { userId },
+        auth.token
+      );
+      socket.emit("updateManagerGroup", {
+        userId: auth.user._id,
+        conversation: res.data.conversation,
+      });
+      dispatch({
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: res.data.conversation,
+      });
+      dispatch({
+        type: MESS_TYPES.ALERT_IN_GROUP,
+        payload: res.data.conversation,
       });
     } catch (err) {
       dispatch({

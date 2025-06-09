@@ -261,6 +261,14 @@ const messageCtrl = {
       conversation.admins = conversation.admins.filter(
         (admin) => admin.toString() !== userId
       );
+
+      // Lấy thông tin của người dùng từ User model
+      const user = await User.findById(userId);
+      if (!user) return res.status(400).json({ msg: "User not found!" });
+
+      // Thêm text : user.username vào conversation
+      conversation.text = `${user.username} đã bị gỡ quyền quản trị viên.`;
+
       await conversation.save();
 
       // Tìm lại conversation sau khi cập nhật
@@ -288,6 +296,13 @@ const messageCtrl = {
       }
       // Thêm userId vào danh sách admin
       conversation.admins.push(userId);
+
+      // Lấy thông tin người dùng từ User model
+      const user = await User.findById(userId);
+      if (!user) return res.status(400).json({ msg: "User not found!" });
+
+      // Thêm text : user.username vào conversation
+      conversation.text = `${user.username} đã trở thành quản trị viên.`;
       await conversation.save();
       // Tìm lại conversation sau khi cập nhật
       const updatedConversation = await Conversations.findById(

@@ -97,6 +97,10 @@ const SocketClient = () => {
           payload: data.conversation,
         });
       }
+      dispatch({
+        type: MESS_TYPES.ALERT_IN_GROUP,
+        payload: data.conversation,
+      });
     });
     return () => socket.off("updateManagerGroupToClient");
   }, [dispatch, socket, message.modalManageGroup]);
