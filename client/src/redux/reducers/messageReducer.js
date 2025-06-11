@@ -595,6 +595,47 @@ const messageReducer = (state = initialState, action) => {
         ...state,
         users: state.users.filter((user) => user._id !== action.payload._id),
       };
+    case MESS_TYPES.ADD_MEMBER_GROUP_CHAT:
+      // Nếu không có action.payload._id thì thêm vào state.users, còn đã có rồi thì cập nhật thông tin recipients
+      if (state.users.every((item) => item._id !== action.payload._id)) {
+        return {
+          ...state,
+          users: [
+            {
+              _id: action.payload._id,
+              avatar: imageGroupDefaultLink,
+              fullname: action.payload.recipients
+                .map((item) => item.username)
+                .join(", "),
+              username: action.payload.recipients
+                .map((item) => item.username)
+                .join(", "),
+              text: action.payload.text,
+              media: action.payload.media,
+              isVisible: action.payload.isVisible,
+              recipientAccept: action.payload.recipientAccept,
+              isRead: action.payload.isRead,
+              isGroup: true,
+            },
+            ...state.users,
+          ],
+        };
+      } else {
+        return {
+          ...state,
+          users: state.users.map((user) =>
+            user._id === action.payload._id
+              ? {
+                  ...user,
+                  recipients: action.payload.recipients,
+                  text: action.payload.text,
+                  media: action.payload.media,
+                }
+              : user
+          ),
+        };
+      }
+
     default:
       return state;
   }

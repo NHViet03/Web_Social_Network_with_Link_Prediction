@@ -34,6 +34,7 @@ export const MESS_TYPES = {
   MODAL_MANAGE_GROUP: "MODAL_MANAGE_GROUP",
   ALERT_IN_GROUP: "ALERT_IN_GROUP",
   REMOVE_USER_FROM_GROUP: "REMOVE_USER_FROM_GROUP",
+  ADD_MEMBER_GROUP_CHAT: "ADD_MEMBER_GROUP_CHAT",
 };
 
 export const addMessage =
@@ -366,16 +367,24 @@ export const addMemberGroupChat =
   ({ groupUsersChat, conversationId, auth, socket }) =>
   async (dispatch) => {
     try {
+      const listIdUserAdd = groupUsersChat.map((user) => user._id);
       const res = await postDataAPI(
         "add-member-group-chat",
-        { groupUsersChat, conversationId },
+        { listIdUserAdd, conversationId },
         auth.token
       );
       dispatch({
-        type: MESS_TYPES.ADD_GROUP_CHAT,
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: null,
+      });
+      dispatch({
+        type: MESS_TYPES.ALERT_IN_GROUP,
         payload: res.data.conversation,
       });
-      socket.emit("createGroupChat", res.data.conversation);
+      socket.emit("addMemberGroupChat", {
+        conversation: res.data.conversation,
+        authUserId: auth.user._id,
+      });
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,

@@ -220,6 +220,25 @@ const SocketServer = (socket) => {
       });
   });
 
+  // addMemberGroupChat
+  socket.on("addMemberGroupChat", async (data) => {
+    const { conversation, authUserId } = data;
+
+    const listID = conversation.recipients.map((item) => item._id);
+    //nếu listID chứa authUserId thì xóa authUserId khỏi listID
+    if (listID.includes(authUserId)) {
+      listID.splice(listID.indexOf(authUserId), 1);
+    }
+    const usersListRecepient = users.filter((user) =>
+      listID.find((item) => item === user.id)
+    );
+    usersListRecepient.length > 0 &&
+      usersListRecepient.forEach((user) => {
+        socket.to(`${user.socketId}`).emit("addMemberGroupChatToClient", data);
+      });
+   
+  });
+
   // createGroupChat
   socket.on("createGroupChat", async (data) => {
     const { userData, senderID, recipients } = data;

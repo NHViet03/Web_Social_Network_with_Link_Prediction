@@ -393,7 +393,76 @@ const messageCtrl = {
   },
   addMemberGroupChat: async (req, res) => {
     try {
-      const { groupUsersChat, conversationId } = req.body;
+      const { listIdUserAdd, conversationId } = req.body;
+      const conversation = await Conversations.findById(conversationId);
+      if (!conversation) return res.json({ msg: "Not found!" });
+      // Kiểm tra xem userId đã có trong danh sách recipients chưa
+      const newRecipients = listIdUserAdd.filter(
+        (userId) => !conversation.recipients.includes(userId)
+      );
+      conversation.recipients.push(...newRecipients);
+
+      // Cập nhật recipientAccept cho những người mới thêm vào đều là true, các người cũ vẫn giữ nguyên giá trị
+      newRecipients.forEach((userId) => {
+        // Kiểm tra xem userId đã có trong recipientAccept chưa, nếu chưa thì thêm vào, còn nếu đã có thì không cần làm gì
+        if (!conversation.recipientAccept.has(userId.toString())) {
+          conversation.recipientAccept.set(userId.toString(), true);
+        }
+      });
+
+      // Cập nhật isRead cho những người mới thêm vào đều là false, các người cũ vẫn giữ nguyên giá trị
+      newRecipients.forEach((userId) => {
+        // Kiểm tra xem userId đã có trong isRead chưa, nếu chưa thì thêm vào, còn nếu đã có thì không cần làm gì
+        if (!conversation.isRead.has(userId.toString())) {
+          conversation.isRead.set(userId.toString(), true);
+        }
+      });
+      // Cập nhật isVisible cho những người mới thêm vào đều là true, các người cũ vẫn giữ nguyên giá trị
+      newRecipients.forEach((userId) => {
+        // Kiểm tra xem userId đã có trong isVisible chưa, nếu chưa thì thêm vào, còn nếu đã có thì không cần làm gì
+        if (!conversation.isVisible.has(userId.toString())) {
+          conversation.isVisible.set(userId.toString(), true);
+        }
+      });
+      let textAdd = "";
+      if (newRecipients.length > 0) {
+        // Lấy thông tin người dùng từ User model
+        const users = await User.find({ _id: { $in: newRecipients } });
+        const usernames = users.map((user) => user.username);
+        textAdd = `Đã thêm ${usernames.join(", ")} vào nhóm.`;
+      }
+
+      // Thêm text : user.username vào conversation
+      conversation.text = textAdd ? ` ${textAdd}` : conversation.text;
+      await conversation.save();
+      // Tìm lại conversation sau khi cập nhật
+      const updatedConversation = await Conversations.findById(
+        conversationId
+      ).populate("recipients", "avatar username fullname");
+
+      // Lặp qua từng tin nhắn trong cuộc trò chuyện và kiểm tra
+      // Nếu mảng recipients của tin nhắn không bao gồm người mới thêm vào
+      // Nếu isVisible của người mới chưa có thì set isVisible của người mới là true
+      const messages = await Messages.find({
+        conversation: conversationId,
+      });
+      for (const message of messages) {
+        newRecipients.forEach((userId) => {
+          if (!message.recipients.includes(userId.toString())) {
+            message.recipients.push(userId.toString());
+          }
+
+          if (!message.isVisible.has(userId.toString())) {
+            message.isVisible.set(userId.toString(), true);
+          }
+        });
+        await message.save();
+      }
+
+      res.json({
+        msg: "Add member success!",
+        conversation: updatedConversation,
+      });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

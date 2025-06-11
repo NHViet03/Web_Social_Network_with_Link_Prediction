@@ -144,6 +144,23 @@ const SocketClient = () => {
     return () => socket.off("removeUserFromGroupToClient");
   }, [dispatch, socket, auth.user._id, message.modalManageGroup, id, navigate]);
 
+  //addMemberGroupChatToClient
+  useEffect(() => {
+    socket.on("addMemberGroupChatToClient", (data) => {
+      if (message.modalManageGroup !== null) {
+        dispatch({
+          type: MESS_TYPES.MODAL_MANAGE_GROUP,
+          payload: data.conversation,
+        });
+      }
+      dispatch({
+        type: MESS_TYPES.ADD_MEMBER_GROUP_CHAT,
+        payload: data.conversation,
+      });
+    });
+    return () => socket.off("addMemberGroupChatToClient");
+  }, [dispatch, socket, message.modalManageGroup]);
+
   //leaveGroupChatToClient
   useEffect(() => {
     socket.on("leaveGroupChatToClient", (data) => {
