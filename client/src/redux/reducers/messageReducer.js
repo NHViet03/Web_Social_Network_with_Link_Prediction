@@ -573,18 +573,12 @@ const messageReducer = (state = initialState, action) => {
             return {
               ...user,
               text: action.payload.text,
-            };
-          }
-          return user;
-        }),
-      };
-      return {
-        ...state,
-        users: state.users.map((user) => {
-          if (user._id === action.payload._id) {
-            return {
-              ...user,
-              text: action.payload.text,
+              fullname: action.payload.recipients
+                .map((item) => item.username)
+                .join(", "),
+              username: action.payload.recipients
+                .map((item) => item.username)
+                .join(", "),
             };
           }
           return user;
