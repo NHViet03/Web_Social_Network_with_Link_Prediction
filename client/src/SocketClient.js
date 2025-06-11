@@ -5,6 +5,7 @@ import { MESS_TYPES } from "./redux/actions/messageAction";
 import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
 import { checkMapTrue } from "./utils/helper";
 import { getDataAPI } from "./utils/fetchData";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const SocketClient = () => {
   const auth = useSelector((state) => state.auth);
@@ -12,6 +13,10 @@ const SocketClient = () => {
   const online = useSelector((state) => state.online);
   const call = useSelector((state) => state.call);
   const message = useSelector((state) => state.message);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { id } = useParams();
 
   const dispatch = useDispatch();
 
@@ -104,6 +109,58 @@ const SocketClient = () => {
     });
     return () => socket.off("updateManagerGroupToClient");
   }, [dispatch, socket, message.modalManageGroup]);
+
+  //removeUserFromGroupToClient
+  useEffect(() => {
+    socket.on("removeUserFromGroupToClient", (data) => {
+      if (data.userId === auth.user._id) {
+        // Xóa khỏi danh sách cuộc trò chuyện nếu người dùng bị xóa khỏi nhóm
+        dispatch({
+          type: MESS_TYPES.REMOVE_USER_FROM_GROUP,
+          payload: data.conversation,
+        });
+
+        const pathname = location.pathname; // vd: "/message/6842f129701da552d0165a1a"
+        const pathParts = pathname.split("/"); // ["", "message", "6842f129701da552d0165a1a"]
+        const id = pathParts[2]; // "6842f129701da552d0165a1a"
+        console.log("ID cuộc trò chuyện:", id);
+        if (id === data.conversation._id) {
+          console.log("Bạn đã bị xóa khỏi nhóm");
+          navigate("/message");
+        }
+      } else {
+        if (message.modalManageGroup !== null) {
+          dispatch({
+            type: MESS_TYPES.MODAL_MANAGE_GROUP,
+            payload: data.conversation,
+          });
+        }
+        dispatch({
+          type: MESS_TYPES.ALERT_IN_GROUP,
+          payload: data.conversation,
+        });
+      }
+    });
+    return () => socket.off("removeUserFromGroupToClient");
+  }, [dispatch, socket, auth.user._id, message.modalManageGroup, id, navigate]);
+
+  //leaveGroupChatToClient
+  useEffect(() => {
+    socket.on("leaveGroupChatToClient", (data) => {
+      if (message.modalManageGroup !== null) {
+        dispatch({
+          type: MESS_TYPES.MODAL_MANAGE_GROUP,
+          payload: data.conversation,
+        });
+      }
+      dispatch({
+        type: MESS_TYPES.ALERT_IN_GROUP,
+        payload: data.conversation,
+      });
+    });
+    return () => socket.off("leaveGroupChatToClient");
+  }, [dispatch, socket, message.modalManageGroup]);
+
   //revokeMessageToClient
   useEffect(() => {
     socket.on("revokeMessageToClient", (msg) => {

@@ -284,6 +284,120 @@ const messageCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  deleteUserGroup: async (req, res) => {
+    try {
+      const conversationID = req.params.id;
+      const { userId } = req.body;
+      const conversation = await Conversations.findById(conversationID);
+      if (!conversation) return res.json({ msg: "Not found!" });
+      const recepientsBeforeDelete = conversation.recipients;
+      // Kiểm tra xem userId có trong danh sách recipients không
+      if (!conversation.recipients.includes(userId)) {
+        return res.status(400).json({ msg: "User not in conversation!" });
+      }
+      // Nếu userId có trong danh sách admins thì xóa khỏi danh sách admins
+      if (conversation.admins.includes(userId)) {
+        conversation.admins = conversation.admins.filter(
+          (admin) => admin.toString() !== userId
+        );
+      }
+      // Xóa userId khỏi danh sách recipients
+      conversation.recipients = conversation.recipients.filter(
+        (recipient) => recipient.toString() !== userId
+      );
+      const userActionDelete = await User.findById(req.user._id);
+      // Lấy thông tin người dùng từ User model
+      const user = await User.findById(userId);
+      if (!user) return res.status(400).json({ msg: "User not found!" });
+      // Thêm text : user.username vào conversation
+      conversation.text = `${userActionDelete.username} đã xóa ${user.username} khỏi cuộc trò chuyện.`;
+      await conversation.save();
+      // Tìm lại conversation sau khi cập nhật
+      const updatedConversation = await Conversations.findById(
+        conversationID
+      ).populate("recipients", "avatar username fullname");
+      res.json({
+        msg: "Delete user success!",
+        conversation: updatedConversation,
+        recepientsBeforeDelete: recepientsBeforeDelete,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  leaveGroup: async (req, res) => {
+    try {
+      const conversationID = req.params.id;
+      const conversation = await Conversations.findById(conversationID);
+      if (!conversation) return res.json({ msg: "Not found!" });
+      const recepientsBeforeDelete = conversation.recipients;
+      const { userId } = req.body;
+      // Kiểm tra xem userId có trong danh sách recipients không
+      if (!conversation.recipients.includes(userId)) {
+        return res.status(400).json({ msg: "User not in conversation!" });
+      }
+      // Kiểm tra mảng recipients có chỉ có 1 người không
+      if (conversation.recipients.length === 1) {
+        // không cho rời nhóm nếu chỉ có 1 người, xóa khỏi recipients
+        conversation.recipients = conversation.recipients.filter(
+          (recipient) => recipient.toString() !== userId
+        );
+      } else {
+        // nếu userID là host thì thay kiểm tra mảng admins có ai không
+        if (conversation.host.toString() === userId) {
+          if (conversation.admins.length === 0) {
+            // Lấy 1 người bất kì trong danh sách recipients để chuyển thành host
+            const newHost = conversation.recipients.find(
+              (recipient) => recipient.toString() !== userId
+            );
+            // Chuyển quyền quản trị cho người mới newHost => to ObjectID
+            conversation.host = newHost;
+          } else {
+            // Chuyển quyền quản trị cho admin đầu tiên
+            const newHost = conversation.admins[0];
+            conversation.host = newHost;
+            //Xóa NewHost khỏi danh sách admins
+            conversation.admins = conversation.admins.filter(
+              (admin) => admin.toString() !== newHost.toString()
+            );
+          }
+        }
+        // Nếu userId có trong danh sách admins thì xóa khỏi danh sách admins
+        if (conversation.admins.includes(userId)) {
+          conversation.admins = conversation.admins.filter(
+            (admin) => admin.toString() !== userId
+          );
+        }
+        // Xóa userId khỏi danh sách recipients
+        conversation.recipients = conversation.recipients.filter(
+          (recipient) => recipient.toString() !== userId
+        );
+      }
+
+      const userActionLeave = await User.findById(userId);
+      // Thêm text : user.username vào conversation
+      conversation.text = `${userActionLeave.username} đã rời khỏi cuộc trò chuyện.`;
+      await conversation.save();
+      // Tìm lại conversation sau khi cập nhật
+      const updatedConversation = await Conversations.findById(
+        conversationID
+      ).populate("recipients", "avatar username fullname");
+      res.json({
+        msg: "Leave group success!",
+        conversation: updatedConversation,
+        recepientsBeforeDelete: recepientsBeforeDelete,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  addMemberGroupChat: async (req, res) => {
+    try {
+      const { groupUsersChat, conversationId } = req.body;
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
   setAdminGroup: async (req, res) => {
     try {
       const conversationID = req.params.id;

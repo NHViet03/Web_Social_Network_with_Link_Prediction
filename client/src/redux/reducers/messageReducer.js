@@ -590,6 +590,11 @@ const messageReducer = (state = initialState, action) => {
           return user;
         }),
       };
+    case MESS_TYPES.REMOVE_USER_FROM_GROUP:
+      return {
+        ...state,
+        users: state.users.filter((user) => user._id !== action.payload._id),
+      };
     default:
       return state;
   }

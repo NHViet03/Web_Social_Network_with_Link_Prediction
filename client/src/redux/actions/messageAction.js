@@ -33,6 +33,7 @@ export const MESS_TYPES = {
   REVOKE_MESSAGE_SECOND: "REVOKE_MESSAGE_SECOND",
   MODAL_MANAGE_GROUP: "MODAL_MANAGE_GROUP",
   ALERT_IN_GROUP: "ALERT_IN_GROUP",
+  REMOVE_USER_FROM_GROUP: "REMOVE_USER_FROM_GROUP",
 };
 
 export const addMessage =
@@ -305,14 +306,10 @@ export const removeUserFromGroupChat =
   async (dispatch) => {
     try {
       const res = await putDataAPI(
-        `remove-admin-group/${conversationId}`,
+        `delete-user-group/${conversationId}`,
         { userId },
         auth.token
       );
-      socket.emit("updateManagerGroup", {
-        userId: auth.user._id,
-        conversation: res.data.conversation,
-      });
       dispatch({
         type: MESS_TYPES.MODAL_MANAGE_GROUP,
         payload: res.data.conversation,
@@ -321,6 +318,64 @@ export const removeUserFromGroupChat =
         type: MESS_TYPES.ALERT_IN_GROUP,
         payload: res.data.conversation,
       });
+      socket.emit("removeUserFromGroup", {
+        userId: userId,
+        recepientsBeforeDelete: res.data.recepientsBeforeDelete,
+        conversation: res.data.conversation,
+        authUserId: auth.user._id,
+      });
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+
+export const leaveGroupChat =
+  ({ conversationId, auth, socket }) =>
+  async (dispatch) => {
+    try {
+      const res = await putDataAPI(
+        `leave-group/${conversationId}`,
+        { userId: auth.user._id },
+        auth.token
+      );
+      dispatch({
+        type: MESS_TYPES.MODAL_MANAGE_GROUP,
+        payload: null,
+      });
+      dispatch({
+        type: MESS_TYPES.REMOVE_USER_FROM_GROUP,
+        payload: res.data.conversation,
+      });
+      socket.emit("leaveGroupChat", {
+        authUserId: auth.user._id,
+        recepientsBeforeDelete: res.data.recepientsBeforeDelete,
+        conversation: res.data.conversation,
+      });
+    } catch (err) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
+  };
+
+export const addMemberGroupChat =
+  ({ groupUsersChat, conversationId, auth, socket }) =>
+  async (dispatch) => {
+    try {
+      const res = await postDataAPI(
+        "add-member-group-chat",
+        { groupUsersChat, conversationId },
+        auth.token
+      );
+      dispatch({
+        type: MESS_TYPES.ADD_GROUP_CHAT,
+        payload: res.data.conversation,
+      });
+      socket.emit("createGroupChat", res.data.conversation);
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,

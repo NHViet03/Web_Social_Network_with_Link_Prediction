@@ -172,19 +172,52 @@ const SocketServer = (socket) => {
   //updateManagerGroup
   socket.on("updateManagerGroup", async (data) => {
     const { userId, conversation } = data;
-   const listID = conversation.recipients.map((item) => item._id);
-   //nếu listID chứa userId thì xóa userId khỏi listID
-   if (listID.includes(userId)) {
-     listID.splice(listID.indexOf(userId), 1);
-   }
-   const usersListRecepient = users.filter((user) =>
-     listID.find((item) => item === user.id)
-   );
+    const listID = conversation.recipients.map((item) => item._id);
+    //nếu listID chứa userId thì xóa userId khỏi listID
+    if (listID.includes(userId)) {
+      listID.splice(listID.indexOf(userId), 1);
+    }
+    const usersListRecepient = users.filter((user) =>
+      listID.find((item) => item === user.id)
+    );
     usersListRecepient.length > 0 &&
       usersListRecepient.forEach((user) => {
         socket.to(`${user.socketId}`).emit("updateManagerGroupToClient", data);
       });
+  });
 
+  // removeUserFromGroup
+  socket.on("removeUserFromGroup", async (data) => {
+    const { userId, recepientsBeforeDelete, conversation, authUserId } = data;
+    console.log("removeUserFromGroup data:", data);
+    const listID = [...recepientsBeforeDelete];
+    //nếu listID chứa userId thì xóa userId khỏi listID
+    if (listID.includes(authUserId)) {
+      listID.splice(listID.indexOf(authUserId), 1);
+    }
+    const usersListRecepient = users.filter((user) =>
+      listID.find((item) => item === user.id)
+    );
+    usersListRecepient.length > 0 &&
+      usersListRecepient.forEach((user) => {
+        socket.to(`${user.socketId}`).emit("removeUserFromGroupToClient", data);
+      });
+  });
+  // leaveGroupChat
+  socket.on("leaveGroupChat", async (data) => {
+    const { authUserId, recepientsBeforeDelete, conversation } = data;
+    const listID = [...recepientsBeforeDelete];
+    //nếu listID chứa authUserId thì xóa authUserId khỏi listID
+    if (listID.includes(authUserId)) {
+      listID.splice(listID.indexOf(authUserId), 1);
+    }
+    const usersListRecepient = users.filter((user) =>
+      listID.find((item) => item === user.id)
+    );
+    usersListRecepient.length > 0 &&
+      usersListRecepient.forEach((user) => {
+        socket.to(`${user.socketId}`).emit("leaveGroupChatToClient", data);
+      });
   });
 
   // createGroupChat

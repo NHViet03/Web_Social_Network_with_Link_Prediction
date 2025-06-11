@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import {
+  addMemberGroupChat,
+  leaveGroupChat,
   MESS_TYPES,
   removeAdminGroup,
   removeUserFromGroupChat,
@@ -107,6 +109,18 @@ export const ModalManageGroup = () => {
     );
   };
 
+  const handleLeaveGroupChat = () => {
+    console.log("Rời nhóm:", message.modalManageGroup._id);
+    dispatch(
+      leaveGroupChat({
+        conversationId: message.modalManageGroup._id,
+        auth,
+        socket,
+      })
+    );
+    navigate("/message");
+  };
+
   const handleRemoveFromGroup = (userId) => {
     console.log("Xóa khỏi nhóm:", userId);
     // TODO: Gửi API hoặc dispatch redux để xóa người dùng khỏi nhóm
@@ -130,7 +144,12 @@ export const ModalManageGroup = () => {
         `searchmessage?username=${search}&mesagechatbox=${auth.user._id}`,
         auth.token
       );
-      setSearchUser(res.data.users);
+      const listIDAvailable = message.modalManageGroup.recipients.map(
+        (item) => item._id
+      );
+      setSearchUser(
+        res.data.users.filter((user) => !listIDAvailable.includes(user._id))
+      );
       setLoad(false);
     } catch (err) {
       dispatch({
@@ -139,85 +158,14 @@ export const ModalManageGroup = () => {
       });
     }
   };
-  const handleCreateGroupChat = () => {
+  const handleAddMemberGroupChat = () => {
     if (groupUsersChat.length === 0) return;
-    if (groupUsersChat.length === 1) {
-      const user = groupUsersChat[0];
-      const userData = {
-        avatar: user.avatar,
-        fullname: user.fullname,
-        username: user.username,
-        _id: user._id,
-        text: "",
-        media: [],
-        isVisible: {
-          [auth.user._id]: true,
-          [user._id]: true,
-        },
-        recipientAccept: {
-          [auth.user._id]: true,
-          [user._id]: true,
-        },
-        isRead: {
-          [auth.user._id]: true,
-          [user._id]: true,
-        },
-        isGroup: false,
-        online: false,
-      };
-      dispatch({
-        type: MESS_TYPES.ADD_USER,
-        payload: userData,
-      });
-      navigate(`/message/${user._id}`);
-      return;
-    }
-    if (groupUsersChat.length > 1) {
-      let userIds = groupUsersChat.map((user) => user._id).join(".");
-      userIds += `.${auth.user._id}`;
-      const nameGroup =
-        groupUsersChat.map((user) => user.fullname).join(", ") +
-        ", " +
-        auth.user.fullname;
-      const avatarGroup = imageGroupDefaultLink;
-      const userData = {
-        avatar: avatarGroup,
-        fullname: nameGroup,
-        username: nameGroup,
-        _id: userIds,
-        text: "",
-        media: [],
-        isVisible: {
-          [auth.user._id]: true,
-          ...groupUsersChat.reduce((acc, user) => {
-            acc[user._id] = true;
-            return acc;
-          }, {}),
-        },
-        recipientAccept: {
-          [auth.user._id]: true,
-          ...groupUsersChat.reduce((acc, user) => {
-            acc[user._id] = true;
-            return acc;
-          }, {}),
-        },
-        isRead: {
-          [auth.user._id]: true,
-          ...groupUsersChat.reduce((acc, user) => {
-            acc[user._id] = true;
-            return acc;
-          }, {}),
-        },
-        isGroup: true,
-        online: false,
-      };
-      dispatch({
-        type: MESS_TYPES.ADD_USER,
-        payload: userData,
-      });
-      setGroupUsersChat([]);
-      navigate(`/message/${userIds}`);
-    }
+    dispatch(addMemberGroupChat({
+      groupUsersChat,
+      conversationId: message.modalManageGroup._id,
+      auth,
+      socket,
+    }));
   };
   const handleAddUserGroupChat = (user) => {
     const checkUser = groupUsersChat.find((item) => item._id === user._id);
@@ -390,7 +338,7 @@ export const ModalManageGroup = () => {
                           }}
                         >
                           {isHost
-                            ? "Người tạo nhóm"
+                            ? "Trưởng nhóm"
                             : isAdmin
                             ? "Quản trị viên"
                             : "Thành viên"}
@@ -508,16 +456,7 @@ export const ModalManageGroup = () => {
                   marginTop: "10px",
                   marginBottom: "10px",
                 }}
-                onClick={() => {
-                  dispatch({
-                    type: MESS_TYPES.MODAL_MANAGE_GROUP,
-                    payload: null,
-                  });
-                  dispatch({
-                    type: MESS_TYPES.DELETE_CONVERSATION,
-                    payload: message.modalManageGroup._id,
-                  });
-                }}
+                onClick={() => handleLeaveGroupChat()}
               >
                 Rời nhóm
               </button>
@@ -668,7 +607,7 @@ export const ModalManageGroup = () => {
                     marginTop: "10px",
                     marginBottom: "10px",
                   }}
-                  onClick={() => handleCreateGroupChat()}
+                  onClick={() => handleAddMemberGroupChat()}
                 >
                   Thêm vào nhóm
                 </button>
