@@ -8,7 +8,7 @@
 /.env
 # testing
 /coverage
-
+/fastApiServer/multimodel_model.h5
 # production
 /build
 
