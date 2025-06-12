@@ -4,6 +4,7 @@ import { getDataAPI } from "../../utils/fetchData";
 export const HOME_TYPES = {
   GET_CARDS_DATA: "GET_CARDS_DATA",
   GET_TOP_5_USERS: "GET_TOP_5_USERS",
+  GET_CHART_STATISTICS: "GET_CHART_STATISTICS",
 };
 
 export const getCardsData =
@@ -110,6 +111,28 @@ export const getTop5Users =
       dispatch({
         type: HOME_TYPES.GET_TOP_5_USERS,
         payload: res.data.users,
+      });
+    } catch (error) {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          type: "error",
+          title: error.response.data.msg,
+        },
+      });
+    }
+  };
+
+export const get_chart_statistics =
+  ({ auth }) =>
+  async (dispatch) => {
+    try {
+      const res = await getDataAPI("statistic", auth.token);
+
+      console.log(res.data);
+      dispatch({
+        type: HOME_TYPES.GET_CHART_STATISTICS,
+        payload: res.data,
       });
     } catch (error) {
       dispatch({

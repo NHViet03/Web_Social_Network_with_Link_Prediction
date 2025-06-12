@@ -3,6 +3,7 @@ const adminCtrl = require("../controllers/adminCtrl");
 const auth = require("../middleware/auth");
 
 router.get("/home_info_cards/:interval", auth, adminCtrl.getHomeInfoCards);
+router.get("/statistic", adminCtrl.getStatistic)
 router.get("/top_5_users", auth, adminCtrl.getTop5Users);
 
 router.get("/admin/users",  adminCtrl.getUsers);
@@ -14,6 +15,7 @@ router.get("/admin/post/:id",auth, adminCtrl.getDetailPost);
 router.post("/admin/send_mail",auth, adminCtrl.sendMail);
 
 router.get("/admin/reports", adminCtrl.getReports);
+router.get("/admin/reports/:id", adminCtrl.getReportDetail);
 router.patch("/admin/report/:id", adminCtrl.updateReport);
 router.delete("/admin/report/:id", adminCtrl.deleteReport);
 

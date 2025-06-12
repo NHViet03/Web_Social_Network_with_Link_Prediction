@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import policyData from "../utils/policyData";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -7,8 +7,7 @@ import { deletePost } from "../redux/actions/postAction";
 
 const ModalDeletePost = ({ post, setShowModalDelete }) => {
   const [reason, setReason] = useState("");
-  const [showAnotherReason, setShowAnotherReason] = useState(false);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
@@ -17,7 +16,7 @@ const ModalDeletePost = ({ post, setShowModalDelete }) => {
     setShowModalDelete(false);
   };
 
-  const handleDelete =async () => {
+  const handleDelete = async () => {
     await dispatch(deletePost({ post, reason, auth }));
     setShowModalDelete(false);
     navigate(-1);
@@ -50,36 +49,18 @@ const ModalDeletePost = ({ post, setShowModalDelete }) => {
           <h6 className="fw-medium post_detail_modal_card">
             Lý do bạn xóa bài viết này?
           </h6>
-          {policyData.map((policy) =>
-            policy.content !== "Khác" ? (
-              <div
-                key={policy.id}
-                className={`post_detail_modal_card ${
-                  policy.content === reason && "active"
-                }`}
-                onClick={() => setReason(policy.content)}
-              >
-                <p>{policy.content}</p>
-                <i className="fa-solid fa-angle-right" />
-              </div>
-            ) : (
-              <div
-                key={policy.id}
-                className="post_detail_modal_card"
-                onClick={() => setShowAnotherReason(true)}
-              >
-                {showAnotherReason ? (
-                  <textarea
-                    className="form-control"
-                    placeholder="Nhập lý do của bạn..."
-                    onChange={(e) => setReason(e.target.value)}
-                  />
-                ) : (
-                  <p>{policy.content}</p>
-                )}
-              </div>
-            )
-          )}
+          {policyData.map((policy) => (
+            <div
+              key={policy.id}
+              className={`post_detail_modal_card ${
+                policy.content === reason && "active"
+              }`}
+              onClick={() => setReason(policy.content)}
+            >
+              <p>{policy.content}</p>
+              <i className="fa-solid fa-angle-right" />
+            </div>
+          ))}
         </div>
         <div
           className="modal_footer"

@@ -26,5 +26,6 @@ router.get("/getSavePost", auth, postCtrl.getSavePosts);
 router.get("/getTaggedPost/:id", auth, postCtrl.getTaggedPosts);
 
 router.post("/report_post", auth, postCtrl.reportPost);
+router.get("/post/report/:id", postCtrl.report_notification)
 
 module.exports = router;

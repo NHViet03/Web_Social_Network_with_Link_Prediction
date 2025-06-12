@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import CardItem from "../components/Home/CardItem";
 import { useSelector, useDispatch } from "react-redux";
-import { getCardsData, getTop5Users } from "../redux/actions/homeAction";
+import {
+  getCardsData,
+  getTop5Users,
+  get_chart_statistics,
+} from "../redux/actions/homeAction";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 
 import Chart from "chart.js/auto";
@@ -12,77 +16,11 @@ import Users from "../components/Home/Users";
 
 Chart.register(Tooltip, Legend);
 
-const fakeCardData = [
-  {
-    title: "Người dùng mới",
-    value: 1200,
-    percent: "12",
-    icon: "fa-solid fa-user-group",
-    increase: true,
-  },
-  {
-    title: "Tổng số bài viết mới",
-    value: 200,
-    percent: "5",
-    icon: "fa-solid fa-image",
-    increase: true,
-  },
-  {
-    title: "Tổng số lượt yêu thích",
-    value: 12400,
-    percent: "-3",
-    icon: "fa-solid fa-heart",
-    increase: false,
-  },
-  {
-    title: "Tổng số báo cáo vi phạm",
-    value: 30,
-    percent: "-2",
-    icon: "fa-solid fa-user-shield",
-    increase: false,
-  },
-];
-
-const UserStatistic = [
-  { id: 4, month: "4", num: 250 },
-  { id: 5, month: "5", num: 300 },
-  { id: 6, month: "6", num: 200 },
-  { id: 7, month: "7", num: 400 },
-  { id: 8, month: "8", num: 450 },
-  { id: 9, month: "9", num: 500 },
-  { id: 10, month: "10", num: 450 },
-  { id: 11, month: "11", num: 400 },
-  { id: 12, month: "12", num: 350 },
-];
-
-const PostsStatistic = [
-  [
-    { id: 4, month: "4", num: 50 },
-    { id: 5, month: "5", num: 300 },
-    { id: 6, month: "6", num: 320 },
-    { id: 7, month: "7", num: 230 },
-    { id: 8, month: "8", num: 240 },
-    { id: 9, month: "9", num: 200 },
-    { id: 10, month: "10", num: 350 },
-    { id: 11, month: "11", num: 500 },
-    { id: 12, month: "12", num: 600 },
-  ],
-  [
-    { id: 4, month: "4", num: 30 },
-    { id: 5, month: "5", num: 100 },
-    { id: 6, month: "6", num: 120 },
-    { id: 7, month: "7", num: 130 },
-    { id: 8, month: "8", num: 100 },
-    { id: 9, month: "9", num: 80 },
-    { id: 10, month: "10", num: 150 },
-    { id: 11, month: "11", num: 200 },
-    { id: 12, month: "12", num: 250 },
-  ],
-];
-
 const Home = () => {
   const home = useSelector((state) => state.home);
   const auth = useSelector((state) => state.auth);
+  const UserStatistic = home.statistic.userStatistic;
+  const PostsStatistic = home.statistic.postsStatistic;
   const dispatch = useDispatch();
 
   const [cardsData, setCardsData] = useState([]);
@@ -102,22 +40,13 @@ const Home = () => {
     ],
   });
   const [chartRightData, setChartRightData] = useState({
-    labels: PostsStatistic[0].map((item) => "Th " + item.month),
+    labels: PostsStatistic.map((item) => "Th " + item.month),
     datasets: [
       {
         label: "Số lượng bài viết ",
-        data: PostsStatistic[0].map((data) => data.num),
+        data: PostsStatistic.map((data) => data.num),
         backgroundColor: ["#C43302"],
         borderColor: "#C43302",
-        tension: 0.4,
-        pointRadius: 3,
-        borderWidth: 3,
-      },
-      {
-        label: "Số lượng bài viết bị vi phạm ",
-        data: PostsStatistic[1].map((data) => data.num),
-        backgroundColor: ["#252F40"],
-        borderColor: "#252F40",
         tension: 0.4,
         pointRadius: 3,
         borderWidth: 3,
@@ -129,6 +58,7 @@ const Home = () => {
   useEffect(() => {
     if (!home.loadCardsData) {
       dispatch(getCardsData({ auth }));
+      dispatch(get_chart_statistics({ auth }));
     }
     setCardsData(home.cardsData);
   }, [auth, dispatch, home.cardsData, home.loadCardsData]);
@@ -167,6 +97,41 @@ const Home = () => {
     setUsers(home.users);
   }, [home.users]);
 
+  useEffect(() => {
+    if (UserStatistic.length > 0) {
+      setChartLeftData({
+        labels: UserStatistic.map((item) => "Th " + item.month),
+        datasets: [
+          {
+            label: "Người dùng mới ",
+            data: UserStatistic.map((data) => data.num),
+            backgroundColor: ["#fff"],
+            borderRadius: 8,
+            barThickness: 8,
+          },
+        ],
+      });
+    }
+  }, [UserStatistic]);
+  useEffect(() => {
+    if (PostsStatistic.length > 0) {
+      setChartRightData({
+        labels: PostsStatistic.map((item) => "Th " + item.month),
+        datasets: [
+          {
+            label: "Số lượng bài viết ",
+            data: PostsStatistic.map((data) => data.num),
+            backgroundColor: ["#C43302"],
+            borderColor: "#C43302",
+            tension: 0.4,
+            pointRadius: 3,
+            borderWidth: 3,
+          },
+        ],
+      });
+    }
+  }, [PostsStatistic]);
+
   return (
     <div className="home">
       <select
@@ -196,9 +161,6 @@ const Home = () => {
             >
               Người dùng mới
             </h5>
-            <p>
-              <span className="fw-medium">{"( +23% )"}</span> so với tháng trước
-            </p>
             <div className="mt-3 home_charts_left_cards">
               <div className="home_charts_left_cards_item">
                 <div

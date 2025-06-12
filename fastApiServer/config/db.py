@@ -11,6 +11,8 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.test
 
 userCollection = db['users']
+postCollection = db['posts']
+reportCollection = db['reports']
 # Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')

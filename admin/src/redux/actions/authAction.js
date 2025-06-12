@@ -4,7 +4,11 @@ import { postDataAPI } from "../../utils/fetchData";
 export const login = (data) => async (dispatch) => {
   try {
     dispatch({ type: GLOBAL_TYPES.LOADING, payload: true });
-    const res = await postDataAPI("login", data);
+    const res = await postDataAPI("login", {
+      email:data.email,
+      password:data.password,
+      role: "admin"
+    });
     dispatch({
       type: GLOBAL_TYPES.AUTH,
       payload: {
@@ -62,7 +66,7 @@ export const refreshToken = () => async (dispatch) => {
     dispatch({ type: GLOBAL_TYPES.LOADING, payload: true });
 
     try {
-      const res = await postDataAPI("refresh_token");
+      const res = await postDataAPI("refresh_token?role=admin");
       dispatch({
         type: GLOBAL_TYPES.AUTH,
         payload: {

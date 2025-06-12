@@ -38,6 +38,10 @@ const initialState = {
   loadCardsData: false,
   users: [],
   loadUsers: false,
+  statistic: {
+    userStatistic: [],
+    postsStatistic: [],
+  },
 };
 
 const authReducer = (state = initialState, action) => {
@@ -60,6 +64,15 @@ const authReducer = (state = initialState, action) => {
         ...state,
         users: action.payload,
         loadUsers: true,
+      };
+
+    case HOME_TYPES.GET_CHART_STATISTICS:
+      return {
+        ...state,
+        statistic: {
+          userStatistic: action.payload.users,
+          postsStatistic: action.payload.posts,
+        },
       };
     default:
       return state;

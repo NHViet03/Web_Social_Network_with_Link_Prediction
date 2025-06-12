@@ -72,7 +72,7 @@ const ReportList = ({ reports }) => {
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{"..." + report.id.slice(report.id.length - 4)}</td>
-              <td>{report.reason}</td>
+              <td>{report.content}</td>
               <td>
                 <div className="d-flex align-items-center gap-2">
                   <Avatar src={report.post.user.avatar} size="avatar-sm" />
@@ -96,7 +96,7 @@ const ReportList = ({ reports }) => {
                   </button>
 
                   <div className="box_shadow dropdown-menu right">
-                    {report.status === "pending" && (
+                    {/* {report.status === "pending" && (
                       <>
                         <button
                           className="btn dropdown-item"
@@ -117,7 +117,7 @@ const ReportList = ({ reports }) => {
                           Bác bỏ <i className="fa-solid fa-xmark" />
                         </button>
                       </>
-                    )}
+                    )} */}
                     <button
                       className="btn dropdown-item"
                       style={{
@@ -127,9 +127,12 @@ const ReportList = ({ reports }) => {
                     >
                       Xóa <i className="fa-solid fa-trash" />
                     </button>
-                    <Link to={`/posts/${report.id}`} className="dropdown-item">
-                      Xem bài viết
-                      <i className="fa-solid fa-image" />
+                    <Link
+                      to={`/reports/${report._id}`}
+                      className="dropdown-item"
+                    >
+                      Xem báo cáo
+                      <i className="fa-solid fa-flag"></i>
                     </Link>
                   </div>
                 </div>
