@@ -5,10 +5,11 @@ import Loading from "../../Loading";
 
 import { useSelector, useDispatch } from "react-redux";
 import { reportPost } from "../../../redux/actions/postAction";
+import { GLOBAL_TYPES } from "../../../redux/actions/globalTypes";
 
 const ReportPostModal = ({ postData, setShowReport }) => {
   const [post, setPost] = useState(postData);
-  const [reason, setReason] = useState("");
+  const [report, setReport] = useState(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const auth = useSelector((state) => state.auth);
@@ -16,8 +17,15 @@ const ReportPostModal = ({ postData, setShowReport }) => {
 
   const handleReport = async () => {
     if (loading) return;
+    if (!report) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng chọn lý do báo cáo" },
+      });
+    }
+
     setLoading(true);
-    await dispatch(reportPost({ post, reason, auth }));
+    await dispatch(reportPost({ post, report, auth }));
     setLoading(false);
     setStep(2);
   };
@@ -49,20 +57,13 @@ const ReportPostModal = ({ postData, setShowReport }) => {
 
         {!loading && step === 1 ? (
           <ReportReason
-            reason={reason}
-            setReason={setReason}
+            report={report}
+            setReport={setReport}
             setShowReport={setShowReport}
             handleReport={handleReport}
           />
         ) : (
-          !loading && (
-            <ReportResult
-              setShowReport={setShowReport}
-              post={post}
-              auth={auth}
-              dispatch={dispatch}
-            />
-          )
+          !loading && <ReportResult setShowReport={setShowReport} />
         )}
       </div>
     </div>

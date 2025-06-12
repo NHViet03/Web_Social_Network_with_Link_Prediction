@@ -16,6 +16,10 @@ const postSchema = new mongoose.Schema(
       id: { type: String, index: true },
       name: String,
     },
+    isDeleted:{
+      type: Boolean,
+      default: false,
+    }
   },
   {
     timestamps: true,

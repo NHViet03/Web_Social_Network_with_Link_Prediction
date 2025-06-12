@@ -158,6 +158,101 @@ const adminCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  getStatistic: async (req, res) => {
+    const now = new Date();
+    const startMonth = new Date(now.getFullYear(), now.getMonth() - 7, 1);
+
+    const result_users = await Users.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startMonth },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          num: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: "$_id.month",
+          month: { $toString: "$_id.month" },
+          num: 1,
+        },
+      },
+    ]);
+
+    const result_posts = await Posts.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startMonth },
+          isDeleted: { $ne: true },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          num: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: "$_id.month",
+          month: { $toString: "$_id.month" },
+          num: 1,
+        },
+      },
+    ]);
+
+    // Generate last 8 months
+    const months_users = [];
+    const months_posts = [];
+
+    for (let i = 7; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months_users.push({
+        id: date.getMonth() + 1,
+        month: (date.getMonth() + 1).toString(),
+        num: 0,
+      });
+      months_posts.push({
+        id: date.getMonth() + 1,
+        month: (date.getMonth() + 1).toString(),
+        num: 0,
+      });
+    }
+    // Merge aggregation result with months array
+    for (const m of months_users) {
+      const found = result_users.find((r) => Number(r.id) === m.id);
+      if (found) m.num = found.num;
+    }
+
+    // Merge aggregation result with months array
+    for (const m of months_posts) {
+      const found = result_posts.find((r) => Number(r.id) === m.id);
+      if (found) m.num = found.num;
+    }
+
+    return res.json({
+      users: months_users,
+      posts: months_posts,
+    });
+  },
   getTop5Users: async (req, res) => {
     try {
       let users = await Users.aggregate([
@@ -645,6 +740,17 @@ const adminCtrl = {
     try {
       let reports = await Reports.aggregate([
         {
+          $addFields: {
+            reporter: {
+              $cond: [
+                { $not: [{ $eq: [{ $type: "$reporter" }, "objectId"] }] },
+                { $toObjectId: "$reporter" },
+                "$reporter",
+              ],
+            },
+          },
+        },
+        {
           $match: {
             type: "post",
             status: {
@@ -661,11 +767,11 @@ const adminCtrl = {
           $project: {
             id: 1,
             status: 1,
-            reason: 1,
+            content: 1,
             reporter: 1,
             createdAt: 1,
           },
-        },  
+        },
         {
           $sort: {
             createdAt: -1,
@@ -692,7 +798,7 @@ const adminCtrl = {
                     {
                       $project: {
                         username: 1,
-                        fullname:1,
+                        fullname: 1,
                         avatar: 1,
                         email: 1,
                       },
@@ -795,6 +901,41 @@ const adminCtrl = {
         reports,
         result: reports.length,
         totalReports: totalReports.length,
+      });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  getReportDetail: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Find the report by id and populate post and user info
+      const report = await Reports.findById(id)
+        .populate({
+          path: "reporter",
+          select: "username fullname avatar email",
+        })
+        .lean();
+
+      if (!report) {
+        return res.status(404).json({ msg: "Không tìm thấy báo cáo." });
+      }
+
+      // Populate post info if report.type is 'post'
+      let post = null;
+      if (report.type === "post" && report.id) {
+        post = await Posts.findById(report.id)
+          .populate({
+            path: "user",
+            select: "username fullname avatar email",
+          })
+          .lean();
+      }
+
+      return res.json({
+        report,
+        post,
       });
     } catch (err) {
       return res.status(500).json({ msg: err.message });

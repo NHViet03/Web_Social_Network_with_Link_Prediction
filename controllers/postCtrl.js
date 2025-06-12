@@ -4,6 +4,8 @@ const Users = require("../models/userModel");
 const Reports = require("../models/reportModel");
 const Hashtags = require("../models/hashtagsModel");
 
+const nodemailer = require("nodemailer");
+
 class APIfeatures {
   constructor(query, queryString) {
     this.query = query;
@@ -37,7 +39,8 @@ const postCtrl = {
 
       await newPost.save();
 
-      const responsePost = await Posts.findById(newPost._id).populate("user", "avatar username fullname")
+      const responsePost = await Posts.findById(newPost._id)
+        .populate("user", "avatar username fullname")
         .populate({
           path: "comments",
           populate: {
@@ -63,7 +66,7 @@ const postCtrl = {
         }
       }
 
-            const parentComments = responsePost.comments.filter(
+      const parentComments = responsePost.comments.filter(
         (comment) =>
           comment.replyCommentId == null || comment.replyCommentId === undefined
       );
@@ -92,6 +95,7 @@ const postCtrl = {
     const features = new APIfeatures(
       Posts.find({
         user: [...req.user.following, req.user._id],
+        isDeleted: { $ne: true },
       }),
       req.query
     ).paginating();
@@ -142,7 +146,10 @@ const postCtrl = {
   },
   getPost: async (req, res) => {
     try {
-      const post = await Posts.findOne({ _id: req.params.id })
+      const post = await Posts.findOne({
+        _id: req.params.id,
+        isDeleted: { $ne: true },
+      })
         .populate("user", "avatar username fullname")
         .populate({
           path: "comments",
@@ -292,6 +299,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           user: { $nin: exceptArr },
+          isDeleted: { $ne: true },
         }),
         req.query
       ).paginating();
@@ -344,6 +352,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           "location.id": id,
+          isDeleted: { $ne: true }
         }),
         req.query
       ).paginating();
@@ -365,6 +374,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           hashtags: id,
+          isDeleted: { $ne: true }
         }),
         req.query
       ).paginating();
@@ -438,6 +448,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           user: req.params.id,
+          isDeleted: { $ne: true }
         }),
         req.query
       ).paginating();
@@ -498,6 +509,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           _id: { $in: req.user.saved },
+          isDeleted: { $ne: true }
         }),
         req.query
       ).paginating();
@@ -519,6 +531,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           tags: id,
+          isDeleted: { $ne: true }
         }),
         req.query
       ).paginating();
@@ -533,6 +546,132 @@ const postCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+  report_notification: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const report = await Reports.findById(id);
+
+      const post = await Posts.findById(report.id).populate(
+        "user",
+        "email fullname"
+      );
+
+      if (!report) {
+        return res.status(404).json({ msg: "Báo cáo không tồn tại" });
+      }
+
+      if (!post) {
+        return res.status(404).json({ msg: "Bài viết không tồn tại" });
+      }
+
+      if (report.status != "pending") {
+        return res.status(400).json({ msg: "Báo cáo đã được xử lý" });
+      }
+
+      if (post.isDeleted) {
+        return res.status(400).json({ msg: "Bài viết đã bị xóa" });
+      }
+
+      const report_id = report.report_id;
+
+      const prediction = report.predictions.find(
+        (prediction) => prediction.id === report_id
+      );
+
+      const to = post.user.email;
+      const subject = "Dreamers - Điều khoản chính sách bài viết.";
+      // Threshold for determining if the report is handled
+      // if prediction >= 70%, delete the post and send email notification to the user
+      if (prediction && prediction.probability >= 70.0) {
+        report.status = "validated";
+        post.isDeleted = true;
+        await report.save();
+        await post.save();
+
+        const html = `<h4>Xin chào người dùng ${post.user.fullname},</h4>
+        <p>
+          Chúng tôi là Dreamers, chúng tôi đã phát hiện bài viết của bạn (ID: ${
+            post._id
+          }) được đăng tải vào lúc <em>${new Date(
+          post.createdAt
+        ).toLocaleString()}</em> với nội dung <strong>"${
+          post.content
+        }" được đăng tải cùng với ${
+          post.images.length
+        } hình ảnh</strong> đã vi phạm chính sách bài viết của chúng tôi với lý do: <strong>"${
+          report.content
+        }"</strong>. Vì vậy, bài viết của bạn sẽ bị cấm hiển thị trong thời gian tới.
+        <p>
+        <br/>
+        <h5><em>Mọi thắc hoặc kháng cáo xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
+        </h5>
+        <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network`;
+
+        await handle_send_email(to, subject, html);
+
+        return res.json({
+          msg: "Bài viết đã bị xóa do vi phạm chính sách bài viết",
+        });
+      }
+
+      // If the prediction >= 50% but < 70%, send warning notification to the user but do not delete the post
+      if (prediction && prediction.probability >= 50.0) {
+        const html = `<h4>Xin chào người dùng ${post.user.fullname},</h4>
+        <p>
+          Chúng tôi là Dreamers, chúng tôi đã phát hiện bài viết của bạn (ID: ${
+            post._id
+          }) được đăng tải vào lúc <em>${new Date(
+          post.createdAt
+        ).toLocaleString()}</em> với nội dung <strong>"${
+          post.content
+        }" được đăng tải cùng với ${
+          post.images.length
+        } hình ảnh</strong> có dấu hiệu vi phạm chính sách bài viết của chúng tôi với lý do: <strong>"${
+          report.content
+        }"</strong>. Bài viết của bạn vẫn được hiển thị, tuy nhiên chúng tôi sẽ xem xét thêm trước khi có quyết định cụ thể.
+        <p>
+        <br/>
+        <h5><em>Mọi thắc hoặc kháng cáo xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
+        </h5>
+        <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network`;
+
+        await handle_send_email(to, subject, html);
+
+        return res.json({
+          msg: "Bài viết đã được xem xét, chúng tôi sẽ thông báo cho bạn sau khi có quyết định cụ thể",
+        });
+      }
+
+      report.status = "rejected";
+      await report.save();
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+};
+
+const handle_send_email = async (to, subject, html) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "dreamerssocialuit@gmail.com",
+        pass: "pwxdinwdinhfjwvf",
+      },
+    });
+
+    const mailOptions = {
+      from: "dreamerssocialuit@gmail.com",
+      to: to,
+      subject: subject,
+      html: html,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.log("Error in sending email", error);
+  }
 };
 
 module.exports = postCtrl;

@@ -9,6 +9,7 @@ import {
 import { EXPLORE_TYPES } from "./exploreAction";
 import { PROFILE_TYPES } from "./profileAction";
 import { createNotify, removeNotify } from "./notifyAction";
+import axios from "axios";
 
 export const POST_TYPES = {
   CREATE_POST: "CREATE_POST",
@@ -313,25 +314,34 @@ export const unSavePost =
   };
 
 export const reportPost =
-  ({ post, reason, auth }) =>
+  ({ post, report, auth }) =>
   async (dispatch) => {
-    const newReport = {
-      id: post._id,
-      reason,
-      reporter: auth.user._id,
-    };
-
     try {
-      await postDataAPI("report_post", newReport, auth.token);
+      // await postDataAPI("report_post", newReport, auth.token);
+      // dispatch({
+      //   type: POST_TYPES.DELETE_POST,
+      //   payload: post,
+      // });
+
+      const res = await axios.post(
+        `http://localhost:8000/post/report/${post._id}`,
+        {
+          ...report,
+          reporter: auth.user._id,
+        }
+      );
+
       dispatch({
         type: POST_TYPES.DELETE_POST,
         payload: post,
       });
+
+      console.log(res);
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
         payload: {
-          error: error.response.data.msg,
+          error: error.response,
         },
       });
     }

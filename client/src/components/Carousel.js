@@ -57,7 +57,7 @@ const Carousel = ({ images, id }) => {
   };
 
   const handleMutedVideo = (videoId) => {
-    const video = document.getElementById("video" + videoId);
+    const video = document.getElementById(`video_${last_4_characters(id)}_${videoId}`);
     console.log(videoId, video);
     if (video) {
       video.muted = !video.muted;
@@ -72,6 +72,11 @@ const Carousel = ({ images, id }) => {
       );
     }
   };
+
+  const last_4_characters = id => {
+    const str = id.toString();
+    return str.slice(-4);
+  }
 
   return (
     <div id={`image${id}`} className="carousel slide">
@@ -96,7 +101,7 @@ const Carousel = ({ images, id }) => {
                 }}
               >
                 <video
-                  id={"video" + index}
+                  id={`video_${last_4_characters(id)}_${index}`}
                   width="100%"
                   onClick={handleClickVideo}
                   loop

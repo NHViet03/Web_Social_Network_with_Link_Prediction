@@ -4,11 +4,11 @@
 /node_modules
 /.pnp
 .pnp.js
-
+/.venv
 /.env
 # testing
 /coverage
-
+/fastApiServer/multimodel_model.h5
 # production
 /build
 
