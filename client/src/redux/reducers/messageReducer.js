@@ -573,6 +573,7 @@ const messageReducer = (state = initialState, action) => {
             return {
               ...user,
               text: action.payload.text,
+              recipients: action.payload.recipients,
               fullname: action.payload.recipients
                 .map((item) => item.username)
                 .join(", "),
@@ -608,6 +609,7 @@ const messageReducer = (state = initialState, action) => {
               media: action.payload.media,
               isVisible: action.payload.isVisible,
               recipientAccept: action.payload.recipientAccept,
+              recipients: action.payload.recipients,
               isRead: action.payload.isRead,
               isGroup: true,
             },
