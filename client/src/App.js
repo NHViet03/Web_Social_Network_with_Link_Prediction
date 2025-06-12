@@ -63,29 +63,30 @@ function App() {
       sharePost: state.sharePost,
       message: state.message,
       addPostModal: state.addPostModal,
+      call: state.call,
       auth: state.auth,
       modal: state.modal,
     }));
   const [loading, setLoading] = React.useState(true);
   const dispatch = useDispatch();
 
-   useEffect(() => {
-      const fetchNumberNewMessage = async () => {
-        try {
-          const res = await getDataAPI('numberNewMessage', auth.token);
-          dispatch({
-            type: MESS_TYPES.NUMBERNEWMESSAGE,
-            payload: res.data?.numberNewMessage,
-          });
-        } catch (err) {
-          console.error(err);
-        }
-      };
-    
-      if (auth.token) {
-        fetchNumberNewMessage();
+  useEffect(() => {
+    const fetchNumberNewMessage = async () => {
+      try {
+        const res = await getDataAPI("numberNewMessage", auth.token);
+        dispatch({
+          type: MESS_TYPES.NUMBERNEWMESSAGE,
+          payload: res.data?.numberNewMessage,
+        });
+      } catch (err) {
+        console.error(err);
       }
-    }, [message.numberNewMessage, auth.token]);
+    };
+
+    if (auth.token) {
+      fetchNumberNewMessage();
+    }
+  }, [message.numberNewMessage, auth.token]);
 
   useEffect(() => {
     if (postDetail || sharePost || addPostModal || modal) {
@@ -151,7 +152,7 @@ function App() {
           {sharePost && <SharePostModal />}
           {addPostModal && <AddPostModal />}
           {auth.token && <SocketClient />}
-          {call !== null && <CallModal />}
+          {call && <CallModal />}
 
           <div className="main_container">
             <Routes>

@@ -338,7 +338,7 @@ const RightSide = () => {
   };
   const handleAudioCall = () => {
     caller({ video: false });
-    callUser({ video: true });
+    callUser({ video: false });
   };
   const handleVideoCall = () => {
     caller({ video: true });
