@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const { createServer } = require("node:http");
 const SocketServer = require("./socketServer");
-const {Peer, PeerServer} = require('peer');
+const {PeerServer} = require('peer');
 const app = express();
 app.use(express.json());
 app.use(cors());

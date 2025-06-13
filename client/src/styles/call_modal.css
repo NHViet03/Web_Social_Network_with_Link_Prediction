@@ -55,24 +55,65 @@
     z-index: 100;
     border-radius: 20px;
 } */
-.show_video .other_video{
+/* .show_video .other_video{
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
+    height: fit-content;
+    width: fit-content;
     border-radius: 20px;
     z-index: 100;
 }
 .show_video .you_video{
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 200px;
+    height: fit-content;
+    width: fit-content;
+
     border-radius: 5px;
     box-shadow: 0 0 5px #d7d3d2;
     z-index: 100;
+} */
+ .video_wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+  /* ở giữa mà hình */
+    align-items: center;
+    padding:  20px;
+    justify-content: center;
 }
+
+.left_box,
+.right_box {
+  width: 50%;
+  height: 70%;
+  overflow: hidden; /* Chặn phần video dư */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black; /* để dễ nhìn */
+}
+
+.you_video,
+.other_video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background-color: black; /* fallback nếu video chưa có */
+}
+
+.left_box {
+  border-radius: 20px;
+  border: 4px solid #f53708;
+  margin-right: 10px;
+}
+
+.right_box {
+  border-radius: 20px;
+}
+
 .call_modal .end_call{
     position: absolute;
     bottom: 50px;

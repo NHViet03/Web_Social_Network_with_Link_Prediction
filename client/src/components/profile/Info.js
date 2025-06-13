@@ -57,11 +57,11 @@ const Info = ({id, auth, profile, dispatch}) => {
               ) : (
                 <div>
                   <FollowButton user={user} />
-                  <i
+                  {/* <i
                     class="fa-solid fa-ellipsis mx-3"
                     style={{ fontSize: "20px" }}
                     onClick={() => setOnSetting(true)}
-                  ></i>
+                  ></i> */}
                   {onSetting && (
                     <div className="setting">
                      <div className="setting-info" >

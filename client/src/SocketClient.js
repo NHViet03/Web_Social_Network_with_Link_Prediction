@@ -239,8 +239,9 @@ const SocketClient = () => {
     socket.on("userBusy", (data) => {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
-        payload: { error: `${call.username} đang bận` },
+        payload: { error: `Người dùng đang có cuộc gọi khác` },
       });
+      dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
     });
     return () => socket.off("userBusy");
   }, [dispatch, socket, call]);

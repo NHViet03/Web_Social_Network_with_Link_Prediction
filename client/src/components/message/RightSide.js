@@ -412,7 +412,6 @@ const RightSide = () => {
         className="conversation-message_chat-container"
         onClick={() => setIsListenCLoseMsgDisplay(!isListenCLoseMsgDisplay)}
       >
-        {call && <CallModal />}
         <div className="conversation-message_chat-display" ref={refDisplay}>
           <button
             type="button"

@@ -13,6 +13,7 @@ const CallModal = () => {
   const [answer, setAnswer] = useState(false);
   const youVideo = useRef();
   const otherVideo = useRef();
+
   const [tracks, setTracks] = useState(null);
   const dispatch = useDispatch();
 
@@ -37,20 +38,64 @@ const CallModal = () => {
       setTotal(0);
     } else {
       const timer = setTimeout(() => {
+        if (tracks) {
+          tracks.forEach((track) => {
+            track.stop();
+          });
+        }
+        socket.emit("endCall", call);
         dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
-      }, 15000);
+      }, 45000);
       return () => clearTimeout(timer);
     }
-  }, [answer, dispatch]);
+  }, [answer, dispatch, socket, call, tracks]);
 
   // Stream Media
-  const openStream = (video) => {
-    const config = { audio: true, video };
-    return navigator.mediaDevices.getUserMedia(config);
+  const openStream = async (preferredLabel = "") => {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoInputs = devices.filter(
+      (device) => device.kind === "videoinput"
+    );
+
+    let selectedDevice = videoInputs[0]; // fallback
+
+    if (preferredLabel) {
+      const found = videoInputs.find((device) =>
+        device.label.toLowerCase().includes(preferredLabel.toLowerCase())
+      );
+      if (found) selectedDevice = found;
+    }
+
+    const constraints = {
+      audio: true,
+      video: selectedDevice
+        ? { deviceId: { exact: selectedDevice.deviceId } }
+        : true,
+    };
+
+    return navigator.mediaDevices.getUserMedia(constraints);
+  };
+
+  const playStream = (videoTag, stream) => {
+    if (!videoTag || !stream) return;
+
+    videoTag.srcObject = stream;
+
+    videoTag.onloadedmetadata = () => {
+      videoTag
+        .play()
+        .then(() => {
+          // OK
+        })
+        .catch((err) => {
+          console.error("Error playing video:", err);
+        });
+    };
   };
 
   const handleAnswer = () => {
-    openStream(call.video).then((stream) => {
+    // Ví dụ: máy B dùng OBS Virtual Cam
+    openStream("OBS").then((stream) => {
       playStream(youVideo.current, stream);
       const track = stream.getTracks();
       setTracks(track);
@@ -59,28 +104,15 @@ const CallModal = () => {
       newCall.on("stream", (remoteStream) => {
         playStream(otherVideo.current, remoteStream);
       });
-
       setAnswer(true);
     });
   };
 
-  const playStream = (tag, stream) => {
-    let video = tag;
-    video.srcObject = stream;
-    video.pause();
-    video.load();
-    video.oncanplaythrough = () => {
-      if (video.readyState >= 2) {
-        video.play();
-      }
-    };
-  };
-
   useEffect(() => {
-    peer?.on("call", (newCall) => {
-      openStream(call?.video).then((stream) => {
+    peer.on("call", (newCall) => {
+      // Ví dụ: máy A dùng camera thật (không OBS)
+      openStream("integrated").then((stream) => {
         if (youVideo.current) {
-          youVideo.current.pause();
           playStream(youVideo.current, stream);
         }
         const track = stream.getTracks();
@@ -88,31 +120,57 @@ const CallModal = () => {
 
         newCall.answer(stream);
 
-        newCall?.on("stream", (remoteStream) => {
+        newCall.on("stream", (remoteStream) => {
           if (otherVideo.current) {
-            otherVideo.current.pause();
             playStream(otherVideo.current, remoteStream);
           }
         });
         setAnswer(true);
       });
     });
-    return () => peer?.removeListener("call");
+    return () => peer.removeListener("call");
   }, [peer, call?.video]);
 
   // End Call
   const handeEndCall = () => {
+    if (tracks) {
+      tracks.forEach((track) => {
+        track.stop();
+      });
+    }
     dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
     socket.emit("endCall", call);
   };
   useEffect(() => {
     if (socket && typeof socket.on === "function") {
       socket.on("endCallToClient", (data) => {
+        if (tracks) {
+          tracks.forEach((track) => {
+            track.stop();
+          });
+        }
         dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
       });
       return () => socket.off("endCallToClient");
     }
-  }, [socket, dispatch]);
+  }, [socket, dispatch, tracks]);
+
+  //Disconnect
+  useEffect(() => {
+    socket.on("callerDisconnect", () => {
+      if (tracks) {
+        tracks.forEach((track) => {
+          track.stop();
+        });
+      }
+      dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Người gọi đã ngắt kết nối" },
+      });
+    });
+    return () => socket.off("callerDisconnect");
+  }, [socket, dispatch, tracks]);
 
   return (
     <>
@@ -197,8 +255,14 @@ const CallModal = () => {
             className="show_video"
             style={{ display: answer && call.video ? "block" : "none" }}
           >
-            <video ref={youVideo} className="you_video" />
-            <video ref={otherVideo} className="other_video" />
+            <div className="video_wrapper">
+              <div className="left_box">
+                <video ref={youVideo} className="you_video" />
+              </div>
+              <div className="right_box">
+                <video ref={otherVideo} className="other_video" />
+              </div>
+            </div>
 
             <div className="time_video">
               <small>{hours.toString().length < 2 ? "0" + hours : hours}</small>
