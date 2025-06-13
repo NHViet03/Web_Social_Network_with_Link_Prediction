@@ -273,6 +273,7 @@ const RightSide = () => {
       createAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+    console.log("msg", msg);
     dispatch(addMessage({ msg, auth, socket }));
 
     setLoadMedia(false);

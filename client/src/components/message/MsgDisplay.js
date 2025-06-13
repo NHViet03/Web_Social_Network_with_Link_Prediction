@@ -89,6 +89,54 @@ const MsgDisplay = ({
           <Avatar src={user.avatar} size="avatar-sm"></Avatar>
         )}
       </div>
+      {msg && msg.call && (
+        <div
+          className="call_message"
+          style={{
+            ...(yourmessage
+              ? { flexDirection: "row", textAlign: "left" }
+              : { flexDirection: "row-reverse", textAlign: "right" }),
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "row",
+              gap: "5px",
+              backgroundColor: "#D97B5C",
+              color: "white",
+              padding: "10px",
+              borderRadius: "20px",
+              cursor: "pointer",
+              minWidth: "50px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                gap: "5px",
+                alignItems: "left",
+                flexDirection: "column",
+              }}
+            >
+              <span>
+                {msg.call.video === true ? "Cuộc gọi video" : "Cuộc gọi thoại"}
+              </span>
+              <span>
+                {Math.floor(msg.call.times / 3600)}:
+                {Math.floor((msg.call.times % 3600) / 60)}:{msg.call.times % 60}
+                s
+              </span>
+            </div>
+            <i
+              className={`fa fa-${msg.call.video === true ? "video" : "phone"}`}
+              aria-hidden="true"
+              style={{ fontSize: "20px", color: "white", marginLeft: "10px" }}
+            ></i>
+          </div>
+        </div>
+      )}
       {msg && msg.replymessage && (
         <div className="reply_message">
           <div

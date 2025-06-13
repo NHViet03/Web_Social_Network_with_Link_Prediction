@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { addMessage } from "../../redux/actions/messageAction";
 
 import Avatar from "../Avatar";
+import { generateObjectId } from "../../utils/helper";
 
 const CallModal = () => {
   const { call, auth, socket, peer } = useSelector((state) => state);
@@ -131,6 +133,35 @@ const CallModal = () => {
     return () => peer.removeListener("call");
   }, [peer, call?.video]);
 
+  const addCallMessage = (call, times) => {
+    const message = {
+      sender: {
+        _id: auth.user._id,
+        avatar: auth.user.avatar,
+        fullname: auth.user.fullname,
+        username: auth.user.username,
+      },
+      conversationID: call.recipient,
+      recipients: [call.recipient, auth.user._id],
+      isRevoke: false,
+      isEdit: false,
+      text: "",
+      media: [],
+      call: {
+        video: call.video,
+        times,
+      },
+      isGroup: false,
+      _id: generateObjectId(),
+      isVisible: {},
+      replymessage: null,
+
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    console.log("addCallMessage", message);
+    dispatch(addMessage({ msg: message, auth, socket }));
+  };
   // End Call
   const handeEndCall = () => {
     if (tracks) {
@@ -138,8 +169,11 @@ const CallModal = () => {
         track.stop();
       });
     }
+    let times = answer ? total : 0;
+    socket.emit("endCall", { ...call, times });
+    addCallMessage(call, times);
+
     dispatch({ type: GLOBAL_TYPES.CALL, payload: null });
-    socket.emit("endCall", call);
   };
   useEffect(() => {
     if (socket && typeof socket.on === "function") {

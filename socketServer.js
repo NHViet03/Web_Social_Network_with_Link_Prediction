@@ -273,6 +273,7 @@ const SocketServer = (socket) => {
     }
   });
   socket.on("endCall", (data) => {
+    console.log("endCall data:", data);
     const client = users.find((user) => user.id === data.sender);
     if (client) {
       socket.to(`${client.socketId}`).emit("endCallToClient", data);
