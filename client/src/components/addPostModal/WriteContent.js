@@ -263,6 +263,15 @@ function WriteContent({ post, setPost }) {
         (user) => !existUserSet.has(user._id) && user._id !== auth.user._id
       );
 
+      // const userMapping = filteredUsers.map((user) => {
+      //  return {
+      //   _id: user._id,
+      //   avatar: user.image,
+      //   username: user.title,
+      //   fullname: user.subtitle,
+      //  }
+      // })
+
       setTagUsers(filteredUsers);
     } catch (error) {
       console.error("Error fetching search users:", error);
@@ -280,7 +289,8 @@ function WriteContent({ post, setPost }) {
   };
 
   const handleChooseTagUser = (e, user) => {
-    if (post.tags.length >= 5) {
+    if (post.tags.length >= 5 && e.target.checked) {
+      e.preventDefault();
       return dispatch({
         type: GLOBAL_TYPES.ALERT,
         payload: {
@@ -503,7 +513,15 @@ function WriteContent({ post, setPost }) {
                     key={user._id}
                     className="list-group-item list-group-item-tag"
                   >
-                    <UserCard user={user} size={"avatar-xs"} />
+                    <UserCard
+                      user={{
+                        _id: user._id,
+                        username: user.title,
+                        fullname: user.subtitle,
+                        avatar: user.image,
+                      }}
+                      size={"avatar-xs"}
+                    />
                     <input
                       className="form-check-input"
                       type="checkbox"

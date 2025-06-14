@@ -115,14 +115,14 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
       image: image,
     };
 
-    if (setPost) {
-      const newComments = generateNewComments(post, newComment);
+    // if (setPost) {
+    //   const newComments = generateNewComments(post, newComment);
 
-      setPost({
-        ...post,
-        comments: [...newComments],
-      });
-    }
+    //   setPost({
+    //     ...post,
+    //     comments: [...newComments],
+    //   });
+    // }
 
     const res = await dispatch(
       createComment({ post, newComment, auth, explore, socket })

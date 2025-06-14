@@ -122,6 +122,10 @@ function AddPostModal() {
       return setAddStep(4);
     }
 
+    if (addStep === 5){
+      return handleClose();
+    }
+
     setAddStep((pre) => pre + 1);
   };
 

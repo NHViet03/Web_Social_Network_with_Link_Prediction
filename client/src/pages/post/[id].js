@@ -25,6 +25,7 @@ const PostDetail = () => {
       setLoading(true);
       try {
         const res = await getDataAPI(`post/${id}`, auth.token);
+        console.log(res.data.post);
         setPost(res.data.post);
       } catch (error) {
         dispatch({

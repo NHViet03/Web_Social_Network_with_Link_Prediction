@@ -45,7 +45,7 @@ export const generateNewComments = (post, newComment) => {
 export const createComment =
   ({ post, newComment, auth, explore, socket }) =>
   async (dispatch) => {
-    if (newComment.image){
+    if (newComment.image) {
       const media = await imageUpload([newComment.image]);
       newComment.image = media[0].url;
     }
@@ -68,6 +68,7 @@ export const createComment =
     });
 
     try {
+      console.log("Creating comment:", newComment);
       const res = await postDataAPI("create_comment", newComment, auth.token);
 
       dispatch({
@@ -122,10 +123,11 @@ export const createComment =
 
       return res.data.newPost;
     } catch (error) {
+      console.error("Error creating comment:", error);
       dispatch({
         type: GLOBAL_TYPES.ALERT,
         payload: {
-          error: error.response.data.msg,
+          error: error.response?.data?.msg,
         },
       });
     }

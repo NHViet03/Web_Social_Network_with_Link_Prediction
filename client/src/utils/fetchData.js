@@ -11,8 +11,8 @@ export const getDataAPI = async (url, token) => {
     return res;
   } catch (err) {
     if (
-      err.response.status === 403 &&
-      err.response.data.type === "ACCESS_DENIED"
+      err?.response?.status === 403 &&
+      err?.response?.data?.type === "ACCESS_DENIED"
     ) {
       setTimeout(() => {
         localStorage.removeItem("firstLogin");
@@ -33,8 +33,8 @@ export const postDataAPI = async (url, post, token) => {
   } catch (err) {
     // Handle block device access
     if (
-      err.response.status === 403 &&
-      err.response.data.type === "ACCESS_DENIED"
+      err.response?.status === 403 &&
+      err.response?.data?.type === "ACCESS_DENIED"
     ) {
       setTimeout(() => {
         localStorage.removeItem("firstLogin");
@@ -55,8 +55,8 @@ export const putDataAPI = async (url, post, token) => {
   } catch (err) {
     // Handle block device access
     if (
-      err.response.status === 403 &&
-      err.response.data.type === "ACCESS_DENIED"
+      err.response?.status === 403 &&
+      err.response?.data?.type === "ACCESS_DENIED"
     ) {
       setTimeout(() => {
         localStorage.removeItem("firstLogin");
@@ -76,8 +76,8 @@ export const patchDataAPI = async (url, post, token) => {
   } catch (err) {
     // Handle block device access
     if (
-      err.response.status === 403 &&
-      err.response.data.type === "ACCESS_DENIED"
+      err.response?.status === 403 &&
+      err.response?.data?.type === "ACCESS_DENIED"
     ) {
       setTimeout(() => {
         localStorage.removeItem("firstLogin");
@@ -98,8 +98,8 @@ export const deleteDataAPI = async (url, token) => {
   } catch (err) {
     // Handle block device access
     if (
-      err.response.status === 403 &&
-      err.response.data.type === "ACCESS_DENIED"
+      err.response?.status === 403 &&
+      err.response?.data?.type === "ACCESS_DENIED"
     ) {
       setTimeout(() => {
         localStorage.removeItem("firstLogin");
