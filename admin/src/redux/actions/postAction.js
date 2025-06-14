@@ -1,9 +1,14 @@
 import { GLOBAL_TYPES } from "./globalTypes";
-import { getDataAPI, postDataAPI,deleteDataAPI } from "../../utils/fetchData";
+import {
+  getDataAPI,
+  postDataAPI,
+  deleteDataAPI,
+  putDataAPI,
+} from "../../utils/fetchData";
 
 export const POST_TYPES = {
   GET_POSTS: "GET_POSTS",
-  FIRST_LOAD:"FIRST_LOAD_POSTS"
+  FIRST_LOAD: "FIRST_LOAD_POSTS",
 };
 
 export const getPosts =
@@ -69,12 +74,8 @@ export const deletePost =
         payload: true,
       });
 
-      await deleteDataAPI(`/post/${post._id}`,auth.token);
-      await postDataAPI(
-        `admin/send_mail`,
-        email,
-        auth.token
-      );
+      await deleteDataAPI(`/post/${post._id}`, auth.token);
+      await postDataAPI(`admin/send_mail`, email, auth.token);
 
       dispatch({
         type: GLOBAL_TYPES.LOADING,
@@ -97,5 +98,32 @@ export const deletePost =
           title: "Xóa bài viết thất bại !",
         },
       });
+    }
+  };
+
+export const restorePost =
+  ({ post, auth }) =>
+  async (dispath) => {
+    try {
+      dispath({ type: GLOBAL_TYPES.LOADING, payload: true });
+
+      await putDataAPI(`admin/post/${post._id}/restore`, {}, auth.token);
+      dispath({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          type: "success",
+          title: "Khôi phục bài viết thành công !",
+        },
+      });
+    } catch (error) {
+      dispath({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          type: "error",
+          title: error.response.data.msg,
+        },
+      });
+    } finally {
+      dispath({ type: GLOBAL_TYPES.LOADING, payload: false });
     }
   };

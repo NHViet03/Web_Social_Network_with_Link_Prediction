@@ -228,8 +228,13 @@ const postCtrl = {
     try {
       const { id } = req.params;
 
-      await Comments.deleteMany({ postId: id });
-      await Posts.findOneAndDelete({ _id: id });
+      // await Comments.deleteMany({ postId: id });
+      await Posts.findOneAndUpdate(
+        { _id: id },
+        {
+          isDeleted: true,
+        }
+      );
 
       return res.json({
         msg: "Đã xóa bài viết thành công",
@@ -352,7 +357,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           "location.id": id,
-          isDeleted: { $ne: true }
+          isDeleted: { $ne: true },
         }),
         req.query
       ).paginating();
@@ -374,7 +379,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           hashtags: id,
-          isDeleted: { $ne: true }
+          isDeleted: { $ne: true },
         }),
         req.query
       ).paginating();
@@ -448,7 +453,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           user: req.params.id,
-          isDeleted: { $ne: true }
+          isDeleted: { $ne: true },
         }),
         req.query
       ).paginating();
@@ -509,7 +514,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           _id: { $in: req.user.saved },
-          isDeleted: { $ne: true }
+          isDeleted: { $ne: true },
         }),
         req.query
       ).paginating();
@@ -531,7 +536,7 @@ const postCtrl = {
       const features = new APIfeatures(
         Posts.find({
           tags: id,
-          isDeleted: { $ne: true }
+          isDeleted: { $ne: true },
         }),
         req.query
       ).paginating();
