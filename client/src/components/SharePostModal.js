@@ -3,11 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 import UserCard from "./UserCard";
 import Loading from "./Loading";
+import { addMessage } from "../redux/actions/messageAction";
 
 import { getDataAPI } from "../utils/fetchData";
+import { generateObjectId } from "../utils/helper";
 
 const SharePostModal = ({ post }) => {
   const auth = useSelector((state) => state.auth);
+  const socket = useSelector((state) => state.socket);
   const sharePost = useSelector((state) => state.sharePost);
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
@@ -40,7 +43,9 @@ const SharePostModal = ({ post }) => {
             `search?keyword=${search}&type=user`,
             auth.token
           );
-          setUsers(res.data.results);
+          setUsers(
+            res.data.results.filter((user) => user._id !== auth.user._id)
+          );
           setLoading(false);
         } catch (err) {
           dispatch({
@@ -69,8 +74,63 @@ const SharePostModal = ({ post }) => {
   const handleRemoveUser = (user) => {
     setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
   };
+
+  const getFirstImage = (post) => {
+    if (post.images.length > 0) {
+      return post.images.find((img) => img.type != "video")?.url || "";
+    }
+    return "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (selectUsers.length === 0) return;
+
+    selectUsers.forEach((user) => {
+      const msg = {
+        recipients: [user._id, auth.user._id],
+        isRevoke: false,
+        isEdit: false,
+        isVisible: {},
+        media: [],
+        _id: generateObjectId(),
+        isGroup: false,
+        conversationID: user._id,
+        sender: {
+          _id: auth.user._id,
+          avatar: auth.user.avatar,
+          fullname: auth.user.fullname,
+          username: auth.user.username,
+        },
+        text: "Đã chia sẻ một bài viết",
+        replymessage: null,
+        post: {
+          id: sharePost._id,
+          user: {
+            _id: sharePost.user._id,
+            avatar: sharePost.user.avatar,
+            username: sharePost.user.username,
+          },
+          image: getFirstImage(sharePost),
+        },
+        recipient: {
+          _id: user._id,
+          avatar: user.image,
+          fullname: user.subtitle,
+          username: user.title,
+        },
+        createAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      dispatch(addMessage({ msg, auth, socket }));
+
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { success: "Đã chia sẻ bài viết" },
+      })
+      handleClose();
+    });
   };
 
   return (

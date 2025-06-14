@@ -200,7 +200,7 @@
 .modal-addmess_content{
     display: flex;
     flex-direction: column;
-    min-height: 850px;
+    min-height: 600px;
     width: 500px;
     background-color: #fff;
     border-radius: 25px;

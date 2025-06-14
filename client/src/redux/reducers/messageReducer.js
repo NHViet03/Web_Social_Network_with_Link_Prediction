@@ -94,6 +94,34 @@ const messageReducer = (state = initialState, action) => {
       });
 
       // Cập nhật từng user
+      if (
+        !state.users.find(
+          (user) => user._id == action.payload.conversationID
+        ) &&
+        action.payload?.recipient
+      ) {
+        state.users.push({
+          _id: action.payload.conversationID,
+          avatar: action.payload.recipient.avatar,
+          fullname: action.payload.recipient.fullname,
+          username: action.payload.recipient.username,
+          text: action.payload.text,
+          media: [],
+          isGroup: false,
+          isVisible: {
+            [action.payload.sender._id]: true,
+            [action.payload.recipient._id]: true,
+          },
+          recipientAccept: {
+            [action.payload.sender._id]: true,
+            [action.payload.recipient._id]: true,
+          },
+          isRead: {
+            [action.payload.sender._id]: true,
+            [action.payload.recipient._id]: false,
+          },
+        });
+      }
       const updatedUsers = state.users.map((user) => {
         let recipientsMatch = false;
         if (action.payload.isGroup) {

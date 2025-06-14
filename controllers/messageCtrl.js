@@ -27,16 +27,15 @@ const messageCtrl = {
         replymessage,
         isGroup,
         conversationID,
+        post,
       } = req.body;
       const senderId = sender._id;
-      let newText = text;
-      if (text == "" && media.length > 0) {
-        newText = "Đã gửi một phương tiện";
-      }
       // recipientList : danh sách người nhận, bao gồm cả người gửi
       // senderId: người gửi tin nhắn
       // recipients: mảng người nhận tin nhắn ( bao gồm cả người gửi )
       // recipientsNosender: danh sách người nhận không bao gồm người gửi
+      const newText = renderConversationText(text, media, call, post);
+
       const recipientList = [...recipients];
       if (!recipientList.includes(senderId)) {
         recipientList.push(senderId);
@@ -134,6 +133,7 @@ const messageCtrl = {
           acc[recipient] = true;
           return acc;
         }, {}),
+        post: post
       });
 
       await newMessage.save();
@@ -658,6 +658,23 @@ const messageCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+};
+
+const renderConversationText = (text, media, call, post) => {
+  if (call) {
+    return "Đã thực hiện một cuộc gọi";
+  }
+
+  if (post) {
+    return "Đã chia sẻ một bài viết";
+  }
+
+  let newText = text;
+  if (text == "" && media.length > 0) {
+    newText = "Đã gửi một phương tiện";
+  }
+
+  return newText;
 };
 
 module.exports = messageCtrl;

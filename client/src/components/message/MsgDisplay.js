@@ -4,7 +4,7 @@ import { imageShow, videoShow } from "../../utils/mediaShow";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MESS_TYPES, revokeMessage } from "../../redux/actions/messageAction";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useRef } from "react";
 
 const MsgDisplay = ({
@@ -19,7 +19,7 @@ const MsgDisplay = ({
   }, [isListenCLoseMsgDisplay]);
 
   const { auth, socket, message } = useSelector((state) => state);
-
+  const navigate = useNavigate();
   const dropdownRef = useRef(null);
   useEffect(() => {
     function handleClickOutside(event) {
@@ -179,7 +179,51 @@ const MsgDisplay = ({
           </div>
         </div>
       )}
-      {msg && (
+
+      {msg && msg.post ? (
+        <div
+          style={{
+            border: "1px solid #e1e8ed",
+            borderRadius: "8px",
+            overflow: "hidden",
+            width: "300px",
+            height: "400px",
+            background: "#fff",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+          }}
+          onClick={() => {
+            navigate(`/post/${msg.post.id}`);
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "8px",
+              backgroundColor: "rgb(239, 239, 239)",
+            }}
+          >
+            <Avatar src={msg.post.user.avatar} size="avatar-sm"></Avatar>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <span
+                style={{ fontWeight: "500", color: "#000", paddingLeft: "8px" }}
+              >
+                {msg.post.user.username}
+              </span>
+            </div>
+          </div>
+          <img
+            src={msg.post.image}
+            alt="Post content"
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "block",
+              objectFit: "cover",
+            }}
+          />
+        </div>
+      ) : (
         <>
           {msg.isEdit && (
             <div
