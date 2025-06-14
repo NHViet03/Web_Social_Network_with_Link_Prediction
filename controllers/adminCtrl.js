@@ -629,6 +629,7 @@ const adminCtrl = {
               $size: "$likes",
             },
             comments: 1,
+            isDeleted: 1,
           },
         },
         {
@@ -937,20 +938,62 @@ const adminCtrl = {
         report,
         post,
       });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
     }
   },
   updateReport: async (req, res) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status, deletePost } = req.body;
 
-      await Reports.findOneAndUpdate({ _id: id }, { status: status });
+      const report = await Reports.findOneAndUpdate(
+        { _id: id },
+        { status: status }
+      );
+
+      if (status === "validated" && deletePost && report) {
+        // Delete the post status if the report is validated
+        const post = await Posts.findById({ _id: report.id }).populate(
+          "user",
+          "email username fullname"
+        );
+
+        if (post.isDeleted) {
+          return res.status(200).json({ msg: "Bài viết đã bị xóa." });
+        }
+
+        post.isDeleted = true;
+
+        // Send email notification to the reporter
+        const to = post.user.email;
+        const subject = "Dreamers - Điều khoản chính sách bài viết.";
+        const html = `<h4>Xin chào người dùng ${post.user.fullname},</h4>
+        <p>
+          Chúng tôi là Dreamers, chúng tôi đã phát hiện bài viết của bạn (ID: ${
+            post._id
+          }) được đăng tải vào lúc <em>${new Date(
+          post.createdAt
+        ).toLocaleString()}</em> với nội dung <strong>"${
+          post.content
+        }" được đăng tải cùng với ${
+          post.images.length
+        } hình ảnh</strong> đã vi phạm chính sách bài viết của chúng tôi với lý do: <strong>"${
+          report.content
+        }"</strong>. Vì vậy, bài viết của bạn sẽ bị cấm hiển thị trong thời gian tới.
+        <p>
+        <br/>
+        <h5><em>Mọi thắc hoặc kháng cáo xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
+        </h5>
+        <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network`;
+
+        await handle_send_email(to, subject, html);
+        await post.save();
+      }
 
       return res.json({ msg: "Cập nhật thành công." });
     } catch (error) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ msg: error.message });
     }
   },
   deleteReport: async (req, res) => {
@@ -961,9 +1004,71 @@ const adminCtrl = {
 
       return res.json({ msg: "Xóa thành công." });
     } catch (error) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ msg: error.message });
     }
   },
+  restorePost: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const post = await Posts.findById(id).populate("user", "email fullname");
+
+      if (!post) {
+        return res.status(404).json({ msg: "Bài viết không tồn tại." });
+      }
+
+      post.isDeleted = false;
+
+      await post.save();
+
+      // Send email notification to the user
+      const to = post.user.email;
+      const subject = "Dreamers - Bài viết của bạn đã được khôi phục.";
+      const html = `<h4>Xin chào người dùng ${post.user.fullname},</h4>
+        <p>
+          Chúng tôi là Dreamers, chúng tôi quyết định khôi phục bài viết (ID: ${
+            post._id
+          }) được đăng tải vào lúc <em>${new Date(
+        post.createdAt
+      ).toLocaleString()}</em> với nội dung <strong>"${
+        post.content
+      }" được đăng tải cùng với ${
+        post.images.length
+      } hình ảnh</strong>. Bài viết của bạn đã được xác minh và khôi phục. Hiện tại bài viết có thể hiển thị lại trên nền tảng của chúng tôi.
+        </p>
+        <br/>
+        <h5><em>Mọi thắc xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
+        </h5>
+        <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network`;
+      await handle_send_email(to, subject, html);
+      return res.json({ msg: "Khôi phục bài viết thành công." });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  },
+};
+
+const handle_send_email = async (to, subject, html) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "dreamerssocialuit@gmail.com",
+        pass: "pwxdinwdinhfjwvf",
+      },
+    });
+
+    const mailOptions = {
+      from: "dreamerssocialuit@gmail.com",
+      to: to,
+      subject: subject,
+      html: html,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.log("Error in sending email", error);
+  }
 };
 
 module.exports = adminCtrl;

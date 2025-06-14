@@ -58,7 +58,7 @@ function Posts() {
       "Lượt bình luận": post.comments,
       "Số lượng hình ảnh": post.images,
       "Ngày đăng": moment(post.createdAt).format("LLL"),
-      "Thuộc về": post.user.username,
+      "Thuộc về": post.user?.username,
     }));
   }, [posts]);
 

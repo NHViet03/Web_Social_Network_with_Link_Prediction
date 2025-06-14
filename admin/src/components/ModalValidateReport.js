@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import moment from "moment";
 
-const ModalValidateReport = ({ report, setShowModal, handleValidate }) => {
-  const [deletePost, setDeletePost] = useState(false);
+const ModalValidateReport = ({
+  report,
+  post,
+  setShowModal,
+  handleValidate,
+}) => {
+  const [deletePost, setDeletePost] = useState(true);
   const handleClose = () => {
     setShowModal(false);
   };
@@ -10,6 +15,15 @@ const ModalValidateReport = ({ report, setShowModal, handleValidate }) => {
   const handleSubmit = async () => {
     await handleValidate({ report, deletePost });
     setShowModal(false);
+  };
+
+  const descriptonMapping = {
+    NotHate: "Không có nội dung thù hận",
+    Racist: "Có nội dung phân biệt chủng tộc",
+    Sexist: "Có nội dung phân biệt giới tính",
+    Homophobe: "Có nội dung phân biệt người đồng tính",
+    Religion: "Có nội dung phân biệt tôn giáo",
+    OtherHate: "Có nội dung thù hận khác",
   };
 
   return (
@@ -23,7 +37,7 @@ const ModalValidateReport = ({ report, setShowModal, handleValidate }) => {
         <div className="d-flex justify-content-between align-items-center modal_header">
           <h6 className="fw-medium">
             <i className="fa-solid fa-user-check me-2" />
-            Xác thực báo cáo - {report.id}
+            Xác thực báo cáo - {descriptonMapping[report.label]}
           </h6>
           <button
             className="btn"
@@ -57,7 +71,7 @@ const ModalValidateReport = ({ report, setShowModal, handleValidate }) => {
               Người đăng:{" "}
             </span>
             <span>
-              {report.post.user.username} - {report.post.user.fullname}
+              {post.user.username} - {post.user.fullname}
             </span>
           </div>
           <div className="mb-2">
@@ -80,7 +94,7 @@ const ModalValidateReport = ({ report, setShowModal, handleValidate }) => {
             >
               Lý do báo cáo:{" "}
             </span>
-            <span>{report.reason}</span>
+            <span>{report.content}</span>
           </div>
           <div className="mb-2">
             <span
@@ -99,6 +113,7 @@ const ModalValidateReport = ({ report, setShowModal, handleValidate }) => {
               type="checkbox"
               value={deletePost}
               onChange={(e) => setDeletePost(e.target.checked)}
+              checked={deletePost}
               id="include_post"
               style={{
                 width: "20px",

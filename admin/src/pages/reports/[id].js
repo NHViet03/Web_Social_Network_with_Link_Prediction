@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import moment from "moment";
 import Avatar from "../../components/Avatar";
 import Carousel from "../../components/Post/Carousel";
@@ -10,12 +10,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { Pie } from "react-chartjs-2";
+import { validateReport, rejectReport } from "../../redux/actions/reportAction";
+import ModalValidateReport from "../../components/ModalValidateReport";
 
 function ReportDetail() {
   const [post, setPost] = useState(null);
   const [report, setReport] = useState(null);
-  const [search, setSearch] = useState("");
-  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModelValidate, setShowModalValidate] = useState(false);
   const [showModalMail, setShowModalMail] = useState(false);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -96,6 +97,29 @@ function ReportDetail() {
     OtherHate: "Có nội dung thù hận khác",
   };
 
+  const status = useMemo(
+    () => ({
+      pending: "Chờ xử lý",
+      validated: "Đã xác nhận",
+      rejected: "Đã bác bỏ",
+    }),
+    []
+  );
+
+  const handleValidate = async ({ report, deletePost }) => {
+    await dispatch(validateReport({ report, deletePost, auth }));
+    setShowModalValidate(false);
+    navigate(`/posts/${post._id}`);
+  };
+
+  const handleReject = async () => {
+    await dispatch(rejectReport({ report, auth }));
+    setReport((prev) => ({
+      ...prev,
+      status: "rejected",
+    }));
+  };
+
   return (
     <div className="mb-4 post_detail">
       {post && (
@@ -117,17 +141,27 @@ function ReportDetail() {
                 Báo cáo bài viết:{" "}
               </span>
               <span>
-                {moment(report.createdAt).format("L")} - {report.label}
+                {moment(report.createdAt).format("L")} -{" "}
+                {descriptonMapping[report.label] || "Không xác định"}
               </span>
             </div>
             <div className="d-flex gap-3">
-              <button
+              <div
+                className={`table_state ${report.status}`}
+                style={{
+                  fontSize: "16px",
+                  lineHeight: "30px",
+                }}
+              >
+                {status[report.status]}
+              </div>
+              {/* <button
                 className="btn btn_normal btn_accept"
                 onClick={() => setShowModalDelete(true)}
               >
                 <i className="fa-solid fa-delete-left me-1" />
                 Xóa bài viết
-              </button>
+              </button> */}
               <div className="dropdown">
                 <button
                   className=" btn btn_normal "
@@ -137,6 +171,34 @@ function ReportDetail() {
                   <i className="fa-solid fa-ellipsis" />
                 </button>
                 <ul className="dropdown-menu">
+                  {report.status === "pending" && (
+                    <>
+                      <li>
+                        <div
+                          className="dropdown-item fw-medium"
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => setShowModalValidate(true)}
+                        >
+                          <i className="fa-solid fa-check me-1" />
+                          Xác nhận vi phạm
+                        </div>
+                      </li>
+                      <li>
+                        <div
+                          className="dropdown-item fw-medium"
+                          style={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleReject()}
+                        >
+                          <i class="fa-solid fa-ban me-1"></i>
+                          Bác bỏ vi phạm
+                        </div>
+                      </li>
+                    </>
+                  )}
                   <li>
                     <div
                       className="dropdown-item fw-medium"
@@ -147,6 +209,18 @@ function ReportDetail() {
                     >
                       <i className="fa-solid fa-envelope me-1" />
                       Gửi email tới người dùng
+                    </div>
+                  </li>
+                  <li>
+                    <div
+                      className="dropdown-item fw-medium"
+                      style={{
+                        cursor: "pointer",
+                      }}
+                      onClick={() => navigate(`/posts/${post._id}`)}
+                    >
+                      <i className="fa-solid fa-circle-info me-1" />
+                      Xem chi tiết bài viết
                     </div>
                   </li>
                 </ul>
@@ -368,10 +442,12 @@ function ReportDetail() {
               </div>
             </div>
           </div>
-          {showModalDelete && (
-            <ModalDeletePost
+          {showModelValidate && (
+            <ModalValidateReport
+              report={report}
               post={post}
-              setShowModalDelete={setShowModalDelete}
+              setShowModal={setShowModalValidate}
+              handleValidate={handleValidate}
             />
           )}
           {showModalMail && (

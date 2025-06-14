@@ -14,16 +14,7 @@ import {
 const ReportList = ({ reports }) => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-
-  const [modalValidate, setModalValidate] = useState(false);
-
-  const handleValidate = async ({ report, deletePost }) => {
-    await dispatch(validateReport({ report, deletePost, auth }));
-  };
-
-  const handleReject = (report) => {
-    dispatch(rejectReport({ report, auth }));
-  };
+  
   const handleDelete = (report) => {
     dispatch(deleteReport({ report, auth }));
   };
@@ -141,13 +132,6 @@ const ReportList = ({ reports }) => {
           ))}
         </tbody>
       </table>
-      {modalValidate && (
-        <ModalValidateReport
-          report={modalValidate}
-          setShowModal={setModalValidate}
-          handleValidate={handleValidate}
-        />
-      )}
     </>
   );
 };

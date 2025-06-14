@@ -9,6 +9,7 @@ import ModalSendMail from "../../components/ModalSendMail";
 import { useSelector, useDispatch } from "react-redux";
 import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { restorePost } from "../../redux/actions/postAction";
 
 function PostDetail() {
   const [post, setPost] = useState(null);
@@ -35,6 +36,11 @@ function PostDetail() {
     getPost();
   }, [auth.token, dispatch, id]);
 
+  const handleRestorePost = async () => {
+    await dispatch(restorePost({ post, auth }));
+    window.location.reload();
+  };
+
   return (
     <div className="mb-4 post_detail">
       {post && (
@@ -60,13 +66,24 @@ function PostDetail() {
               </span>
             </div>
             <div className="d-flex gap-3">
-              <button
-                className="btn btn_normal btn_accept"
-                onClick={() => setShowModalDelete(true)}
-              >
-                <i className="fa-solid fa-delete-left me-1" />
-                Xóa bài viết
-              </button>
+              {post.isDeleted ? (
+                <button
+                  className="btn btn_normal btn_accept"
+                  onClick={() => handleRestorePost()}
+                >
+                  <i className="fa-solid fa-arrow-rotate-left me-1" />
+                  Khôi phục bài viết
+                </button>
+              ) : (
+                <button
+                  className="btn btn_normal btn_accept"
+                  onClick={() => setShowModalDelete(true)}
+                >
+                  <i className="fa-solid fa-delete-left me-1" />
+                  Xóa bài viết
+                </button>
+              )}
+
               <div className="dropdown">
                 <button
                   className=" btn btn_normal "

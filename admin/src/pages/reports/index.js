@@ -63,13 +63,13 @@ function Reports() {
   }, [filter.sort]);
 
   const customData = useCallback(() => {
+    if (reports.length === 0) return [];
     return reports.map((report) => ({
       "Mã báo cáo": report._id,
       "Mã bài viết": report.id,
-      "Lý do": report.reason,
-      "Chủ bài viết": report.post.user.username,
+      "Lý do": report.content,
       "Ngày báo cáo": moment(report.createdAt).format("LLL"),
-      "Người báo cáo": report.reporter.username,
+      "Người báo cáo": report.reporter?.username,
     }));
   }, [reports]);
 

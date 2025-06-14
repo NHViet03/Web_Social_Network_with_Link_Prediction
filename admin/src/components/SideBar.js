@@ -29,12 +29,7 @@ function SideBar({ showSideBar }) {
         title: "Báo cáo",
         icon: "fa-solid fa-user-shield",
         link: "/reports",
-      },
-      {
-        title: "Thống kê",
-        icon: "fa-solid fa-chart-pie",
-        link: "/statistic",
-      },
+      }
     ],
     []
   );
@@ -83,18 +78,6 @@ function SideBar({ showSideBar }) {
           >
             TRANG TÀI KHOẢN
           </span>
-          <li className="nav-item mb-3">
-            <Link
-              to="/profile"
-              className={`nav-link ${pathname === "/profile" ? "active" : ""}`}
-              onClick={resetActive}
-            >
-              <span className="icon_wrapper">
-                <i className="fa-solid fa-id-card-clip" />
-              </span>
-              <span>Thông tin cá nhân</span>
-            </Link>
-          </li>
           <li className="nav-item mb-3">
             <button className={`nav-link`} onClick={handleLogout}>
               <span className="icon_wrapper">

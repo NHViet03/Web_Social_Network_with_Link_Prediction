@@ -56,35 +56,9 @@ export const validateReport =
       dispatch({ type: GLOBAL_TYPES.LOADING, payload: true });
       await patchDataAPI(
         `admin/report/${report._id}`,
-        { status: "validated" },
+        { status: "validated", deletePost: deletePost },
         auth.token
       );
-
-      if (deletePost) {
-        const post = report.post;
-        const email = {
-          to: post.user.email,
-          subject: "Dreamers - Vi phạm chính sách bài viết.",
-          html: `<h4>Xin chào người dùng ${post.user.fullname},</h4>
-        <p>
-          Chúng tôi là Dreamers, chúng tôi đã phát hiện bài viết của bạn (ID: ${
-            post._id
-          }) được đăng tải vào lúc <em>${new Date(
-            post.createdAt
-          ).toLocaleString()}</em> đã vi phạm chính sách bài viết của chúng tôi với lý do <strong>"${
-            report.reason
-          }"</strong>. Vì vậy, bài viết của bạn đã bị xóa vĩnh viễn khỏi hệ thống của chúng tôi.
-        <p>
-        <br/>
-        <h5><em>Mọi thắc xin vui lòng liên hệ với chúng tôi qua gmail <u>dreamerssocialuit@gmail.com</u> hoặc liên lạc với nhân viên hỗ trợ qua số điện thoại <u>+84 123 456 789.</u></em>
-        </h5>
-        <p>Trân trọng,<br/>Đội ngũ Dreamers Social Network
-        </p>`,
-          attachFiles: [],
-        };
-        await deleteDataAPI(`/post/${post._id}`, auth.token);
-        await postDataAPI(`admin/send_mail`, email, auth.token);
-      }
 
       dispatch({
         type: REPORTS_TYPES.UPDATE_REPORT,
@@ -94,6 +68,14 @@ export const validateReport =
         },
       });
       dispatch({ type: GLOBAL_TYPES.LOADING, payload: false });
+
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          type: "success",
+          title: "Xác thực báo cáo thành công",
+        },
+      });
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -112,8 +94,7 @@ export const rejectReport =
       dispatch({ type: GLOBAL_TYPES.LOADING, payload: true });
       await patchDataAPI(
         `admin/report/${report._id}`,
-        { status: "rejected" },
-        auth.token
+        { status: "rejected" }
       );
       dispatch({
         type: REPORTS_TYPES.UPDATE_REPORT,
@@ -122,16 +103,17 @@ export const rejectReport =
           status: "rejected",
         },
       });
-      dispatch({ type: GLOBAL_TYPES.LOADING, payload: false });
     } catch (error) {
+      console.error(error);
       dispatch({
         type: GLOBAL_TYPES.ALERT,
         payload: {
           type: "error",
-          title: error.response.data.msg,
+          title: error.response?.data?.msg,
         },
       });
     }
+    dispatch({ type: GLOBAL_TYPES.LOADING, payload: false });
   };
 
 export const deleteReport =
