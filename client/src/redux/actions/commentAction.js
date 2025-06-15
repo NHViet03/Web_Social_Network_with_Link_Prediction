@@ -1,6 +1,7 @@
 import { GLOBAL_TYPES } from "./globalTypes";
-import { POST_TYPES } from "./postAction";
+import { POST_TYPES, POST_POOL_TYPES } from "./postAction";
 import { EXPLORE_TYPES } from "./exploreAction";
+
 import {
   postDataAPI,
   patchDataAPI,
@@ -36,7 +37,19 @@ export const generateNewComments = (post, newComment) => {
       parentComment.replies.push(newComment);
     }
   } else {
-    newComments.push(newComment);
+    let existingCommentId = -1;
+    for (let i = 0; i < newComments.length; i++) {
+      if (newComments[i]._id === newComment._id) {
+        existingCommentId = i;
+        break;
+      }
+    }
+
+    if (existingCommentId !== -1) {
+      newComments[existingCommentId] = newComment;
+    } else {
+      newComments.push(newComment);
+    }
   }
 
   return newComments;
@@ -67,6 +80,11 @@ export const createComment =
       payload: newPost,
     });
 
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
     try {
       console.log("Creating comment:", newComment);
       const res = await postDataAPI("create_comment", newComment, auth.token);
@@ -78,6 +96,11 @@ export const createComment =
 
       dispatch({
         type: POST_TYPES.UPDATE_POST,
+        payload: res.data.newPost,
+      });
+
+      dispatch({
+        type: POST_POOL_TYPES.UPDATE_POST,
         payload: res.data.newPost,
       });
 
@@ -158,6 +181,11 @@ export const likeComment =
       payload: newPost,
     });
 
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
     // Notify
     const msg = {
       id: comment._id,
@@ -211,6 +239,11 @@ export const unLikeComment =
       payload: newPost,
     });
 
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
     // Notify
     const msg = {
       id: comment._id,
@@ -257,6 +290,11 @@ export const deleteComment =
 
     dispatch({
       type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
       payload: newPost,
     });
 

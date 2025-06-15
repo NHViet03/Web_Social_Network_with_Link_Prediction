@@ -30,7 +30,8 @@
   position: relative;
 }
 
-.gallery_group img {
+.gallery_group img,
+.gallery_group video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -58,7 +59,8 @@
   display: none;
 }
 
-.gallery_group .fa-images {
+.gallery_group .fa-images,
+.gallery_group .fa-clapperboard {
   position: absolute;
   color: #fff;
   z-index: 2;

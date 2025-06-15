@@ -18,6 +18,13 @@ export const POST_TYPES = {
   DELETE_POST: "DELETE_POST",
 };
 
+export const POST_POOL_TYPES = {
+  CREATE_POST: "CREATE_POST_POOL",
+  GET_POSTS: "GET_POSTS_POOL",
+  UPDATE_POST: "UPDATE_POST_POOL",
+  DELETE_POST: "DELETE_POST_POOL",
+};
+
 export const createPost =
   ({ post, auth, socket }) =>
   async (dispatch) => {
@@ -116,6 +123,12 @@ export const updatePost =
       payload: post,
     });
 
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: post,
+    });
+    
+
     try {
       await patchDataAPI(
         `post/${post._id}`,
@@ -152,6 +165,16 @@ export const deletePost =
         _id: auth.user._id,
         postId: post._id,
       },
+    });
+
+    dispatch({
+      type: POST_POOL_TYPES.DELETE_POST,
+      payload: post,
+    });
+
+    dispatch({
+      type:GLOBAL_TYPES.POST_DETAIL,
+      payload: false,
     });
 
     // Notify
@@ -194,6 +217,11 @@ export const likePost =
       payload: newPost,
     });
 
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
     // Notify
     const msg = {
       id: auth.user._id,
@@ -232,6 +260,11 @@ export const unLikePost =
 
     dispatch({
       type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
       payload: newPost,
     });
 
@@ -322,6 +355,22 @@ export const reportPost =
       //   type: POST_TYPES.DELETE_POST,
       //   payload: post,
       // });
+      dispatch({
+        type: POST_TYPES.DELETE_POST,
+        payload: post,
+      });
+
+      dispatch({
+        type: POST_POOL_TYPES.DELETE_POST,
+        payload: post,
+      });
+
+      dispatch({
+        type: EXPLORE_TYPES.DELETE_POST,
+        payload: post,
+      });
+
+      dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false });
 
       const res = await axios.post(
         `http://localhost:8000/post/report/${post._id}`,
@@ -330,11 +379,6 @@ export const reportPost =
           reporter: auth.user._id,
         }
       );
-
-      dispatch({
-        type: POST_TYPES.DELETE_POST,
-        payload: post,
-      });
 
       console.log(res);
     } catch (error) {
@@ -346,4 +390,3 @@ export const reportPost =
       });
     }
   };
-

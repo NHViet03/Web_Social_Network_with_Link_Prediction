@@ -18,6 +18,7 @@ import online from "./onlineReducer";
 import call from "./callReducer";
 import peer from "./peerReducer";
 import searchHistory from "./searchHistoryReducer";
+import postPool from "./postPoolReducer";
 
 export default combineReducers({
   auth,
@@ -39,4 +40,5 @@ export default combineReducers({
   call,
   peer,
   searchHistory,
+  postPool,
 });

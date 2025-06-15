@@ -53,7 +53,7 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
     setAddStep((pre) => pre + 1);
   };
 
-    const handleNextImage = () => {
+  const handleNextImage = () => {
     const saveEditedImages = [];
 
     for (const editorRef of editorRefs) {
@@ -158,6 +158,10 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
           data-bs-target={"#imageSelected"}
           data-bs-slide="prev"
           onClick={handleNextImage}
+          style={{
+            top: "30%",
+            bottom: "30%",
+          }}
         >
           <span className="carousel-control-prev-icon">
             <i className="fa-solid fa-chevron-left" />
@@ -169,6 +173,10 @@ const EditImages = ({ post, setPost, addStep, setAddStep }) => {
           data-bs-target={"#imageSelected"}
           data-bs-slide="next"
           onClick={handleNextImage}
+          style={{
+            top: "30%",
+            bottom: "30%",
+          }}
         >
           <span className="carousel-control-next-icon">
             <i className="fa-solid fa-chevron-right" />

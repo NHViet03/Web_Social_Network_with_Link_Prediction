@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import PostThumb from "../PostThumb";
+import { useSelector, useDispatch } from "react-redux";
 import { getDataAPI } from "../../utils/fetchData";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import loading from "../../images/loading.gif";
 
-const Tagged = ({ auth, dispatch, id }) => {
+const Tagged = ({ dispatch, id }) => {
+  const { auth } = useSelector((state) => state);
   const [posts, setPosts] = useState([]);
   const [result, setResult] = useState(9);
   const [load, setLoad] = useState(false);

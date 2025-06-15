@@ -6,15 +6,19 @@ import CardBody from "./postCard/CardBody";
 import CardFooterDetail from "./postCard/CardFooterDetail";
 
 import { getDataAPI } from "../utils/fetchData";
+import { POST_POOL_TYPES } from "../redux/actions/postAction";
 import Loading from "./Loading";
 
 const PostDetailModal = () => {
-  const { auth, homePosts, explore, postDetail } = useSelector((state) => ({
-    auth: state.auth,
-    postDetail: state.postDetail,
-    homePosts: state.homePosts,
-    explore: state.explore,
-  }));
+  const { auth, homePosts, explore, postDetail, postPool } = useSelector(
+    (state) => ({
+      auth: state.auth,
+      postDetail: state.postDetail,
+      homePosts: state.homePosts,
+      explore: state.explore,
+      postPool: state.postPool,
+    })
+  );
   const dispatch = useDispatch();
   const [post, setPost] = useState({});
   const [loading, setLoading] = useState(false);
@@ -33,12 +37,21 @@ const PostDetailModal = () => {
         );
       }
 
+      if (!findPost) {
+        findPost = postPool.posts.find(
+          (item) => item._id === (postDetail.postId || postDetail)
+        );
+      }
+
       // If the post is not fount in homePost or Explore Post, find it in database
       if (!findPost) {
         setLoading(true);
         getDataAPI(`post/${postDetail.postId || postDetail}`, auth.token)
           .then((res) => {
-            setPost(res.data.post);
+            dispatch({
+              type: POST_POOL_TYPES.CREATE_POST,
+              payload: res.data.post,
+            });
             setLoading(false);
           })
           .catch((err) => {
@@ -51,7 +64,7 @@ const PostDetailModal = () => {
 
       setPost(findPost || {});
     }
-  }, [explore.posts, homePosts.posts, postDetail]);
+  }, [explore.posts, homePosts.posts, postDetail, postPool]);
 
   const handleClose = () => {
     dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false });

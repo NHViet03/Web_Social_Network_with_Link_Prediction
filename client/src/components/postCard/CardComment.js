@@ -14,7 +14,6 @@ import CardCommentReply from "./CardCommentReply";
 
 const CardComment = ({
   post,
-  setPost,
   comment,
   loadComment,
   handleClose,
@@ -56,10 +55,6 @@ const CardComment = ({
       const res = await dispatch(
         deleteComment({ post, comment, auth, explore, socket })
       );
-
-      if (setPost) {
-        setPost(res);
-      }
     }
   };
 
@@ -115,7 +110,7 @@ const CardComment = ({
                         maxHeight: "200px",
                         objectFit: "cover",
                         borderRadius: "12px",
-                        margin:"8px 0"
+                        margin: "8px 0",
                       }}
                     />
                   </div>
@@ -224,7 +219,6 @@ const CardComment = ({
                   <CardCommentReply
                     key={reply._id}
                     post={post}
-                    setPost={setPost}
                     comment={reply}
                     explore={explore}
                     handleClose={handleClose}

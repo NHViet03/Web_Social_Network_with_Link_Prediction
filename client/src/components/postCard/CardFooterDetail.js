@@ -22,7 +22,7 @@ import {
   generateNewComments,
 } from "../../redux/actions/commentAction";
 
-const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
+const CardFooterDetail = ({ post, explore, handleClose }) => {
   const [comment, setComment] = useState("");
   const [reply, setReply] = useState({});
   const [image, setImage] = useState(null);
@@ -92,13 +92,13 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
 
   const handleComment = async (e) => {
     e.preventDefault();
-
-    if ((!comment.trim() && image == null) || loadComment) return;
     setLoadComment(true);
     setComment("");
     setReply({});
     setImage(null);
     setShowEmoji(false);
+
+    if ((!comment.trim() && image == null) || loadComment) return;
 
     const trimmedComment = comment.replace(/^@\S+\s*/, "");
 
@@ -124,14 +124,13 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     //   });
     // }
 
-    const res = await dispatch(
-      createComment({ post, newComment, auth, explore, socket })
-    );
-    setLoadComment(false);
+    try {
+      const res = await dispatch(
+        createComment({ post, newComment, auth, explore, socket })
+      );
+    } catch (error) {}
 
-    if (setPost) {
-      setPost(res);
-    }
+    setLoadComment(false);
   };
 
   const handleEmojiSelect = (emoji) => {
@@ -146,6 +145,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
           key={index}
           className="hashtag"
           to={`/explore/hashtags/${hashtag}`}
+          onClick={handleClose}
         >
           #{hashtag}
         </Link>
@@ -268,7 +268,6 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
               <CardComment
                 key={index}
                 post={post}
-                setPost={setPost ? setPost : false}
                 comment={comment}
                 loadComment={!comment._id ? loadComment : false}
                 explore={explore}

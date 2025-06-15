@@ -15,19 +15,19 @@ const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getProfileUsers({ id, auth }));
-  }, [id, auth, dispatch]);
+    dispatch(getProfileUsers({ id, token: auth.token }));
+  }, [id, auth.token, dispatch]);
 
   const generateTab = () => {
     switch (activeTab) {
       case 1:
         return (
-          <Posts auth={auth} profile={profile} dispatch={dispatch} id={id} />
+          <Posts  profile={profile} dispatch={dispatch} id={id} />
         );
       case 2:
-        return <Saved auth={auth} dispatch={dispatch} />;
+        return <Saved  dispatch={dispatch} />;
       case 3:
-        return <Tagged auth={auth} dispatch={dispatch} id={id} />;
+        return <Tagged dispatch={dispatch} id={id} />;
       default:
         return (
           <Posts auth={auth} profile={profile} dispatch={dispatch} id={id} />

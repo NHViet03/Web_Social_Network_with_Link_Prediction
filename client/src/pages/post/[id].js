@@ -8,9 +8,11 @@ import CardBody from "../../components/postCard/CardBody";
 import CardFooterDetail from "../../components/postCard/CardFooterDetail";
 import Loading from "../../components/Loading";
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import { POST_POOL_TYPES } from "../../redux/actions/postAction";
 
 const PostDetail = () => {
   const auth = useSelector((state) => state.auth);
+  const postPool = useSelector((state) => state.postPool);
   const [post, setPost] = useState(false);
   const navigate = useNavigate();
 
@@ -22,11 +24,21 @@ const PostDetail = () => {
   useEffect(() => {
     const getPost = async () => {
       if (!id) return;
+
+      // Check if the post is already in the postPool
+      const existingPost = postPool.posts.find((item) => item._id === id);
+      if (existingPost) {
+        setPost(existingPost);
+        return;
+      }
+
       setLoading(true);
       try {
         const res = await getDataAPI(`post/${id}`, auth.token);
-        console.log(res.data.post);
-        setPost(res.data.post);
+        dispatch({
+          type: POST_POOL_TYPES.CREATE_POST,
+          payload: res.data.post,
+        });
       } catch (error) {
         dispatch({
           type: GLOBAL_TYPES.ALERT,
@@ -40,7 +52,7 @@ const PostDetail = () => {
     };
 
     getPost();
-  }, [auth.token, id]);
+  }, [auth.token, id, postPool]);
 
   return (
     <div className="postDetail">
@@ -54,7 +66,7 @@ const PostDetail = () => {
             <div className="px-2">
               <CardHeader user={post.user} post={post} />
             </div>
-            <CardFooterDetail post={post} setPost={setPost} />
+            <CardFooterDetail post={post} />
           </div>
         </div>
       )}

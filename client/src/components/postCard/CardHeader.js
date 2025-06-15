@@ -106,6 +106,9 @@ const CardHeader = ({ user, post, follow }) => {
             <Link
               className="card_header-content-location"
               to={`/explore/locations/${post.location.id}/${post.location.name}`}
+              onClick={() =>
+                dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false })
+              }
             >
               {post.location.name}
             </Link>

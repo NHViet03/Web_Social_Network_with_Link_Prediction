@@ -4,6 +4,7 @@ import { getDataAPI } from "../../utils/fetchData";
 export const EXPLORE_TYPES = {
   GET_POSTS: "GET_EXPLORE_POSTS",
   UPDATE_POST: "UPDATE_EXPLORE_POST",
+  DELETE_POST: "DELETE_EXPLORE_POST",
 };
 
 export const getDiscoverPosts = ({auth,page=1}) => async (dispatch) => {

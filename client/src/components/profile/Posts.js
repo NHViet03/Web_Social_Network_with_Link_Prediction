@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PostThumb from "../PostThumb";
 import NoPost from "../NoPost";
 
-const Posts = ({ auth, id, dispatch, profile }) => {
+const Posts = ({ id, dispatch, profile }) => {
   const [posts, setPosts] = useState([]);
   const [result, setResult] = useState(9);
 

@@ -1,29 +1,29 @@
-import { EXPLORE_TYPES } from "../actions/exploreAction";
+import { POST_POOL_TYPES } from "../actions/postAction";
 
 const initialState = {
   posts: [],
-  result: 0,
-  firstLoad: false,
 };
 
-const exploreReducer = (state = initialState, action) => {
+const postPoolReducer = (state = initialState, action) => {
   switch (action.type) {
-    case EXPLORE_TYPES.GET_POSTS:
+    case POST_POOL_TYPES.CREATE_POST:
+      return {
+        ...state,
+        posts: [action.payload, ...state.posts],
+      };
+    case POST_POOL_TYPES.GET_POSTS:
       return {
         ...state,
         posts: action.payload.posts,
-        result: action.payload.result,
-        firstLoad: true,
       };
-    case EXPLORE_TYPES.UPDATE_POST:
+    case POST_POOL_TYPES.UPDATE_POST:
       return {
         ...state,
         posts: state.posts.map((post) =>
           post._id === action.payload._id ? action.payload : post
         ),
       };
-
-    case EXPLORE_TYPES.DELETE_POST:
+    case POST_POOL_TYPES.DELETE_POST:
       return {
         ...state,
         posts: state.posts.filter((post) => post._id !== action.payload._id),
@@ -33,4 +33,4 @@ const exploreReducer = (state = initialState, action) => {
   }
 };
 
-export default exploreReducer;
+export default postPoolReducer;

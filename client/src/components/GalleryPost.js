@@ -32,6 +32,20 @@ const GalleryPost = ({ posts }) => {
     }, 0);
   };
 
+  const detectVideoOrImage = (post) => {
+    const firstImg = post.images[0];
+
+    if (firstImg.type === "video") {
+      return (
+        <video width="100%" muted>
+          <source src={post.images[0].url} type="video/mp4" />
+          Xin lỗi, trình duyệt của bạn không hỗ trợ video này.
+        </video>
+      );
+    }
+    return <img src={firstImg.url} alt={firstImg.url} />;
+  };
+
   return (
     <div className="gallery_post">
       {clusterPosts &&
@@ -43,14 +57,13 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img
-                    src={
-                      cluster[4].images.find((img) => img.type !== "video")?.url
-                    }
-                    alt="Post"
-                  />
-                  {cluster[4].images.length > 1 && (
-                    <i className="fa-solid fa-images" />
+                  {detectVideoOrImage(cluster[4])}
+                  {cluster[4].images[0]?.type === "video" ? (
+                    <i className="fa-solid fa-clapperboard" />
+                  ) : (
+                    cluster[4].images?.length > 1 && (
+                      <i className="fa-solid fa-images" />
+                    )
                   )}
                   <div className="gallery_overlay">
                     <span className="me-4">
@@ -70,12 +83,13 @@ const GalleryPost = ({ posts }) => {
                     className="gallery_item"
                     onClick={() => handleShowPost(post)}
                   >
-                    <img
-                      src={post.images.find((img) => img.type !== "video")?.url}
-                      alt="Post"
-                    />
-                    {post.images.length > 1 && (
-                      <i className="fa-solid fa-images" />
+                    {detectVideoOrImage(post)}
+                    {post.images[0]?.type === "video" ? (
+                      <i className="fa-solid fa-clapperboard" />
+                    ) : (
+                      post.images?.length > 1 && (
+                        <i className="fa-solid fa-images" />
+                      )
                     )}
                     <div className="gallery_overlay">
                       <span className="me-4">
@@ -94,14 +108,13 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img
-                    src={
-                      cluster[4].images.find((img) => img.type !== "video")?.url
-                    }
-                    alt="Post"
-                  />
-                  {cluster[4].images.length > 1 && (
-                    <i className="fa-solid fa-images" />
+                  {detectVideoOrImage(cluster[4])}
+                  {cluster[4].images[0]?.type === "video" ? (
+                    <i className="fa-solid fa-clapperboard" />
+                  ) : (
+                    cluster[4].images?.length > 1 && (
+                      <i className="fa-solid fa-images" />
+                    )
                   )}
                   <div className="gallery_overlay">
                     <span className="me-4">
