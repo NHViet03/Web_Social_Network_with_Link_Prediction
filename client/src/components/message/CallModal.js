@@ -141,7 +141,8 @@ const CallModal = () => {
         fullname: auth.user.fullname,
         username: auth.user.username,
       },
-      conversationID: call.recipient,
+      conversationID:
+        call.recipient === auth.user._id ? call.sender : call.recipient,
       recipients: [call.recipient, auth.user._id],
       isRevoke: false,
       isEdit: false,
@@ -155,7 +156,7 @@ const CallModal = () => {
       _id: generateObjectId(),
       isVisible: {},
       replymessage: null,
-
+      whoEndCall: auth.user._id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -164,6 +165,7 @@ const CallModal = () => {
   };
   // End Call
   const handeEndCall = () => {
+    console.log("End Call");
     if (tracks) {
       tracks.forEach((track) => {
         track.stop();

@@ -136,7 +136,7 @@ export const ModalAddMessageGroup = ({ setOpenModalGroup }) => {
   };
   return (
     <div className="modal-addmess" style={{ zIndex: "10"}}>
-      <div className="modal-addmess_content" style={{ minHeight: "700px" }}>
+      <div className="modal-addmess_content" style={{ minHeight: "fit-content" }}>
         <div className="modal-addmess_header">
           <div></div>
           <h5 className="modal-addmess_content-h5">Tạo tin nhắn nhóm mới</h5>

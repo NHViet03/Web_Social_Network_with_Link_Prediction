@@ -59,6 +59,7 @@ const SocketClient = () => {
   // Message
   useEffect(() => {
     socket.on("addMessageToClient", (msg) => {
+      console.log("addMessageToClient", msg);
       fetchNumberNewMessage();
       dispatch({ type: MESS_TYPES.ADD_MESSAGE_SECOND, payload: msg });
 
