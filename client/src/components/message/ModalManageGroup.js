@@ -167,7 +167,6 @@ export const ModalManageGroup = () => {
         socket,
       })
     );
-  
   };
   const handleAddUserGroupChat = (user) => {
     const checkUser = groupUsersChat.find((item) => item._id === user._id);
@@ -247,7 +246,12 @@ export const ModalManageGroup = () => {
         {/* Thông tin nhóm */}
         {isBoxManageGroup && !loadInfoGroup && (
           // map qua từng message.modalManageGroup.recipients để hiển thị UserCard
-          <div>
+          <div
+            style={{
+              maxHeight: "500px",
+              overflowY: "auto",
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -437,34 +441,37 @@ export const ModalManageGroup = () => {
                 );
               })}
             </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <button
-                className="btn btn-danger"
-                style={{
-                  width: "100%",
-                  height: "40px",
-                  fontSize: "16px",
-                  fontWeight: "600",
-                  borderRadius: "20px",
-                  border: "none",
-                  backgroundColor: "#D97B5C",
-                  marginTop: "10px",
-                  marginBottom: "10px",
-                }}
-                onClick={() => handleLeaveGroupChat()}
-              >
-                Rời nhóm
-              </button>
-            </div>
           </div>
         )}
+        {isBoxManageGroup && !loadInfoGroup && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            <button
+              className="btn btn-danger"
+              style={{
+                width: "100%",
+                height: "40px",
+                fontSize: "16px",
+                fontWeight: "600",
+                borderRadius: "20px",
+                border: "none",
+                backgroundColor: "#D97B5C",
+                marginTop: "10px",
+                marginBottom: "10px",
+              }}
+              onClick={() => handleLeaveGroupChat()}
+            >
+              Rời nhóm
+            </button>
+          </div>
+        )}
+
         {isBoxManageGroup && loadInfoGroup && <Loading />}
         {/* Thêm người mới vào nhóm */}
         {!isBoxManageGroup && (

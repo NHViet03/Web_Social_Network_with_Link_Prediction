@@ -148,6 +148,16 @@ const RightSide = () => {
     }
   }, [text]);
 
+  // Nếu id không có trong danh sách users, navigate về trang message. Nhưng phải đợi message.users đã load xong
+  // Điều này tránh lỗi khi người dùng truy cập trực tiếp vào một cuộc trò chuyện không hợp lệ
+  useEffect(() => {
+    if (!message.users || message.users.length === 0) return;
+    const conversationExists = message.users.some((user) => user._id === id);
+    if (!conversationExists) {
+      navigate("/message");
+    }
+  }, [message.users, id, navigate]);
+
   //============================ Function ========================
 
   const handleMangeGroup = () => {

@@ -303,7 +303,7 @@ const MsgDisplay = ({
               )}
             </div>
           )}
-          {msg.media.map((item, index) => (
+          {!msg.isRevoke && msg.media.map((item, index) => (
             <div key={index} className="display_img_video_chat">
               {item.url && item.url.match(/video/i)
                 ? videoShow(item.url, theme)

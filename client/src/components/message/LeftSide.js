@@ -48,11 +48,15 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
     });
     try {
       //Save to DB read message = true
-      postDataAPI(`readMessage/${auth.user._id}`, {
-        listID: listID,
-        isGroup: user.isGroup,
-        conversationID: user._id,
-      }, auth.token);
+      postDataAPI(
+        `readMessage/${auth.user._id}`,
+        {
+          listID: listID,
+          isGroup: user.isGroup,
+          conversationID: user._id,
+        },
+        auth.token
+      );
     } catch (err) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
@@ -69,9 +73,7 @@ export const LeftSide = ({ setOpenModal, setOpenModalGroup }) => {
       type: MESS_TYPES.MAINBOXMESSAGE,
       payload: mainBoxMessage,
     });
-    dispatch(
-      getConversations({ auth, mainBoxMessage: mainBoxMessage })
-    );
+    dispatch(getConversations({ auth, mainBoxMessage: mainBoxMessage }));
   };
 
   // UseEffect

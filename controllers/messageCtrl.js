@@ -118,13 +118,22 @@ const messageCtrl = {
         await conversation.save();
       }
 
+      let textMessage = "";
+      if (call) {
+        textMessage = "";
+      } else if (media.length > 0 && !text.trim()) {
+        textMessage = "";
+      } else if (text.trim()) {
+        textMessage = text;
+      }
+
       const newMessage = new Messages({
         _id: _id,
         conversation: conversation._id,
         sender: senderId,
         call,
         recipients: recipientsNosender,
-        text: call !== null || media.length > 0 ? "" : newText,
+        text: textMessage,
         replymessage: replymessage,
         isRevoke: false,
         isEdit: false,
