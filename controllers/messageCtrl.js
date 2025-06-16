@@ -124,7 +124,7 @@ const messageCtrl = {
         sender: senderId,
         call,
         recipients: recipientsNosender,
-        text: newText,
+        text: call !== null || media.length > 0 ? "" : newText,
         replymessage: replymessage,
         isRevoke: false,
         isEdit: false,
@@ -133,7 +133,7 @@ const messageCtrl = {
           acc[recipient] = true;
           return acc;
         }, {}),
-        post: post
+        post: post,
       });
 
       await newMessage.save();
@@ -643,6 +643,12 @@ const messageCtrl = {
       const newConversation = await Conversations.findOne({
         recipients: { $all: listID, $size: listID.length },
       });
+
+      if (!newConversation) {
+        return res
+          .status(404)
+          .json({ msg: "Bạn chưa từng nhắn tin với người này" });
+      }
 
       newConversation.isVisible.set(req.user._id.toString(), false);
       await newConversation.save();

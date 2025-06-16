@@ -110,7 +110,6 @@ export const ModalManageGroup = () => {
   };
 
   const handleLeaveGroupChat = () => {
-    console.log("Rời nhóm:", message.modalManageGroup._id);
     dispatch(
       leaveGroupChat({
         conversationId: message.modalManageGroup._id,
@@ -160,12 +159,15 @@ export const ModalManageGroup = () => {
   };
   const handleAddMemberGroupChat = () => {
     if (groupUsersChat.length === 0) return;
-    dispatch(addMemberGroupChat({
-      groupUsersChat,
-      conversationId: message.modalManageGroup._id,
-      auth,
-      socket,
-    }));
+    dispatch(
+      addMemberGroupChat({
+        groupUsersChat,
+        conversationId: message.modalManageGroup._id,
+        auth,
+        socket,
+      })
+    );
+  
   };
   const handleAddUserGroupChat = (user) => {
     const checkUser = groupUsersChat.find((item) => item._id === user._id);
@@ -180,7 +182,7 @@ export const ModalManageGroup = () => {
     setIsBoxManageGroup(isManageGroup);
   };
   return (
-    <div className="modal-addmess">
+    <div className="modal-addmess" style={{ zIndex: "10" }}>
       <div className="modal-addmess_content">
         <div className="modal-addmess_header">
           <div></div>

@@ -478,7 +478,7 @@
 /* Modal Add Message */
 .display_img_video_chat{
     max-width: 200px;
-    max-height: 200px;
+    height: fit-content;
 }
 
 .dropdown-item-manage-group:hover{
