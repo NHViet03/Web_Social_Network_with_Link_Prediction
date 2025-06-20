@@ -67,11 +67,13 @@ const SocketClient = () => {
         auth.user._id,
         msg.conversation.recipientAccept
       );
-      if (
-        (checkUserAccept && message.mainBoxMessage) ||
-        (!checkUserAccept && !message.mainBoxMessage)
-      ) {
-        dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
+      if (msg?.callBacktoSender == undefined || msg?.callBacktoSender == null) {
+        if (
+          (checkUserAccept && message.mainBoxMessage) ||
+          (!checkUserAccept && !message.mainBoxMessage)
+        ) {
+          dispatch({ type: MESS_TYPES.ADD_USER_SECOND, payload: msg });
+        }
       }
     });
 

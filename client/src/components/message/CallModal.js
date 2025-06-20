@@ -136,14 +136,10 @@ const CallModal = () => {
   const addCallMessage = (call, times) => {
     const message = {
       sender: {
-        _id: auth.user._id,
-        avatar: auth.user.avatar,
-        fullname: auth.user.fullname,
-        username: auth.user.username,
+        _id: call.sender,
       },
-      conversationID:
-        call.recipient === auth.user._id ? call.sender : call.recipient,
-      recipients: [call.recipient, auth.user._id],
+      conversationID: call.recipient === auth.user._id ? call.sender : call.recipient,
+      recipients: [call.recipient, call.sender],
       isRevoke: false,
       isEdit: false,
       text: "",
@@ -156,7 +152,6 @@ const CallModal = () => {
       _id: generateObjectId(),
       isVisible: {},
       replymessage: null,
-      whoEndCall: auth.user._id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

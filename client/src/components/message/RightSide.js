@@ -341,10 +341,12 @@ const RightSide = () => {
       avatar,
       username,
       fullname,
+      avatarRecipient: user.avatar,
+      usernameRecipient: user.username,
+      fullnameRecipient: user.fullname,
       video,
     };
     if (peer.open) msg.peerId = peer._id;
-
     socket.emit("callUser", msg);
   };
   const handleAudioCall = () => {
