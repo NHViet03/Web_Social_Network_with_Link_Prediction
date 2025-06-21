@@ -82,7 +82,10 @@ export const ModalAddMessage = ({ setOpenModal }) => {
             onKeyPress={handleEnter}
            />
         </div>
-        <div className="modal-addmess_message_chat_list">
+        <div className="modal-addmess_message_chat_list" style={{
+          height: "100%",
+          overflowY: "scroll"
+        }}>
         {
           load &&  <Loading />
           

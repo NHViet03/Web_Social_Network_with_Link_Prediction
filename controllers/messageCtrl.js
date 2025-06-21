@@ -118,13 +118,22 @@ const messageCtrl = {
         await conversation.save();
       }
 
+      let textMessage = "";
+      if (call) {
+        textMessage = "";
+      } else if (media.length > 0 && !text.trim()) {
+        textMessage = "";
+      } else if (text.trim()) {
+        textMessage = text;
+      }
+
       const newMessage = new Messages({
         _id: _id,
         conversation: conversation._id,
         sender: senderId,
         call,
         recipients: recipientsNosender,
-        text: newText,
+        text: textMessage,
         replymessage: replymessage,
         isRevoke: false,
         isEdit: false,
@@ -133,7 +142,7 @@ const messageCtrl = {
           acc[recipient] = true;
           return acc;
         }, {}),
-        post: post
+        post: post,
       });
 
       await newMessage.save();
@@ -643,6 +652,12 @@ const messageCtrl = {
       const newConversation = await Conversations.findOne({
         recipients: { $all: listID, $size: listID.length },
       });
+
+      if (!newConversation) {
+        return res
+          .status(404)
+          .json({ msg: "Bạn chưa từng nhắn tin với người này" });
+      }
 
       newConversation.isVisible.set(req.user._id.toString(), false);
       await newConversation.save();

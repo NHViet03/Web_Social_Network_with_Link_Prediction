@@ -202,6 +202,14 @@ const messageReducer = (state = initialState, action) => {
             itemIDs,
             action.payload.recipients
           );
+
+          if (
+            action.payload.callBacktoSender != undefined &&
+            action.payload.callBacktoSender != null &&
+            action.payload.callBacktoSender
+          ) {
+            recipientsMatch = item._id === action.payload.conversationID;
+          }
         }
 
         if (recipientsMatch) {

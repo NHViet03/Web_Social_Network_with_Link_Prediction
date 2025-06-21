@@ -196,10 +196,12 @@ export const deleteConversation =
     try {
       await deleteDataAPI(`conversation/${id}`, auth.token);
     } catch (err) {
-      dispatch({
-        type: GLOBAL_TYPES.ALERT,
-        payload: { error: err.response.data.msg },
-      });
+      if (err.response.status !== 404) {
+        dispatch({
+          type: GLOBAL_TYPES.ALERT,
+          payload: { error: err.response.data.msg },
+        });
+      }
     }
   };
 
@@ -247,12 +249,19 @@ export const removeAdminGroup =
   ({ userId, conversationId, auth, socket }) =>
   async (dispatch) => {
     try {
-      console.log("removeAdminGroup userId:", userId);
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: true },
+      });
       const res = await putDataAPI(
         `remove-admin-group/${conversationId}`,
         { userId },
         auth.token
       );
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: false },
+      });
       socket.emit("updateManagerGroup", {
         userId: auth.user._id,
         conversation: res.data.conversation,
@@ -277,11 +286,19 @@ export const setAdminGroup =
   ({ userId, conversationId, auth, socket }) =>
   async (dispatch) => {
     try {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: true },
+      });
       const res = await putDataAPI(
         `set-admin-group/${conversationId}`,
         { userId },
         auth.token
       );
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: false },
+      });
       dispatch({
         type: MESS_TYPES.MODAL_MANAGE_GROUP,
         payload: res.data.conversation,
@@ -306,11 +323,19 @@ export const removeUserFromGroupChat =
   ({ userId, conversationId, auth, socket }) =>
   async (dispatch) => {
     try {
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: true },
+      });
       const res = await putDataAPI(
         `delete-user-group/${conversationId}`,
         { userId },
         auth.token
       );
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: false },
+      });
       dispatch({
         type: MESS_TYPES.MODAL_MANAGE_GROUP,
         payload: res.data.conversation,
@@ -368,11 +393,19 @@ export const addMemberGroupChat =
   async (dispatch) => {
     try {
       const listIdUserAdd = groupUsersChat.map((user) => user._id);
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: true },
+      });
       const res = await postDataAPI(
         "add-member-group-chat",
         { listIdUserAdd, conversationId },
         auth.token
       );
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { loading: false },
+      });
       dispatch({
         type: MESS_TYPES.MODAL_MANAGE_GROUP,
         payload: null,

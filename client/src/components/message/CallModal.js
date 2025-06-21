@@ -136,13 +136,10 @@ const CallModal = () => {
   const addCallMessage = (call, times) => {
     const message = {
       sender: {
-        _id: auth.user._id,
-        avatar: auth.user.avatar,
-        fullname: auth.user.fullname,
-        username: auth.user.username,
+        _id: call.sender,
       },
-      conversationID: call.recipient,
-      recipients: [call.recipient, auth.user._id],
+      conversationID: call.recipient === auth.user._id ? call.sender : call.recipient,
+      recipients: [call.recipient, call.sender],
       isRevoke: false,
       isEdit: false,
       text: "",
@@ -155,7 +152,6 @@ const CallModal = () => {
       _id: generateObjectId(),
       isVisible: {},
       replymessage: null,
-
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -164,6 +160,7 @@ const CallModal = () => {
   };
   // End Call
   const handeEndCall = () => {
+    console.log("End Call");
     if (tracks) {
       tracks.forEach((track) => {
         track.stop();

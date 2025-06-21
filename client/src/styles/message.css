@@ -242,8 +242,7 @@
    flex: 1;
 }
 .modal-addmess_message_chat_list{
-    min-height: 525px;
-    max-height: 525px;
+    height: 300px;
     overflow-y: auto;
     padding: 0px 20px;
 }
@@ -478,7 +477,7 @@
 /* Modal Add Message */
 .display_img_video_chat{
     max-width: 200px;
-    max-height: 200px;
+    height: fit-content;
 }
 
 .dropdown-item-manage-group:hover{

@@ -96,12 +96,29 @@ const SocketServer = (socket) => {
       conversation: conversationExits,
       nameGroup,
     };
-    // foeach user trong usersListRecepient
-    usersListRecepient.length > 0 &&
-      usersListRecepient.forEach((user) => {
-        // emit addMessageToClient cho user đó
-        socket.to(`${user.socketId}`).emit("addMessageToClient", msg);
-      });
+    if (msg.call && msg.sender._id == msg.conversationID) {
+      // Chỉnh sửa newMessage = msg nhưng đổi conversationID thành phần tử trong msg.recipients nhưng không phải là msg.sender._id
+      const newMessage = {
+        ...msg,
+        conversationID: msg.recipients.find((item) => item !== msg.sender._id),
+        callBacktoSender: true,
+      };
+      const usersListRecepientOfSender = users.filter(
+        (user) => user.id === msg.sender._id
+      );
+      usersListRecepientOfSender.length > 0 &&
+        usersListRecepientOfSender.forEach((user) => {
+          // emit addMessageToClient cho user đó
+          socket.to(`${user.socketId}`).emit("addMessageToClient", newMessage);
+        });
+    } else {
+      // foeach user trong usersListRecepient
+      usersListRecepient.length > 0 &&
+        usersListRecepient.forEach((user) => {
+          // emit addMessageToClient cho user đó
+          socket.to(`${user.socketId}`).emit("addMessageToClient", msg);
+        });
+    }
   });
 
   // Check User Online / Offline
@@ -273,7 +290,6 @@ const SocketServer = (socket) => {
     }
   });
   socket.on("endCall", (data) => {
-    console.log("endCall data:", data);
     const client = users.find((user) => user.id === data.sender);
     if (client) {
       socket.to(`${client.socketId}`).emit("endCallToClient", data);
