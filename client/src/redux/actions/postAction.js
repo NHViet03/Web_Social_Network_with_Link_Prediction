@@ -7,13 +7,22 @@ import {
   deleteDataAPI,
 } from "../../utils/fetchData";
 import { EXPLORE_TYPES } from "./exploreAction";
+import { PROFILE_TYPES } from "./profileAction";
 import { createNotify, removeNotify } from "./notifyAction";
+import axios from "axios";
 
 export const POST_TYPES = {
   CREATE_POST: "CREATE_POST",
   GET_POSTS: "GET_POSTS",
   UPDATE_POST: "UPDATE_POST",
   DELETE_POST: "DELETE_POST",
+};
+
+export const POST_POOL_TYPES = {
+  CREATE_POST: "CREATE_POST_POOL",
+  GET_POSTS: "GET_POSTS_POOL",
+  UPDATE_POST: "UPDATE_POST_POOL",
+  DELETE_POST: "DELETE_POST_POOL",
 };
 
 export const createPost =
@@ -28,6 +37,9 @@ export const createPost =
         {
           content: post.content,
           images: media,
+          hashtags: post.hashtags || [],
+          tags: post.tags.map((tag) => tag._id) || [],
+          location: post.location || {},
         },
         auth.token
       );
@@ -40,11 +52,31 @@ export const createPost =
         },
       });
 
-      // Notify
+      // Notify for tags
+      if (post.tags?.length > 0) {
+        const msg = {
+          id: res.data.post._id,
+          content: " đã gắn thẻ bạn trong một bài viết.",
+          recipients: post.tags,
+          url: `/post/${res.data.post._id}`,
+          image: res.data.post.images.find((img) => img.type === "image")?.url,
+          user: auth.user,
+        };
+
+        dispatch(createNotify({ msg, auth, socket }));
+      }
+
+      // Notify for followers
+      // Exclude the user who already got the notify from tags above
+      const tagsSet = new Set(post.tags.map((tag) => tag._id));
+      const followers = auth.user.followers.filter(
+        (user) => !tagsSet.has(user._id)
+      );
+
       const msg = {
         id: res.data.post._id,
         content: " đã thêm một bài viết.",
-        recipients: auth.user.followers,
+        recipients: followers,
         url: `/post/${res.data.post._id}`,
         image: res.data.post.images[0].url,
         user: auth.user,
@@ -91,11 +123,20 @@ export const updatePost =
       payload: post,
     });
 
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: post,
+    });
+    
+
     try {
       await patchDataAPI(
         `post/${post._id}`,
         {
           content: post.content,
+          hashtags: post.hashtags || [],
+          tags: post.tags.map((tag) => tag._id) || [],
+          location: post.location || {},
         },
         auth.token
       );
@@ -115,6 +156,25 @@ export const deletePost =
     dispatch({
       type: POST_TYPES.DELETE_POST,
       payload: post,
+    });
+
+    //
+    dispatch({
+      type: PROFILE_TYPES.DELETE_POST_PROFILE,
+      payload: {
+        _id: auth.user._id,
+        postId: post._id,
+      },
+    });
+
+    dispatch({
+      type: POST_POOL_TYPES.DELETE_POST,
+      payload: post,
+    });
+
+    dispatch({
+      type:GLOBAL_TYPES.POST_DETAIL,
+      payload: false,
     });
 
     // Notify
@@ -147,17 +207,20 @@ export const likePost =
       likes: [...post.likes, auth.user._id],
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     // Notify
     const msg = {
@@ -190,17 +253,20 @@ export const unLikePost =
       likes: post.likes.filter((like) => like !== auth.user._id),
     };
 
-    if (explore) {
-      dispatch({
-        type: EXPLORE_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    } else {
-      dispatch({
-        type: POST_TYPES.UPDATE_POST,
-        payload: newPost,
-      });
-    }
+    dispatch({
+      type: EXPLORE_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
+
+    dispatch({
+      type: POST_POOL_TYPES.UPDATE_POST,
+      payload: newPost,
+    });
 
     // Notify
     const msg = {
@@ -281,25 +347,45 @@ export const unSavePost =
   };
 
 export const reportPost =
-  ({ post, reason, auth }) =>
+  ({ post, report, auth }) =>
   async (dispatch) => {
-    const newReport = {
-      id: post._id,
-      reason,
-      reporter: auth.user._id,
-    };
-
     try {
-      await postDataAPI("report_post", newReport, auth.token);
+      // await postDataAPI("report_post", newReport, auth.token);
+      // dispatch({
+      //   type: POST_TYPES.DELETE_POST,
+      //   payload: post,
+      // });
       dispatch({
         type: POST_TYPES.DELETE_POST,
         payload: post,
       });
+
+      dispatch({
+        type: POST_POOL_TYPES.DELETE_POST,
+        payload: post,
+      });
+
+      dispatch({
+        type: EXPLORE_TYPES.DELETE_POST,
+        payload: post,
+      });
+
+      dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: false });
+
+      const res = await axios.post(
+        `http://localhost:8000/post/report/${post._id}`,
+        {
+          ...report,
+          reporter: auth.user._id,
+        }
+      );
+
+      console.log(res);
     } catch (error) {
       dispatch({
         type: GLOBAL_TYPES.ALERT,
         payload: {
-          error: error.response.data.msg,
+          error: error.response,
         },
       });
     }

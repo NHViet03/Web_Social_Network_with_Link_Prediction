@@ -228,7 +228,7 @@
 /* SAVE TAB */
 .profile_tab {
   margin: auto;
-  width: 65%;
+  width: 75%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -240,15 +240,26 @@
   border: none;
   background-color: white;
   text-transform: uppercase;
-  padding: 10px 0px;
+  padding: 14px 0px;
   font-weight: 500;
   opacity: 0.5;
+  margin-right: 24px;
+  font-size: 14px;
+}
+
+.profile_tab button:last-child {
+  margin-right: 0px;
 }
 
 .profile_tab button.active {
   border-top: 1px solid #615d5d;
   opacity: 1;
 }
+
+.profile_tab button i {
+  margin-right: 6px;
+}
+
 .profile_saved_icon {
   margin-right: 5px;
 }

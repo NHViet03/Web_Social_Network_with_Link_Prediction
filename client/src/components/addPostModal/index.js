@@ -17,13 +17,19 @@ function AddPostModal() {
   }));
   const dispatch = useDispatch();
 
-  const [addStep, setAddStep] = useState(addPostModal.onEdit ? 3 : 1);
+  const [addStep, setAddStep] = useState(addPostModal.onEdit ? 4 : 1);
   const [post, setPost] = useState(
     addPostModal.onEdit
       ? addPostModal.post
       : {
           content: "",
           images: [],
+          hashtags:[],
+          tags:[],
+          location:{
+            id:"",
+            name: ""
+          }
         }
   );
   const [loading, setLoading] = useState(false);
@@ -43,7 +49,6 @@ function AddPostModal() {
   };
 
   const handleUpdatePost = () => {
-    if (post.content === addPostModal.post.content) return handleClose();
     dispatch(updatePost({ post, auth }));
     handleClose();
   };
@@ -101,6 +106,39 @@ function AddPostModal() {
     }
   }, [addStep, loading, post]);
 
+  const handleNextStep = () => {
+    if (addStep === 1 && post.images.length === 0) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: {
+          error: "Vui lòng chọn ít nhất 1 ảnh/video",
+        },
+      })
+    }
+
+    const existImage = post.images.some((img) => img.type.includes("image"));
+
+    if (!existImage && addStep === 2) {
+      return setAddStep(4);
+    }
+
+    if (addStep === 5){
+      return handleClose();
+    }
+
+    setAddStep((pre) => pre + 1);
+  };
+
+  const handlePrevStep = () => {
+    const existImage = post.images.some((img) => img.type.includes("image"));
+
+    if (!existImage && addStep === 4) {
+      return setAddStep(2);
+    }
+
+    setAddStep((pre) => pre - 1);
+  };
+
   return (
     <div className="addPost_modal">
       <div
@@ -118,13 +156,13 @@ function AddPostModal() {
                   fontSize: "24px",
                   cursor: "pointer",
                 }}
-                onClick={() => setAddStep(addStep - 1)}
+                onClick={handlePrevStep}
               />
             )}
             <h6 className="text-center flex-fill">{getTitle()}</h6>
             {addPostModal.onEdit ? (
               addStep > 1 &&
-              addStep < 4 && (
+              addStep < 5 && (
                 <h6
                   style={{
                     color: "var(--primary-color)",
@@ -145,11 +183,7 @@ function AddPostModal() {
                   position: "absolute",
                   right: "16px",
                 }}
-                onClick={
-                  addStep === 4
-                    ? handleCreatePost
-                    : () => setAddStep(addStep + 1)
-                }
+                onClick={addStep === 4 ? handleCreatePost : handleNextStep}
               >
                 {addStep === 4 ? "Chia sẻ" : addStep !== 4 && "Tiếp"}
               </h6>

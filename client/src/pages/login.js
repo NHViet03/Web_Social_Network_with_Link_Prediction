@@ -118,7 +118,7 @@ const Login = () => {
             cssClass="login_facebook"
             textButton="Đăng nhập với Facebook"
             icon="fa-brands fa-facebook"
-            appId="1141768957449727"
+            appId="1270760671135470"
             autoLoad={false}
             fields="name,email,picture"
             callback={handleFacebookCallback}

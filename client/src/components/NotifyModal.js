@@ -23,6 +23,16 @@ function NotifyModal({ isShowNotify, setIsShowNotify }) {
     dispatch(deleteAllNotifies(auth));
   };
 
+  const detectVideoOrImage = (url) => {
+    if (!url) return null;
+    const ext = url.split(".").pop().toLowerCase();
+    if (ext === "mp4" || ext === "webm" || ext === "ogg") {
+      return <video className="notify_card-img" src={url} alt="notify" muted />;
+    } else {
+      return <img className="notify_card-img" src={url} alt="notify" />;
+    }
+  };
+
   return (
     <div className={`sideBar_modal notify_modal ${isShowNotify && "show"}`}>
       <h3>Thông báo</h3>
@@ -66,7 +76,7 @@ function NotifyModal({ isShowNotify, setIsShowNotify }) {
               </span>
             </p>
             {item.image ? (
-              <img className="notify_card-img" src={item.image} alt="notify" />
+              <>{detectVideoOrImage(item.image)}</>
             ) : (
               <FollowButton user={item.user} />
             )}

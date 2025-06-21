@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import PostThumb from '../PostThumb';
-import { getDataAPI } from '../../utils/fetchData';
-import { GLOBAL_TYPES } from '../../redux/actions/globalTypes';
-import loading from '../../images/loading.gif';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import PostThumb from "../PostThumb";
+import { getDataAPI } from "../../utils/fetchData";
+import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
+import Loading from "../Loading";
 
-const Saved = ({ auth, dispatch }) => {
+const Saved = ({ dispatch }) => {
+  const { auth } = useSelector((state) => state);
   const [savePosts, setSavePosts] = useState([]);
   const [result, setResult] = useState(9);
   const [load, setLoad] = useState(false);
@@ -13,7 +15,7 @@ const Saved = ({ auth, dispatch }) => {
     const fetchData = async () => {
       try {
         setLoad(true);
-        const res = await getDataAPI('getSavePost', auth.token);
+        const res = await getDataAPI("getSavePost", auth.token);
         setSavePosts(res.data.savePosts);
         setResult(res.data.result);
         setLoad(false);
@@ -31,7 +33,7 @@ const Saved = ({ auth, dispatch }) => {
 
   return (
     <>
-      {load && <img src={loading} alt="loading" className='mx-auto d-block' />}
+      {load && <Loading />}
       <PostThumb posts={savePosts} result={result} />
     </>
   );

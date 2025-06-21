@@ -4,7 +4,7 @@
 
 /* Main Content */
 .home .main-content {
-  padding: 0 32px 0 64px;
+  padding: 0 40px 0 60px;
   margin-top: 48px;
 }
 
@@ -45,6 +45,10 @@
 /* Posts */
 .home-posts {
   margin: 32px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .home-post-item {
   width: 550px;
@@ -71,7 +75,7 @@
 
 .suggestions {
   height: 650px;
-  padding: 48px 12px 0 12px;
+  padding: 48px 8px 0 8px;
 }
 
 .suggestions > h6 {
@@ -86,6 +90,28 @@
   gap: 12px;
 }
 
+.suggest-list .userCard-username {
+  margin-bottom: 4px;
+}
+
+.suggest-list .userCard-fullname {
+  font-size: 13px;
+  line-height: 1.1;
+}
+
+.suggest-list .userCard-content {
+  margin-left: 8px;
+}
+
+.suggest-list .follow_btn span {
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.suggest-list  .follow_btn {
+  min-width: 65px;
+}
+
 @media (max-width: 1024px) {
   .home .main-content {
     width: 100%;
@@ -97,4 +123,3 @@
     width: 400px;
   }
 }
-

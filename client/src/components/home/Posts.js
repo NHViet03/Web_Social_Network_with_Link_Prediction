@@ -51,7 +51,9 @@ const Posts = () => {
   return (
     <div className="home-posts">
       {!posts.length && (
-        <div className="text-center home-posts-empty">
+        <div className="text-center home-posts-empty"
+        style={{ display: !homePosts.firstLoad || loading ? "none" : "" }}
+        >
           Không có bài viết nào
         </div>
       )}

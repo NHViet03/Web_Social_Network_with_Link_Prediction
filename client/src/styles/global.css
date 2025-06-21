@@ -51,7 +51,7 @@ a:hover {
   margin: auto;
 }
 .main_container {
-  margin-left: 250px;
+  margin-left: 280px;
 }
 
 .text_primary {
@@ -103,7 +103,7 @@ a:hover {
 
 .form-emoji i {
   position: relative;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
 }
 .form-emoji i:active {
@@ -128,6 +128,10 @@ a:hover {
 
 .carousel-indicators [data-bs-target]{
   background-color: #fff;
+}
+
+.leaflet-container {
+  z-index:2;
 }
 
 /* Custome Image Editor */

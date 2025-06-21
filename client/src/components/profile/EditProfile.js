@@ -206,7 +206,7 @@ const EditProfile = ({ setOnEdit }) => {
             </label>
           </div>
         </div>
-        <div className="form_group mb-2">
+        {/* <div className="form_group mb-2">
           <label htmlFor="birthday" className="mb-2">Ngày sinh</label>
           <div className="position-relative">
             <input
@@ -218,7 +218,7 @@ const EditProfile = ({ setOnEdit }) => {
               onChange={handleInput}
             />
           </div>
-        </div>
+        </div> */}
         <button className="btn btn-info w-100 edit_profile_btn_save mt-2" type="Submit"> Lưu</button>
       </form>
     </div>

@@ -1,35 +1,32 @@
 const policyData = [
   {
     id: 1,
-    content: "Đây là spam",
+    label: "Racist",
+    content:"Nội dung phân biệt, kỳ thị chủng tộc, màu da, dân tộc hoặc quốc gia",
+
   },
   {
     id: 2,
-    content: "Ảnh khỏa thân hoặc hoạt động tình dục",
+    label: "Sexist",
+    content:"Kỳ thị, xúc phạm giới tính",
+    
   },
   {
     id: 3,
-    content: "Bạo lực hoặc tổ chức nguy hiểm",
+    label: "Homophobe",
+    content:"Thù ghét, kỳ thị người đồng tính, song tính hoặc chuyển giới", 
+    
   },
   {
     id: 4,
-    content: "Bắt nạt hoặc quấy rối",
+    label: "Religion",
+    content:"Xúc phạm, công kích tôn giáo, tín ngưỡng",
+    
   },
   {
     id: 5,
-    content: "Vi phạm quyền sở hữu trí tuệ",
-  },
-  {
-    id: 6,
-    content: "Lừa đạo hoặc gian lận",
-  },
-  {
-    id: 7,
-    content: "Thông tin sai sự thật",
-  },
-  {
-    id: 8,
-    content: "Khác",
+    label: "OtherHate",
+    content:"Khác",
   },
 ];
 

@@ -16,6 +16,7 @@ import { refreshToken } from "./redux/actions/authAction";
 import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from "./redux/actions/postAction";
 import { getNotifies } from "./redux/actions/notifyAction";
+import { getSearchHistories } from "./redux/actions/searchHistoryAction.js";
 import { GLOBAL_TYPES } from "./redux/actions/globalTypes";
 import CallModal from "./components/message/CallModal";
 import { io } from "socket.io-client";
@@ -26,9 +27,12 @@ import ForgotPassword from "./pages/forgotpassword.js";
 import ForgotPasswordVerifyOTP from "./pages/forgotpasswordverifyotp.js";
 import ForgotPasswordChangePassword from "./pages/forgotpasswordchangepassword.js";
 import BlockDeviceAccess from "./pages/blockDeviceAccess.js";
+import ExploreLocations from "./pages/exploreLocations.js";
+import ExploreHashtags from "./pages/exploreHashtags.js";
 import Loading from "./components/alert/Loading.js";
 import getClientInfo from "./utils/getClientInfo.js";
-
+import { getDataAPI } from "./utils/fetchData.js";
+import { MESS_TYPES } from "./redux/actions/messageAction.js";
 
 // Config moment
 moment.updateLocale("vi", {
@@ -53,16 +57,36 @@ moment.updateLocale("vi", {
 });
 
 function App() {
-  const { postDetail, sharePost, addPostModal, auth, modal, call } =
+  const { postDetail, sharePost, message, addPostModal, auth, modal, call } =
     useSelector((state) => ({
       postDetail: state.postDetail,
       sharePost: state.sharePost,
+      message: state.message,
       addPostModal: state.addPostModal,
+      call: state.call,
       auth: state.auth,
       modal: state.modal,
     }));
   const [loading, setLoading] = React.useState(true);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchNumberNewMessage = async () => {
+      try {
+        const res = await getDataAPI("numberNewMessage", auth.token);
+        dispatch({
+          type: MESS_TYPES.NUMBERNEWMESSAGE,
+          payload: res.data?.numberNewMessage,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (auth.token) {
+      fetchNumberNewMessage();
+    }
+  }, [message.numberNewMessage, auth.token]);
 
   useEffect(() => {
     if (postDetail || sharePost || addPostModal || modal) {
@@ -93,6 +117,7 @@ function App() {
     if (auth.token) {
       dispatch(getPosts({ auth }));
       dispatch(getNotifies(auth.token));
+      dispatch(getSearchHistories(auth.token));
     }
   }, [auth, dispatch]);
 
@@ -127,7 +152,7 @@ function App() {
           {sharePost && <SharePostModal />}
           {addPostModal && <AddPostModal />}
           {auth.token && <SocketClient />}
-          {call !== null && <CallModal />}
+          {call && <CallModal />}
 
           <div className="main_container">
             <Routes>
@@ -151,6 +176,15 @@ function App() {
               <Route
                 path="/blockdevice/:userId/:deviceId"
                 element={<BlockDeviceAccess />}
+              />
+
+              <Route
+                path="/explore/locations/:id/:name"
+                element={<ExploreLocations />}
+              />
+              <Route
+                path="/explore/hashtags/:id"
+                element={<ExploreHashtags />}
               />
 
               <Route path="/:page" element={<PageRender />} />

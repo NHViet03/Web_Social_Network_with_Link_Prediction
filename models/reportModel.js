@@ -3,7 +3,12 @@ const mongoose = require("mongoose");
 const reportSchema = new mongoose.Schema(
   {
     id: mongoose.Types.ObjectId,
-    reason: String,
+    report_id: {
+      type: Number,
+      required: true
+    },
+    label: String,
+    content: String,
     type: {
       type: String,
       default: "post",
@@ -16,6 +21,13 @@ const reportSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "user",
     },
+    predictions: [
+      {
+        "id": Number,
+        "label": String,
+        "probability": Number,
+      }
+    ]
   },
   {
     timestamps: true,

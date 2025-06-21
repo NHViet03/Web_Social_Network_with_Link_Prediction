@@ -80,8 +80,24 @@ const notifyCtrl = {
   },
   deleteAllNotifies: async (req, res) => {
     try {
-      await Notifies.deleteMany({
+      const notifies = await Notifies.find({
         recipients: req.user._id,
+      });
+
+      if (notifies.length === 0) {
+        return res.status(400).json({ msg: "Không có thông báo nào" });
+      }
+
+      notifies.forEach((item) => {
+        item.recipients = item.recipients.filter(
+          (recipient) => recipient.toString() !== req.user._id.toString()
+        );
+
+        if (item.recipients.length === 0) {
+          item.remove();
+        } else {
+          item.save();
+        }
       });
 
       return res.status(200).json({ msg: "Đã xóa tất cả thông báo" });

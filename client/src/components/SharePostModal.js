@@ -3,11 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { GLOBAL_TYPES } from "../redux/actions/globalTypes";
 import UserCard from "./UserCard";
 import Loading from "./Loading";
+import { addMessage } from "../redux/actions/messageAction";
 
 import { getDataAPI } from "../utils/fetchData";
+import { generateObjectId } from "../utils/helper";
 
 const SharePostModal = ({ post }) => {
   const auth = useSelector((state) => state.auth);
+  const socket = useSelector((state) => state.socket);
   const sharePost = useSelector((state) => state.sharePost);
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
@@ -23,13 +26,26 @@ const SharePostModal = ({ post }) => {
           newArr.push(user);
         }
       });
+
+      newArr.map((user) => {
+        user.image = user.avatar;
+        user.title = user.username;
+        user.subtitle = user.fullname;
+        return user;
+      });
+
       setUsers(newArr);
     } else {
-      const handleSearch = async () => {  
+      const handleSearch = async () => {
         try {
           setLoading(true);
-          const res = await getDataAPI(`search?username=${search}`, auth.token);
-          setUsers(res.data.users);
+          const res = await getDataAPI(
+            `search?keyword=${search}&type=user`,
+            auth.token
+          );
+          setUsers(
+            res.data.results.filter((user) => user._id !== auth.user._id)
+          );
           setLoading(false);
         } catch (err) {
           dispatch({
@@ -54,11 +70,67 @@ const SharePostModal = ({ post }) => {
       setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
     }
   };
+
   const handleRemoveUser = (user) => {
     setSelectUsers(selectUsers.filter((item) => item._id !== user._id));
   };
+
+  const getFirstImage = (post) => {
+    if (post.images.length > 0) {
+      return post.images.find((img) => img.type != "video")?.url || "";
+    }
+    return "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (selectUsers.length === 0) return;
+
+    selectUsers.forEach((user) => {
+      const msg = {
+        recipients: [user._id, auth.user._id],
+        isRevoke: false,
+        isEdit: false,
+        isVisible: {},
+        media: [],
+        _id: generateObjectId(),
+        isGroup: false,
+        conversationID: user._id,
+        sender: {
+          _id: auth.user._id,
+          avatar: auth.user.avatar,
+          fullname: auth.user.fullname,
+          username: auth.user.username,
+        },
+        text: "Đã chia sẻ một bài viết",
+        replymessage: null,
+        post: {
+          id: sharePost._id,
+          user: {
+            _id: sharePost.user._id,
+            avatar: sharePost.user.avatar,
+            username: sharePost.user.username,
+          },
+          image: getFirstImage(sharePost),
+        },
+        recipient: {
+          _id: user._id,
+          avatar: user.image,
+          fullname: user.subtitle,
+          username: user.title,
+        },
+        createAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      dispatch(addMessage({ msg, auth, socket }));
+
+      dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { success: "Đã chia sẻ bài viết" },
+      })
+      handleClose();
+    });
   };
 
   return (
@@ -67,19 +139,18 @@ const SharePostModal = ({ post }) => {
         <h6 className="sharePost_modal-title">Chia sẻ</h6>
         <div className="sharePost_modal-search">
           <span style={{ fontWeight: "600" }}>Tới: </span>
-          {selectUsers &&
-            selectUsers.map((item, index) => (
-              <span key={index} className="sharePost_modal-username">
-                <span>{item.username}</span>
-                <span
-                  className="material-icons"
-                  style={{ transform: "translateY(1px)", cursor: "pointer" }}
-                  onClick={() => handleRemoveUser(item)}
-                >
-                  close
-                </span>
+          {selectUsers?.map((item, index) => (
+            <span key={item._id} className="sharePost_modal-username">
+              <span>{item.title}</span>
+              <span
+                className="material-icons"
+                style={{ transform: "translateY(1px)", cursor: "pointer" }}
+                onClick={() => handleRemoveUser(item)}
+              >
+                close
               </span>
-            ))}
+            </span>
+          ))}
           <input
             className="form-control"
             type="text"
@@ -93,18 +164,24 @@ const SharePostModal = ({ post }) => {
             Gợi ý
           </h6>
           {loading && <Loading />}
-          {users &&
-            users.map((user, index) => (
-              <div key={index} className="mb-3 sharePost_modal-user">
-                <UserCard user={user} />
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  checked={selectUsers.find((item) => item._id === user._id)}
-                  onChange={(e) => handleSelectUser(e, user)}
-                />
-              </div>
-            ))}
+          {users?.map((user, index) => (
+            <div key={user._id} className="mb-3 sharePost_modal-user">
+              <UserCard
+                user={{
+                  _id: user._id,
+                  username: user.title,
+                  fullname: user.subtitle,
+                  avatar: user.image,
+                }}
+              />
+              <input
+                className="form-check-input"
+                type="checkbox"
+                checked={selectUsers.find((item) => item._id === user._id)}
+                onChange={(e) => handleSelectUser(e, user)}
+              />
+            </div>
+          ))}
         </div>
         <div className="sharePost_modal-button">
           <button

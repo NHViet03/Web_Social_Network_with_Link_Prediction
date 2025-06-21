@@ -10,20 +10,22 @@ import {
   unLikeComment,
   deleteComment,
 } from "../../redux/actions/commentAction";
+import CardCommentReply from "./CardCommentReply";
 
 const CardComment = ({
   post,
-  setPost,
   comment,
   loadComment,
   handleClose,
   explore,
+  handleClickReply,
 }) => {
   const auth = useSelector((state) => state.auth);
   const socket = useSelector((state) => state.socket);
   const dispatch = useDispatch();
   const [isLike, setIsLike] = useState(false);
   const [loadLike, setLoadLike] = useState(false);
+  const [showReply, setShowReply] = useState(false);
 
   useEffect(() => {
     if (comment.likes.find((like) => like === auth.user._id)) {
@@ -53,10 +55,6 @@ const CardComment = ({
       const res = await dispatch(
         deleteComment({ post, comment, auth, explore, socket })
       );
-
-      if (setPost) {
-        setPost(res);
-      }
     }
   };
 
@@ -78,70 +76,159 @@ const CardComment = ({
           </Link>
 
           <div className="card_comment-content">
-            <div className="card_comment-content-user">
-              <Link
-                to={`/profile/${comment.user._id}`}
-                onClick={handleClickUser}
-              >
-                <span className="card_comment-content-user-username">
-                  {comment.user.username}
-                </span>
-              </Link>
-
-              <span className="card_comment-content-user-comment">
-                {" "}
-                {comment.content}
-              </span>
-            </div>
-            <div className="d-flex card_comment-menu">
-              <span className="card_comment-menu-text">
-                {comment.createdAt
-                  ? moment(comment.createdAt).fromNow()
-                  : "1 ngày trước"}
-              </span>
-
-              {comment.likes.length > 0 && (
-                <span
-                  className="ms-3 card_comment-menu-text"
-                  style={{ fontWeight: "500" }}
-                >
-                  {comment.likes.length} lượt thích
-                </span>
-              )}
-
-              {(auth.user._id === comment.user._id ||
-                post.user._id === auth.user._id) && (
-                <div className="ms-3 nav-item dropdown">
-                  <span
-                    className="material-icons"
-                    id="morelink"
-                    data-bs-toggle="dropdown"
-                    style={{ cursor: "pointer" }}
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
+              <div>
+                <div className="card_comment-content-user">
+                  <Link
+                    to={`/profile/${comment.user._id}`}
+                    onClick={handleClickUser}
                   >
-                    more_horiz
+                    <span className="card_comment-content-user-username">
+                      {comment.user.username}
+                    </span>
+                  </Link>
+
+                  <span className="card_comment-content-user-comment">
+                    {" "}
+                    {comment.content}
                   </span>
-                  <div className="dropdown-menu" style={{ minWidth: "100px" }}>
-                    <div
-                      className="dropdown-item d-flex align-items-center"
-                      style={{
-                        color: "var(--primary-color)",
-                        cursor: "pointer",
-                      }}
-                      onClick={handleDeleteComment}
-                    >
-                      <span className="material-icons">delete_outline</span>
-                      <span>Xoá</span>
-                    </div>
-                  </div>
                 </div>
-              )}
+                {comment.image && (
+                  <div>
+                    <img
+                      src={comment.image}
+                      alt="Comment"
+                      style={{
+                        width: "300px",
+                        maxHeight: "200px",
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        margin: "8px 0",
+                      }}
+                    />
+                  </div>
+                )}
+
+                <div className="d-flex card_comment-menu">
+                  <span className="card_comment-menu-text">
+                    {comment.createdAt
+                      ? moment(comment.createdAt).fromNow()
+                      : "1 ngày trước"}
+                  </span>
+
+                  {comment.likes.length > 0 && (
+                    <span
+                      className="ms-3 card_comment-menu-text"
+                      style={{ fontWeight: "500" }}
+                    >
+                      {comment.likes.length} lượt thích
+                    </span>
+                  )}
+
+                  <span
+                    className="ms-3 card_comment-menu-text"
+                    style={{ fontWeight: "500", cursor: "pointer" }}
+                    onClick={() => handleClickReply(comment)}
+                  >
+                    Trả lời
+                  </span>
+
+                  {(auth.user._id === comment.user._id ||
+                    post.user._id === auth.user._id) && (
+                    <div className="ms-3 nav-item dropdown">
+                      <span
+                        className="material-icons"
+                        id="morelink"
+                        data-bs-toggle="dropdown"
+                        style={{ cursor: "pointer" }}
+                      >
+                        more_horiz
+                      </span>
+                      <div
+                        className="dropdown-menu"
+                        style={{ minWidth: "100px" }}
+                      >
+                        <div
+                          className="dropdown-item d-flex align-items-center"
+                          style={{
+                            color: "var(--primary-color)",
+                            cursor: "pointer",
+                          }}
+                          onClick={handleDeleteComment}
+                        >
+                          <span className="material-icons">delete_outline</span>
+                          <span>Xoá</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {comment.replies?.length > 0 && (
+                  <div
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                    onClick={() => setShowReply(!showReply)}
+                  >
+                    <div
+                      style={{
+                        border: 0,
+                        borderBottom: "1px solid var(--text-color)",
+                        display: "inline-block",
+                        width: "24px",
+                        verticalAlign: "middle",
+                        marginRight: "16px",
+                      }}
+                    />
+                    <span
+                      className="card_comment-menu-text"
+                      style={{
+                        fontWeight: 500,
+                      }}
+                    >
+                      {showReply
+                        ? "Ẩn câu trả lời"
+                        : `Xem câu trả lời (${comment.replies.length})`}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <LikeButton
+                isLike={isLike}
+                handleLike={handleLike}
+                handleUnLike={handleUnLike}
+              />
             </div>
+            {showReply && (
+              <div
+                style={{
+                  marginTop: "16px",
+                }}
+              >
+                {comment?.replies?.map((reply) => (
+                  <CardCommentReply
+                    key={reply._id}
+                    post={post}
+                    comment={reply}
+                    explore={explore}
+                    handleClose={handleClose}
+                    handleClickReply={handleClickReply}
+                    parentCommentId={comment._id}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-          <LikeButton
-            isLike={isLike}
-            handleLike={handleLike}
-            handleUnLike={handleUnLike}
-          />
         </>
       )}
     </div>

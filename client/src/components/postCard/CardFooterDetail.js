@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import Compressor from "compressorjs";
+
 import CardComment from "./CardComment";
 import LikeButton from "../LikeButton";
 import BookMarkButton from "./BookMarkButton";
@@ -16,10 +17,15 @@ import {
   unSavePost,
   savePost,
 } from "../../redux/actions/postAction";
-import { createComment } from "../../redux/actions/commentAction";
+import {
+  createComment,
+  generateNewComments,
+} from "../../redux/actions/commentAction";
 
-const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
+const CardFooterDetail = ({ post, explore, handleClose }) => {
   const [comment, setComment] = useState("");
+  const [reply, setReply] = useState({});
+  const [image, setImage] = useState(null);
   const [isLike, setIsLike] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -49,9 +55,6 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
     }
   }, [auth.user._id, auth.user.saved, post]);
 
-  const handleShowPostDetail = () => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: post });
-  };
   const handleShowSharePost = () => {
     dispatch({ type: GLOBAL_TYPES.SHARE_POST, payload: post });
   };
@@ -89,41 +92,125 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
 
   const handleComment = async (e) => {
     e.preventDefault();
-
-    if (!comment.trim() || loadComment) return;
     setLoadComment(true);
     setComment("");
+    setReply({});
+    setImage(null);
     setShowEmoji(false);
 
+    if ((!comment.trim() && image == null) || loadComment) return;
+
+    const trimmedComment = comment.replace(/^@\S+\s*/, "");
+
     const newComment = {
-      content: comment,
+      content: trimmedComment,
       user: auth.user,
       likes: [],
       postId: post._id,
       postUserId: post.user._id,
       createdAt: new Date().toISOString(),
+      replyCommentId: reply?.commentId,
+      replyUser: reply?.user,
+      replies: [],
+      image: image,
     };
 
-    if (setPost) {
-      setPost({
-        ...post,
-        comments: [...post.comments, newComment],
-      });
-    }
+    // if (setPost) {
+    //   const newComments = generateNewComments(post, newComment);
 
-    const res = await dispatch(
-      createComment({ post, newComment, auth, explore, socket })
-    );
+    //   setPost({
+    //     ...post,
+    //     comments: [...newComments],
+    //   });
+    // }
+
+    try {
+      const res = await dispatch(
+        createComment({ post, newComment, auth, explore, socket })
+      );
+    } catch (error) {}
+
     setLoadComment(false);
-
-    if (setPost) {
-      setPost(res);
-    }
   };
 
   const handleEmojiSelect = (emoji) => {
     setComment(comment + emoji.native);
     commentRef.current.focus();
+  };
+
+  const generateHashtags = () => {
+    const hashtags = post.hashtags.map((hashtag, index) => {
+      return (
+        <Link
+          key={index}
+          className="hashtag"
+          to={`/explore/hashtags/${hashtag}`}
+          onClick={handleClose}
+        >
+          #{hashtag}
+        </Link>
+      );
+    });
+    return hashtags;
+  };
+
+  const handleClickReply = (data) => {
+    if (data.user == null || data.user === undefined) return;
+
+    setReply({
+      commentId: data._id,
+      user: {
+        userId: data.user?._id,
+        username: data.user.username,
+      },
+    });
+
+    setComment(`@${data.user.username} `);
+
+    commentRef.current.focus();
+  };
+
+  const handleOnChangeComment = (e) => {
+    setComment(e.target.value);
+
+    if (e.target.value.trim() === "") {
+      setReply(null);
+    }
+  };
+
+  const handleChangeImages = (e) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    if (!file.type.match(/image\/(jpeg|jpg|png)/)) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng upload file đúng định dạng" },
+      });
+    }
+
+    if (file.size > 1024 * 1024 * 5) {
+      return dispatch({
+        type: GLOBAL_TYPES.ALERT,
+        payload: { error: "Vui lòng upload file có kích thước dưới 5 MB" },
+      });
+    }
+
+    new Compressor(file, {
+      quality: 0.8, // Chất lượng từ 0 đến 1 (0.6 = 60% chất lượng)
+      maxWidth: 400, // Chiều rộng tối đa
+      maxHeight: 300, // Chiều cao tối đa
+      mimeType: "image/jpeg", // Định dạng đầu ra
+      success(result) {
+        setImage(result);
+      },
+      error(err) {
+        console.error(err.message);
+        setImage(file);
+      },
+    });
   };
 
   return (
@@ -149,11 +236,17 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
                     {post.content}
                   </span>
                 </div>
-                <div className="d-flex">
-                  <span className="card_comment-menu-text">
-                    {moment(post.createdAt).fromNow()}
-                  </span>
-                </div>
+                {post.hashtags?.length > 0 && (
+                  <div
+                    style={{
+                      color: "rgb(65, 80, 247)",
+                      display: "flex",
+                      gap: "6px",
+                    }}
+                  >
+                    {generateHashtags()}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -175,11 +268,11 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
               <CardComment
                 key={index}
                 post={post}
-                setPost={setPost ? setPost : false}
                 comment={comment}
                 loadComment={!comment._id ? loadComment : false}
                 explore={explore}
                 handleClose={handleClose}
+                handleClickReply={handleClickReply}
               />
             ))}
           </div>
@@ -190,10 +283,7 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
                 handleLike={handleLike}
                 handleUnLike={handleUnLike}
               />
-              <span
-                className="fa-regular fa-comment"
-                onClick={handleShowPostDetail}
-              />
+              <span className="fa-regular fa-comment" />
               <span
                 className="fa-regular fa-paper-plane"
                 onClick={handleShowSharePost}
@@ -211,47 +301,120 @@ const CardFooterDetail = ({ post, setPost, explore, handleClose }) => {
           >
             {post.likes.length} lượt thích
           </p>
-          <form onSubmit={handleComment} className="px-3 form-comment">
-            <div className="form-emoji">
-              <i
-                className="fa-regular fa-face-grin"
-                onClick={() => setShowEmoji(!showEmoji)}
-              />
 
-              {showEmoji && (
-                <div className="form-emoji-picker">
-                  <Picker
-                    data={data}
-                    previewPosition="none"
-                    searchPosition="none"
-                    theme="light"
-                    set="native"
-                    locale="vi"
-                    perLine="7"
-                    maxFrequentRows={14}
-                    emojiSize={28}
-                    navPosition="bottom"
-                    onEmojiSelect={handleEmojiSelect}
-                  />
-                </div>
-              )}
+          <form onSubmit={handleComment} className="px-3 form-comment">
+            <div
+              className="d-flex align-items-center"
+              style={{
+                gap: "12px",
+              }}
+            >
+              <div className="form-emoji">
+                <i
+                  className="fa-regular fa-face-grin"
+                  onClick={() => setShowEmoji(!showEmoji)}
+                />
+
+                {showEmoji && (
+                  <div className="form-emoji-picker">
+                    <Picker
+                      data={data}
+                      previewPosition="none"
+                      searchPosition="none"
+                      theme="light"
+                      set="native"
+                      locale="vi"
+                      perLine="7"
+                      maxFrequentRows={14}
+                      emojiSize={28}
+                      navPosition="bottom"
+                      onEmojiSelect={handleEmojiSelect}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  name="file"
+                  id="file"
+                  multiple={false}
+                  accept="image/*"
+                  style={{
+                    display: "none",
+                  }}
+                  onChange={handleChangeImages}
+                />
+                <label htmlFor="file" className="select_image_btn">
+                  <i
+                    className="fa-solid fa-camera"
+                    style={{
+                      fontSize: "20px",
+                      cursor: "pointer",
+                    }}
+                  ></i>
+                </label>
+              </div>
             </div>
+
             <input
               ref={commentRef}
               className="form-control"
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={handleOnChangeComment}
               placeholder="Thêm bình luận..."
             />
             <button
               className="btn pe-0 btn-comment"
               type="submit"
-              disabled={comment.length < 1 ? true : false}
+              disabled={comment.length < 1 && image == null ? true : false}
               style={{ color: "var(--primary-color)" }}
             >
               Đăng
             </button>
           </form>
+          {image && (
+            <div
+              style={{
+                width: "80px",
+                height: "60px",
+                position: "relative",
+                padding: "2px",
+                backgroundImage:
+                  "linear-gradient(to right bottom, #feda75, #fa7e1e, #d62976, #962fbf)",
+                margin: "0 16px",
+              }}
+            >
+              <img
+                src={URL.createObjectURL(image)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  padding: "1px",
+                  backgroundColor: "#fff",
+                }}
+                alt="comment"
+              />
+              <span
+                className="material-icons"
+                style={{
+                  position: "absolute",
+                  top: "0",
+                  right: "-30px",
+                  color: "#000",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  borderRadius: "50%",
+                  border: "1px solid #000",
+                }}
+                onClick={() => setImage(null)}
+              >
+                close
+              </span>
+            </div>
+          )}
         </>
       )}
     </div>

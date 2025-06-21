@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {getDataAPI} from "../../utils/fetchData"
 import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
-import loading from "../../images/loading.gif"
+import Loading from "../../components/Loading";
 export const ModalAddMessage = ({ setOpenModal }) => {
   const navigate = useNavigate()
   const {auth, message} = useSelector((state) => state);
@@ -18,7 +18,7 @@ export const ModalAddMessage = ({ setOpenModal }) => {
    if (!search) return setSearchUser([]);
    try {
     setLoad(true);
-    const res = await getDataAPI(`search?username=${search}`, auth.token);
+    const res = await getDataAPI(`searchmessage?username=${search}&mesagechatbox=${auth.user._id}`, auth.token);
     setSearchUser(res.data.users);
     setLoad(false);
   } catch (err) {
@@ -29,21 +29,44 @@ export const ModalAddMessage = ({ setOpenModal }) => {
   }
   }
   const handleAddUser = (user) => {
-    dispatch({ type: MESS_TYPES.ADD_USER, payload: {...user, text: '', media: []} })
+    const userData =
+    {
+      avatar : user.avatar,
+      fullname: user.fullname,
+      username: user.username,
+      _id: user._id,
+      text: '',
+      media: [],
+      isVisible: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      recipientAccept: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      isRead: {
+        [auth.user._id]: true,
+        [user._id]: true
+      },
+      isGroup: false,
+      online: false,
+    }
+    dispatch({ type: MESS_TYPES.ADD_USER, payload: userData });
     navigate(`/message/${user._id}`)
     setOpenModal(false)
   }
-  const handleEnter = (e) => {
+  const handleEnter = (e) => {  
     if (e.key === "Enter") {
       handleSearch(e);
     }
   };
   return (
     <div className="modal-addmess">
-      <div className="modal-addmess_content" onClick={handleSearch}>
+      <div className="modal-addmess_content">
         <div className="modal-addmess_header">
+          <div></div>
           <h5 className="modal-addmess_content-h5">Tin nhắn mới</h5>
-
           <i
             class="fa fa-times"
             aria-hidden="true"
@@ -59,12 +82,13 @@ export const ModalAddMessage = ({ setOpenModal }) => {
             onKeyPress={handleEnter}
            />
         </div>
-        <div className="modal-addmess_message_chat_list">
+        <div className="modal-addmess_message_chat_list" style={{
+          height: "100%",
+          overflowY: "scroll"
+        }}>
         {
-          load && 
-          <div className=" loading_modalAddMessage">
-            <img className="loading" src={loading} alt="loading" />
-          </div>
+          load &&  <Loading />
+          
         }
         {
           searchUsers.length !== 0 ? <>
@@ -76,7 +100,9 @@ export const ModalAddMessage = ({ setOpenModal }) => {
               ))
             }
           </> : <>
-            <h6 className="my-3 mx-3 flex">Không có người dùng phù hợp</h6>
+            <h6 className="my-3 mx-3 flex"
+             style={{ display: load ? 'none' : 'block' }}
+            >Không có người dùng phù hợp</h6>
           </>
         }
         </div>

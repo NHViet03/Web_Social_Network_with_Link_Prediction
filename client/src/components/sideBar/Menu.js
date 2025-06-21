@@ -10,10 +10,13 @@ import { GLOBAL_TYPES } from "../../redux/actions/globalTypes";
 import MenuItem from "./MenuItem";
 import { ModalSideBarContext } from "./SideBar";
 import { useLocation } from "react-router-dom";
+import { getDataAPI } from "../../utils/fetchData";
+import { MESS_TYPES } from "../../redux/actions/messageAction";
 
 const SideBar = () => {
   const auth = useSelector((state) => state.auth);
   const notify = useSelector((state) => state.notify);
+  const message = useSelector((state) => state.message);
   const dispatch = useDispatch();
 
   const { isShowSearch, setIsShowSearch, isShowNotify, setIsShowNotify } =
@@ -67,6 +70,7 @@ const SideBar = () => {
         label: "Tin nhắn",
         icon: "send",
         path: "/message",
+        numberNewMessage: message.numberNewMessage,
       },
       {
         label: "Thông báo",
@@ -95,6 +99,7 @@ const SideBar = () => {
       handleShowNotify,
       handleShowSearch,
       notify.notifies,
+      message.numberNewMessage,
     ]
   );
 
@@ -114,13 +119,16 @@ const SideBar = () => {
     }
   }, []);
 
+
   return (
-    <div className="menu">
+    <div className="menu" >
       <ul className="navbar-nav me-auto mb-2 mb-lg-0 d-flex flex-column">
         {navLinks.map((link, index) => (
-          <>
+          <React.Fragment key={index}>
             {link.path ? (
-              <div onClick={() => handleClickMenuItem(index)}>
+              <div onClick={() => {
+                handleClickMenuItem(index);
+              }}>
                 <MenuItem
                   link={link}
                   active={active === index ? true : ""}
@@ -134,7 +142,9 @@ const SideBar = () => {
                 }
                 ${link.label === "Thông báo" && isShowNotify ? "active" : ""}
                 `}
-                onClick={link.onClick}
+                onClick={() => {
+                  link.onClick();
+                }}
                 style={{
                   cursor: "pointer",
                 }}
@@ -165,7 +175,7 @@ const SideBar = () => {
                 </div>
               </li>
             )}
-          </>
+          </React.Fragment>
         ))}
       </ul>
     </div>

@@ -17,10 +17,33 @@ const GalleryPost = ({ posts }) => {
   }, [posts]);
 
   const handleShowPost = (post) => {
-    dispatch({ type: GLOBAL_TYPES.POST_DETAIL, payload: {
-      postId:post._id,
-      explore:true
-    } });
+    dispatch({
+      type: GLOBAL_TYPES.POST_DETAIL,
+      payload: {
+        postId: post._id,
+        explore: true,
+      },
+    });
+  };
+
+  const calculateTotalComments = (post) => {
+    return post.comments.reduce((acc, comment) => {
+      return 1 + acc + (comment.replies ? comment.replies.length : 0);
+    }, 0);
+  };
+
+  const detectVideoOrImage = (post) => {
+    const firstImg = post.images[0];
+
+    if (firstImg.type === "video") {
+      return (
+        <video width="100%" muted>
+          <source src={post.images[0].url} type="video/mp4" />
+          Xin lỗi, trình duyệt của bạn không hỗ trợ video này.
+        </video>
+      );
+    }
+    return <img src={firstImg.url} alt={firstImg.url} />;
   };
 
   return (
@@ -34,9 +57,13 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img src={cluster[4].images[0].url} alt="Post" />
-                  {cluster[4].images.length > 1 && (
-                    <i className="fa-solid fa-images" />
+                  {detectVideoOrImage(cluster[4])}
+                  {cluster[4].images[0]?.type === "video" ? (
+                    <i className="fa-solid fa-clapperboard" />
+                  ) : (
+                    cluster[4].images?.length > 1 && (
+                      <i className="fa-solid fa-images" />
+                    )
                   )}
                   <div className="gallery_overlay">
                     <span className="me-4">
@@ -44,7 +71,7 @@ const GalleryPost = ({ posts }) => {
                     </span>
                     <span>
                       <i className="fas fa-comment" />{" "}
-                      {cluster[4].comments.length}
+                      {calculateTotalComments(cluster[4])}
                     </span>
                   </div>
                 </div>
@@ -56,16 +83,21 @@ const GalleryPost = ({ posts }) => {
                     className="gallery_item"
                     onClick={() => handleShowPost(post)}
                   >
-                    <img src={post.images[0].url} alt="Post" />
-                    {post.images.length > 1 && (
-                      <i className="fa-solid fa-images" />
+                    {detectVideoOrImage(post)}
+                    {post.images[0]?.type === "video" ? (
+                      <i className="fa-solid fa-clapperboard" />
+                    ) : (
+                      post.images?.length > 1 && (
+                        <i className="fa-solid fa-images" />
+                      )
                     )}
                     <div className="gallery_overlay">
                       <span className="me-4">
                         <i className="fas fa-heart" /> {post.likes.length}
                       </span>
                       <span>
-                        <i className="fas fa-comment" /> {post.comments.length}
+                        <i className="fas fa-comment" />{" "}
+                        {calculateTotalComments(post)}
                       </span>
                     </div>
                   </div>
@@ -76,9 +108,13 @@ const GalleryPost = ({ posts }) => {
                   className="gallery_item-large"
                   onClick={() => handleShowPost(cluster[4])}
                 >
-                  <img src={cluster[4].images[0].url} alt="Post" />
-                  {cluster[4].images.length > 1 && (
-                    <i className="fa-solid fa-images" />
+                  {detectVideoOrImage(cluster[4])}
+                  {cluster[4].images[0]?.type === "video" ? (
+                    <i className="fa-solid fa-clapperboard" />
+                  ) : (
+                    cluster[4].images?.length > 1 && (
+                      <i className="fa-solid fa-images" />
+                    )
                   )}
                   <div className="gallery_overlay">
                     <span className="me-4">
@@ -86,7 +122,7 @@ const GalleryPost = ({ posts }) => {
                     </span>
                     <span>
                       <i className="fas fa-comment" />{" "}
-                      {cluster[4].comments.length}
+                      {calculateTotalComments(cluster[4])}
                     </span>
                   </div>
                 </div>

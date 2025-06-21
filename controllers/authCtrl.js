@@ -85,7 +85,6 @@ const authCtrl = {
           };
 
           await transporter.sendMail(mailOptions);
-          console.log("Email gửi thành công!");
         } catch (err) {
           console.error("Lỗi khi gửi email:", err);
         }
@@ -201,7 +200,6 @@ const authCtrl = {
           };
 
           await transporter.sendMail(mailOptions);
-          console.log("Email gửi thành công!");
         } catch (err) {
           console.error("Lỗi khi gửi email:", err);
         }
@@ -253,7 +251,6 @@ const authCtrl = {
           };
 
           await transporter.sendMail(mailOptions);
-          console.log("Email gửi thành công!");
         } catch (err) {
           console.error("Lỗi khi gửi email:", err);
         }
@@ -265,7 +262,8 @@ const authCtrl = {
 
   login: async (req, res) => {
     try {
-      const { email, password, isFacebook, accessToken, deviceInfo } = req.body;
+      const { email, password, isFacebook, accessToken, deviceInfo, role } =
+        req.body;
 
       const user = await Users.findOne({ email: email })
         .populate(
@@ -276,6 +274,30 @@ const authCtrl = {
 
       if (!user)
         return res.status(400).json({ msg: "Tài khoản không tồn tại" });
+
+      if (role == "admin") {
+        if (user.role !== "admin") {
+          return res.status(403).json({ msg: "Bạn không có quyền truy cập." });
+        }
+
+        const access_token = createAccessToken({ id: user._id });
+        const refresh_token = createRefreshToken({ id: user._id, role: role});
+
+        res.cookie("refreshtoken", refresh_token, {
+          httpOnly: true,
+          path: "/api/refresh_token",
+          maxAge: 30 * 7 * 24 * 60 * 60 * 1000, // 30days
+        });
+
+        return res.json({
+          msg: "Đăng nhập thành công",
+          access_token,
+          user: {
+            ...user._doc,
+            password: "",
+          },
+        });
+      }
 
       if (isFacebook) {
         if (!accessToken)
@@ -446,6 +468,7 @@ const authCtrl = {
   },
   generateAccessToken: async (req, res) => {
     try {
+      const role = req.query.role;
       const rf_token = req.cookies.refreshtoken;
       if (!rf_token) return res.status(400).json({ msg: "Please login now." });
 
@@ -464,6 +487,10 @@ const authCtrl = {
             .populate("saved", "images likes comments");
           if (!user)
             return res.status(400).json({ msg: "This does not exist." });
+
+          if (role === "admin" && user.role !== "admin") {
+            return res.status(403).json({ msg: "Bạn không có quyền truy cập." });
+          }
 
           await Devices.findOneAndUpdate(
             {
