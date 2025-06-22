@@ -20,10 +20,10 @@ function SearchModal({ isShowSearch, setIsShowSearch }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (search.length === 0) {
+    if (search.length === 0 || search === "" || search === " ") {
       setResults(searchHistory.searchHistories);
     }
-  }, [searchHistory, search]);
+  }, [searchHistory, search, results]);
 
   // Debounce function
   const debounce = (func, delay) => {
@@ -35,6 +35,10 @@ function SearchModal({ isShowSearch, setIsShowSearch }) {
   };
 
   const handleSearch = async (keyword) => {
+    if (keyword.length === 0 || keyword === "" || keyword === " ") {
+      setResults(searchHistory.searchHistories);
+      return;
+    }
     try {
       setLoading(true);
 

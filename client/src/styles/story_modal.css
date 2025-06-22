@@ -83,7 +83,8 @@
     180deg,
     rgba(38, 38, 38, 0) 0%,
     rgba(38, 38, 38, 0.8) 100%
-  );    
+  ); 
+  display: none !important;
 }
 
 .story_modal_card-footer input {

@@ -164,7 +164,7 @@ const EditProfile = ({ setOnEdit }) => {
             />
           </div>
         </div>
-        <div className="form_group mb-2">
+        {/* <div className="form_group mb-2">
           <label htmlFor="email" className="mb-2">Email</label>
           <div className="position-relative">
             <input
@@ -176,7 +176,7 @@ const EditProfile = ({ setOnEdit }) => {
               onChange={handleInput}
             />
           </div>
-        </div>
+        </div> */}
         <div className="form_group mb-2">
           <label htmlFor="gender" className="mb-2">Giới tính</label>
           <div className="position-relative">
