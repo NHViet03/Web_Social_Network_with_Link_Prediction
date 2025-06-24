@@ -2,7 +2,6 @@ const Users = require("../models/userModel");
 const Hashtags = require("../models/hashtagsModel");
 const SearchHistories = require("../models/searchHistoryModel");
 
-
 const userCtrl = {
   searchUser: async (req, res) => {
     try {
@@ -76,12 +75,12 @@ const userCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  searchMessage : async (req, res) => {
-     try {
-      const mainUserId = req.query.mesagechatbox
+  searchMessage: async (req, res) => {
+    try {
+      const mainUserId = req.query.mesagechatbox;
       const users = await Users.find({
-        username: { $regex: req.query.username, $options: "i" }, 
-        _id: { $ne: mainUserId }, 
+        username: { $regex: req.query.username, $options: "i" },
+        _id: { $ne: mainUserId },
       })
         .limit(10)
         .select("fullname username avatar");
@@ -113,7 +112,7 @@ const userCtrl = {
         gender,
         birthday,
         website,
-        email,
+        // email,
       } = req.body;
       if (!fullname) return res.status(400).json({ msg: "Vui lòng nhập tên." });
       if (fullname.length > 25)
@@ -127,6 +126,13 @@ const userCtrl = {
           .status(400)
           .json({ msg: "Tên người dùng không được vượt quá 25 ký tự." });
 
+      var userExists = await Users.findOne({
+        username: username,
+        _id: { $ne: req.user._id },
+      });
+      if (userExists)
+        return res.status(400).json({ msg: "Tên người dùng đã tồn tại." });
+
       await Users.findOneAndUpdate(
         { _id: req.user._id },
         {
@@ -137,7 +143,7 @@ const userCtrl = {
           gender,
           birthday,
           website,
-          email,
+          // email,
         }
       );
       res.json({ msg: "Cập nhật thành công!" });
