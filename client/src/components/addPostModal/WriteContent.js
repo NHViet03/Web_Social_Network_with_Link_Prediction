@@ -196,12 +196,16 @@ function WriteContent({ post, setPost }) {
         }
       );
 
+      if (!data.ok) {
+        throw new Error("Network response was not ok");
+      }
+
       const result = await data.json();
 
       setLocations(
-        result.predictions?.map((item) => ({
-          name: item.description,
-          id: item.place_id,
+        result?.predictions?.map((item) => ({
+          name: item?.description,
+          id: item?.place_id,
         }))
       );
     } catch (error) {
