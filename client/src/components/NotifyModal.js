@@ -49,7 +49,7 @@ function NotifyModal({ isShowNotify, setIsShowNotify }) {
             Xóa tất cả thông báo
           </p>
         )}
-        <h6>Tháng này</h6>
+        <h6>Gần đây</h6>
         {notify.notifies.map((item, index) => (
           <Link
             to={`${item.url}`}
