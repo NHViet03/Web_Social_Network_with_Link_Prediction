@@ -708,8 +708,8 @@ const adminCtrl = {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "dreamerssocialuit@gmail.com",
-          pass: "pwxdinwdinhfjwvf",
+          user: "",
+          pass: "",
         },
       });
 
@@ -1053,8 +1053,8 @@ const handle_send_email = async (to, subject, html) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "dreamerssocialuit@gmail.com",
-        pass: "pwxdinwdinhfjwvf",
+        user: "",
+        pass: "",
       },
     });
 

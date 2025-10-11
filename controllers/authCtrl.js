@@ -67,8 +67,8 @@ const authCtrl = {
           const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-              user: "dreamerssocialuit@gmail.com",
-              pass: "pwxdinwdinhfjwvf",
+              user: "",
+              pass: "",
             },
           });
 
@@ -182,8 +182,8 @@ const authCtrl = {
           const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-              user: "dreamerssocialuit@gmail.com",
-              pass: "pwxdinwdinhfjwvf",
+              user: "",
+              pass: "",
             },
           });
 
@@ -233,8 +233,8 @@ const authCtrl = {
           const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
-              user: "dreamerssocialuit@gmail.com",
-              pass: "pwxdinwdinhfjwvf",
+              user: "",
+              pass: "",
             },
           });
 
@@ -377,8 +377,8 @@ const authCtrl = {
               const transporter = nodemailer.createTransport({
                 service: "gmail",
                 auth: {
-                  user: "dreamerssocialuit@gmail.com",
-                  pass: "pwxdinwdinhfjwvf",
+                  user: "",
+                  pass: "",
                 },
               });
 
